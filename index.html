@@ -130,6 +130,83 @@ h1{
 h3.sub-h{font-size:.98rem;margin:22px 0 4px;display:flex;align-items:center;gap:8px}
 h3.sub-h::before{content:"";width:3px;height:16px;background:var(--cyan);border-radius:2px}
 
+[hidden]{display:none!important}
+.steps{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 10px}
+.step{
+  font-size:.72rem;font-weight:700;padding:4px 11px;border-radius:999px;
+  border:1px solid var(--line2);color:var(--txt3);
+}
+.step.on{border-color:var(--cyan);color:#04121a;background:linear-gradient(180deg,var(--cyan),var(--cyan-d))}
+.step.done{border-color:var(--green);color:var(--green)}
+.lock{text-align:center;padding-block:34px;border-style:dashed}
+.lock-ic{font-size:2.2rem}
+.lock h3{margin:6px 0 6px;font-size:1.05rem}
+.lock p{margin:0;color:var(--txt3);font-size:.84rem;line-height:1.8}
+
+/* 卓の下の判定 */
+.verdict{margin-top:12px;border-radius:12px;padding:12px 14px;border:1px solid var(--line);background:#0c1018}
+.verdict.bad{border-color:rgba(255,92,92,.5);background:rgba(255,92,92,.07)}
+.verdict.warn{border-color:rgba(255,154,60,.45);background:rgba(255,154,60,.06)}
+.verdict.ok{border-color:rgba(92,242,168,.45);background:rgba(92,242,168,.06)}
+.vd-h{font-weight:800;font-size:.95rem;margin-bottom:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.vd-h small{font-weight:500;color:var(--txt3);font-size:.74rem}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{
+  font-size:.76rem;font-weight:700;border-radius:8px;padding:4px 10px;border:1px solid;
+  display:inline-flex;align-items:center;gap:5px;cursor:pointer;font-family:inherit;background:none;
+}
+.chip.bad{color:#ffb3b3;border-color:rgba(255,92,92,.55);background:rgba(255,92,92,.12)}
+.chip.warn{color:#ffd2a6;border-color:rgba(255,154,60,.5);background:rgba(255,154,60,.1)}
+.chip.ok{color:#aef5d2;border-color:rgba(92,242,168,.4);background:rgba(92,242,168,.08)}
+.chip small{font-weight:500;opacity:.85}
+
+/* 限界ゲージ */
+.checks-head{margin-bottom:12px}
+.lims{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px}
+.lim{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#0f141d;border-left:4px solid var(--lc)}
+.lim.bad{--lc:var(--red);background:rgba(255,92,92,.05)}
+.lim.warn{--lc:var(--orange)}
+.lim.ok{--lc:var(--green)}
+.lim-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.lim-top .ic{font-size:1.05rem}
+.lim-top .nm{font-size:.84rem;font-weight:700;color:var(--txt2)}
+.lim-tag{margin-left:auto;font-size:.76rem;font-weight:800;padding:2px 9px;border-radius:7px;white-space:nowrap}
+.lim.bad .lim-tag{background:var(--red);color:#1a0505}
+.lim.warn .lim-tag{background:var(--orange);color:#1a0d02}
+.lim.ok .lim-tag{background:rgba(92,242,168,.16);color:var(--green)}
+.lim-bar{position:relative;height:12px;border-radius:99px;background:#232b39;margin:20px 0 6px;overflow:visible}
+.lim-bar i{display:block;height:100%;border-radius:99px;background:var(--lc);max-width:100%}
+.lim-bar b{position:absolute;left:50%;top:-4px;bottom:-4px;width:2px;background:#fff;border-radius:2px}
+.lim-bar b::after{
+  content:attr(data-l);position:absolute;top:-17px;left:50%;transform:translateX(-50%);
+  font-size:.6rem;color:var(--txt3);white-space:nowrap;font-weight:600;
+}
+.lim-bar.over i{box-shadow:0 0 10px var(--lc)}
+.lim-nums{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:.74rem;color:var(--txt3)}
+.lim-nums b{color:var(--txt);font-weight:700}
+.lim-why{font-size:.76rem;color:var(--txt2);line-height:1.7;margin:7px 0 0}
+.lim.ok .lim-why{display:none}
+
+/* くらべる */
+.cmp-tools{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.cmp-saved{font-size:.76rem;color:var(--txt3)}
+table.cmp{min-width:720px;font-size:.8rem}
+table.cmp th{text-align:center;vertical-align:bottom;line-height:1.4;white-space:normal}
+table.cmp th small{display:block;font-weight:400;color:var(--txt3);font-size:.66rem}
+table.cmp th.me{color:var(--cyan)}
+table.cmp td{text-align:center;vertical-align:middle}
+table.cmp td:first-child{text-align:left;color:var(--txt2);font-weight:600;white-space:nowrap}
+table.cmp td.me{background:rgba(79,216,255,.06)}
+.mixbar{display:flex;height:14px;border-radius:4px;overflow:hidden;min-width:110px;background:#232b39}
+.mixbar i{display:block;height:100%}
+.cmp .good{color:var(--green);font-weight:700}
+.cmp .badv{color:var(--red);font-weight:700}
+.cmp .mid{color:var(--yellow);font-weight:700}
+.cmp-probs{font-size:.7rem;line-height:1.55;text-align:left;white-space:normal;min-width:120px}
+.cmp-probs span{display:block}
+.cmp .load{font-size:.7rem;padding:4px 9px}
+.extreme{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:14px;font-size:.78rem;color:var(--txt3)}
+
 /* ---------- プリセット ---------- */
 .presets{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
 .preset{
@@ -509,19 +586,36 @@ footer{text-align:center;color:var(--txt3);font-size:.74rem;padding-top:30px;lin
 
 <!-- ========== 1. ミキサー ========== -->
 <section class="panel">
-  <h2 class="panel-h"><span class="num">1</span>ミキシング卓 ― 電源構成を決める</h2>
-  <p class="panel-sub">フェーダーを動かして、合計が100%になるように配分しよう。数字を直接入力してもOK。</p>
+  <h2 class="panel-h"><span class="num">1</span>ミキシング卓 ― あなたのバンドを組もう</h2>
+  <div class="steps">
+    <span class="step on">STEP 1　自分の考えで組む</span>
+    <span class="step">STEP 2　実現できるか確かめて直す</span>
+    <span class="step">STEP 3　今の日本・国の目標とくらべる</span>
+  </div>
+  <p class="panel-sub">まずは何も見ずに、あなたの考えで配分しよう。<b>すべて0%から</b>始まります。
+  合計がちょうど<b>100%</b>になると、下に結果が出ます。数字を直接入力してもOK。</p>
 
-  <div class="presets" id="presets"></div>
   <div class="mixer" id="mixer"></div>
 
   <div class="total-bar">
-    <div><span class="total-num" id="totalNum">100.0</span><span style="font-size:.9rem;color:var(--txt3)">%</span></div>
-    <div class="total-msg" id="totalMsg">合計100%です。</div>
+    <div><span class="total-num" id="totalNum">0.0</span><span style="font-size:.9rem;color:var(--txt3)">%</span></div>
+    <div class="total-msg" id="totalMsg"></div>
     <button class="btn ghost" id="btnNorm">100%にそろえる</button>
-    <button class="btn ghost" id="btnReset">リセット</button>
+    <button class="btn ghost" id="btnReset">0にもどす</button>
   </div>
+
+  <div class="verdict" id="verdict" aria-live="polite"></div>
 </section>
+
+<!-- 合計100%になるまで表示するカバー -->
+<section class="panel lock" id="lock">
+  <div class="lock-ic">🎚️</div>
+  <h3>合計を100%にすると、ここに結果が出ます</h3>
+  <p>電気代・CO₂・必要な土地・停電しないか・実現できるか……<br>
+  あなたのバンドを、いろいろな角度から採点します。</p>
+</section>
+
+<div id="results" hidden>
 
 <!-- ========== 2. 4つのものさし ========== -->
 <section class="panel">
@@ -582,23 +676,44 @@ footer{text-align:center;color:var(--txt3);font-size:.74rem;padding-top:30px;lin
 </section>
 
 <!-- ========== 4. 現実チェック ========== -->
-<section class="panel">
-  <h2 class="panel-h"><span class="num">4</span>現実チェック</h2>
-  <p class="panel-sub">「増やしたいけど、日本では増やせない理由」がここに出ます。</p>
-  <div class="checks" id="checks"></div>
+<section class="panel" id="checkPanel">
+  <h2 class="panel-h"><span class="num">4</span>現実チェック ― この案は本当に実現できる？</h2>
+  <p class="panel-sub">10の「限界」とくらべます。バーが<b>白い線（限界）</b>をこえると、その案は日本ではそのまま実現できません。</p>
+  <div class="checks-head" id="checksHead"></div>
+  <div class="lims" id="checks"></div>
 </section>
 
-<!-- ========== 5. 国際情勢 ========== -->
+<!-- ========== 5. くらべる ========== -->
 <section class="panel">
-  <h2 class="panel-h"><span class="num">5</span>もしも、世界で何かが起きたら</h2>
+  <h2 class="panel-h"><span class="num">5</span>くらべてみよう ― 今の日本・国の目標</h2>
+  <p class="panel-sub">あなたの案を、今の日本（2023年度）や国が決めた目標とならべます。
+  「📌 この案を記録」を押しておくと、直す前の案とも比べられます。</p>
+  <div class="cmp-tools">
+    <button class="btn" id="btnSave">📌 この案を記録</button>
+    <span class="cmp-saved" id="savedMsg"></span>
+  </div>
+  <div class="tblwrap"><table class="cmp" id="cmpTable"></table></div>
+  <div class="note" id="cmpNote"></div>
+  <div class="extreme">
+    <span>極端な案も試してみる（卓に読み込みます）：</span>
+    <button class="preset" data-p="3">再エネだけ</button>
+    <button class="preset" data-p="4">火力だけ</button>
+    <button class="preset" data-p="5">原子力たより</button>
+  </div>
+</section>
+
+<!-- ========== 6. 国際情勢 ========== -->
+<section class="panel">
+  <h2 class="panel-h"><span class="num">6</span>もしも、世界で何かが起きたら</h2>
   <p class="panel-sub">カードを押すと、その出来事が起きたときに「あなたのバンド」がどうなるか計算します。もう一度押すと元に戻ります。</p>
   <div class="ev-grid" id="events"></div>
   <div id="evResult"></div>
 </section>
+</div><!-- /results -->
 
 <!-- ========== 6. 発電所図鑑 ========== -->
 <section class="panel">
-  <h2 class="panel-h"><span class="num">6</span>発電所図鑑 ― どんな形をしているの？</h2>
+  <h2 class="panel-h"><span class="num">7</span>発電所図鑑 ― どんな形をしているの？</h2>
   <p class="panel-sub">同じ「発電所」でも見た目はまったく違います。遠くから見て何の発電所か当てられるようになろう。</p>
   <div class="gal-bar">
     <div class="seg" id="galleryAll" role="group" aria-label="すべてのカードの表示">
@@ -628,7 +743,7 @@ footer{text-align:center;color:var(--txt3);font-size:.74rem;padding-top:30px;lin
 
 <!-- ========== 7. データ表 ========== -->
 <section class="panel">
-  <h2 class="panel-h"><span class="num">7</span>メンバーの能力データ</h2>
+  <h2 class="panel-h"><span class="num">8</span>メンバーの能力データ</h2>
   <p class="panel-sub">計算に使っている数値。授業のスライドの表を、最新の試算でアップデートしたものです。</p>
   <div class="tblwrap"><table id="dataTable"></table></div>
   <div class="note">
@@ -850,8 +965,12 @@ function drawGauge(gid, t, color){
    状態
    ========================================================= */
 let mix = {};
-PRESETS[0].v && Object.assign(mix, PRESETS[0].v);
+SRC.forEach(s=> mix[s.id] = 0);
 let activeEvent = null;
+let saved = null;          // 記録した案
+try{ saved = JSON.parse(localStorage.getItem("ems-saved")||"null"); }catch(e){ saved = null; }
+const totalOf = ()=> SRC.reduce((a,s)=>a+(mix[s.id]||0),0);
+const isFull  = ()=> Math.abs(totalOf()-100) < 0.05;
 
 /* ---------- ミキサー構築 ---------- */
 function buildMixer(){
@@ -872,7 +991,6 @@ function buildMixer(){
       v = clampNum(v);
       mix[id] = v;
       syncChannel(id);
-      markPreset(null);
       render();
     });
   });
@@ -885,19 +1003,12 @@ function syncChannel(id){
 }
 function syncAll(){ SRC.forEach(s=>syncChannel(s.id)); }
 
-/* ---------- プリセット ---------- */
-function buildPresets(){
-  $("presets").innerHTML = PRESETS.map((p,i)=>'<button class="preset" data-i="'+i+'">'+p.n+'</button>').join("");
-  $("presets").querySelectorAll(".preset").forEach(b=>{
-    b.addEventListener("click", ()=>{
-      const p = PRESETS[+b.dataset.i];
-      SRC.forEach(s=> mix[s.id] = p.v[s.id]||0 );
-      syncAll(); markPreset(+b.dataset.i); render();
-    });
-  });
-}
-function markPreset(i){
-  $("presets").querySelectorAll(".preset").forEach((b,j)=> b.classList.toggle("on", j===i));
+/* ---------- 案を卓に読み込む ---------- */
+function loadMix(v, label){
+  if(totalOf()>0 && !confirm("いまの卓の配分を「"+label+"」に置きかえます。\n\n直す前の案と比べたいときは、先に「📌 この案を記録」を押しておこう。\n\n読み込みますか？")) return;
+  SRC.forEach(s=> mix[s.id] = v[s.id]||0 );
+  syncAll(); render();
+  $("mixer").scrollIntoView({behavior:"smooth", block:"start"});
 }
 
 /* ---------- 円グラフ ---------- */
@@ -924,17 +1035,29 @@ function drawDonut(r){
 const FOREST_OKU = 0.47; // 日本の森林が1年に吸収するCO2(億t)
 
 function render(){
-  const r = calc(mix);
-
   /* --- 合計バー --- */
-  const tot = SRC.reduce((a,s)=>a+(mix[s.id]||0),0);
+  const tot = totalOf(), full = isFull();
   const tn = $("totalNum");
   tn.textContent = tot.toFixed(1);
-  tn.className = "total-num " + (Math.abs(tot-100)<0.05 ? "ok" : "ng");
-  $("totalMsg").textContent = Math.abs(tot-100)<0.05
-    ? "合計100%。バンド編成できました。"
-    : (tot<100 ? "あと "+(100-tot).toFixed(1)+"% 足りません（下の結果は100%に直して計算しています）"
-               : (tot-100).toFixed(1)+"% 多すぎます（下の結果は100%に直して計算しています）");
+  tn.className = "total-num " + (full ? "ok" : "ng");
+  $("totalMsg").textContent = full
+    ? "合計100%。バンド編成できました。下の結果を見てみよう。"
+    : (tot===0 ? "フェーダーを動かして、電気をつくる方法を配分しよう。"
+       : (tot<100 ? "あと "+(100-tot).toFixed(1)+"% 配分しよう。"
+                  : (tot-100).toFixed(1)+"% 多すぎます。どこかを減らそう。"));
+
+  /* --- 100%になるまで結果は出さない --- */
+  $("results").hidden = !full;
+  $("lock").hidden = full;
+  const steps = document.querySelectorAll(".step");
+  if(!full){
+    steps.forEach((el,i)=>{ el.classList.toggle("on", i===0); el.classList.remove("done"); });
+    $("verdict").className = "verdict";
+    $("verdict").innerHTML = '<div class="vd-h">🎚️ 合計100%にすると、この案が実現できるかをここで判定します</div>';
+    return;
+  }
+
+  const r = calc(mix);
 
   /* --- 円グラフ・凡例 --- */
   drawDonut(r);
@@ -994,11 +1117,19 @@ function render(){
       '%</b> は使いきれず捨てることになります（その分、設備を多めに建てる必要があります）。' : '');
 
   renderFeel(r);
-  const badCount = renderChecks(r);
+  const J = judge(r);
+  const badCount = J.filter(x=>x.lv==="bad").length;
+  renderChecks(J);
+  renderVerdict(J, r);
+  renderCompare(r, J);
+  steps.forEach((el,i)=>{
+    el.classList.toggle("on", i===(badCount>0?1:2));
+    el.classList.toggle("done", i<(badCount>0?1:2));
+  });
   if(badCount>0){
     $("rankBadge").style.setProperty("--rc", "#ff5c5c");
     $("rankMsg").innerHTML = '<b style="color:#ff5c5c">点数は出ましたが、現実チェックで重大な問題が'+badCount+
-      '件あります。</b>日本では実際に作れない構成です。下の「現実チェック」を見て直そう。'+
+      '件あります。</b>このままでは日本で実現できない構成です。「4. 現実チェック」を見て直そう。'+
       ' <span style="color:var(--txt3)">（机上の総合 '+r.score.toFixed(0)+'点）</span>';
     $("rankTitle").textContent = "紙の上では good、でも実現できない";
   }
@@ -1039,7 +1170,7 @@ function renderFeel(r){
       ? "<b style=\"color:#ff5c5c\">今ある原発を全部動かしても足りません</b>"
       : "今ある原子炉の数でまかなえる範囲です";
   h += card("⚛️","原子力発電所（100万kW級）", nukes.toFixed(1), " 基",
-      "日本にある原子炉は <b>"+NOW_NUKE+"基</b>（再稼働ずみは14基）<br>"+nukeMsg,
+      "日本にある原子炉は <b>"+NOW_NUKE+"基</b>（再稼働したのは15基、2026年4月時点）<br>"+nukeMsg,
       nukes/NOW_NUKE*100);
 
   h += card("🔥","火力発電所（100万kW級）", thermal.toFixed(1), " 基",
@@ -1061,39 +1192,204 @@ function renderFeel(r){
   $("feel").innerHTML = h;
 }
 
-/* ---------- 現実チェック ---------- */
-function renderChecks(r){
-  const s = r.share, out = [];
-  let badCount = 0;
-  const add = (lv,ic,t)=>{ if(lv==="bad") badCount++;
-    out.push('<div class="chk '+lv+'"><span class="ci">'+ic+'</span><span>'+t+'</span></div>'); };
+/* ---------- 現実チェック：10の限界 ---------- */
+let BASE = null;   // 今の日本・2030年度目標の計算結果（比較の基準）
+function baseline(){
+  if(!BASE) BASE = {now:calc(PRESETS[0].v), t2030:calc(PRESETS[1].v), t2040:calc(PRESETS[2].v)};
+  return BASE;
+}
+/* 太陽光・風力を share% にしたときの設備量（出力抑制なし） */
+const capAt = (id, pct)=> E_TOTAL*pct/100/(8760*SRC[SI[id]].cf);
 
-  if(s.hydro>10.5) add("bad","🚫","<b>水力 "+s.hydro.toFixed(0)+"% は無理があります。</b> ダムを建てられる川はほぼ開発ずみ。国の2040年目標でも水力は8〜10%どまりです。");
-  if(s.geo>2.2) add("bad","♨️","<b>地熱 "+s.geo.toFixed(1)+"% は厳しい。</b> 日本の地熱資源量は世界3位ですが、有望な場所の多くが国立公園の中や温泉地。合意を得るのに10年以上かかります（目標でも1〜2%）。");
-  if(s.biomass>6.5) add("warn","🌲","<b>バイオマス "+s.biomass.toFixed(0)+"% は燃料が足りません。</b> 木質ペレットの多くは北米や東南アジアからの輸入。増やすほど「国産エネルギー」ではなくなります。");
-  if(s.nuclear>25) add("bad","⚛️","<b>原子力 "+s.nuclear.toFixed(0)+"% はすぐには作れません。</b> 今ある原子炉を全部動かしても2割程度。新しく1基つくるには建設だけで10年以上かかります。");
-  if(s.solar>30) add("bad","☀️","<b>太陽光 "+s.solar.toFixed(0)+"% は置く場所が足りません。</b> 日本は国土の約7割が山で平地が少ない。目標でも23〜29%です。山を削って置くと土砂災害の危険も増えます。");
-  else if(s.solar>20) add("warn","☀️","太陽光 "+s.solar.toFixed(0)+"%。目標の上限（29%）に近づいています。屋根・駐車場・耕作放棄地まで総動員する必要があります。");
-  if(s.wind>9) add("warn","🌀","<b>風力 "+s.wind.toFixed(0)+"% は時間がかかります。</b> 目標は4〜8%。陸上で風のよい場所は限られ、洋上風力は計画から運転開始まで約10年かかります。");
-  if(s.oil>8) add("warn","🛢️","<b>石油 "+s.oil.toFixed(0)+"% は危険です。</b> 石油の96%は中東から。値段も一番高く、中東で何かあれば直撃します。");
-  if(r.vre>45) add("bad","🔋","<b>天気まかせの電源が "+r.vre.toFixed(0)+"%。</b> 太陽光＋風力がこの割合になると、巨大な蓄電池と、使いきれず捨てる電気が大量に発生します。どちらも電気代に返ってきます。");
-  if(r.reserve<-35) add("bad","⚡","<b>曇り・無風の夕方に電気がまったく足りません（予備率 "+r.reserve.toFixed(0)+"%）。</b> 必要な蓄電池は "+fmt(r.batKWh/1e6)+"GWh。これは世界中の電池工場をフル稼働させても何年もかかる量で、現実的ではありません。");
-  else if(r.reserve<-5) add("warn","⚡","予備率 "+r.reserve.toFixed(0)+"%。夕方に足りない分を <b>"+fmt(r.batKWh/1e6)+"GWh の蓄電池</b>でおぎなう前提です。その費用は電気代に上乗せされています（"+r.batYen.toFixed(1)+"円/kWh）。");
-  else if(r.reserve<3) add("warn","⚡","予備率 "+r.reserve.toFixed(0)+"%。ギリギリです。発電所が1つ事故で止まると停電のおそれがあります（ふつうは3〜8%の余裕を持ちます）。");
-  if(r.dom<20) add("bad","🌏","<b>電気の国産率が "+r.dom.toFixed(0)+"% しかありません。</b> 輸入が止まったら、日本の電気も止まります。");
-  if(r.co2>500) add("bad","🌡️","<b>CO₂が多すぎます（"+fmt(r.co2)+"g/kWh）。</b> 日本は2050年にCO₂排出を実質ゼロにすると世界に約束しています。");
-  if(r.bill>16000) add("bad","💸","<b>電気代が月 "+fmt(r.bill)+"円。</b> 工場の電気代も上がるので、ものの値段が上がり、会社が海外に移ってしまうかもしれません。");
+function judge(r){
+  const B = baseline(), s = r.share, L = [];
+  const add = (o)=> L.push(o);
+  const lv = (bad, warn)=> bad ? "bad" : (warn ? "warn" : "ok");
 
-  if(!out.length){
-    add("ok","✅","大きな問題は見つかりませんでした。現実に作れそうで、電気代・CO₂・停電のバランスが取れた構成です。");
-  } else {
-    out.unshift('<div class="chk ok"><span class="ci">💡</span><span>下の指摘を読んで、フェーダーを調整してみよう。'+
-      '<b>全部を満たす完璧な答えはありません。</b> どれを我慢するかを決めることが、エネルギーを考えるということです。</span></div>');
-  }
-  $("checks").innerHTML = out.join("");
-  return badCount;
+  /* 1 土地 */
+  const solKm2 = r.capKW.solar*M2_PER_KW/1e6;
+  const solLim = capAt("solar",29)*M2_PER_KW/1e6;
+  add({k:"land", ic:"☀️", nm:"太陽光を置く土地", v:solKm2, lim:solLim, higher:false,
+    lv:lv(solKm2>solLim*1.03, solKm2>solLim*0.8),
+    tag:{bad:"土地が足りない", warn:"土地がギリギリ", ok:"土地はOK"},
+    now:"必要 <b>登別市 "+(solKm2/NOBORIBETSU_KM2).toFixed(1)+"個分</b>（北海道の"+(solKm2/HOKKAIDO_KM2*100).toFixed(1)+"%）",
+    limT:"限界 登別市 約"+Math.round(solLim/NOBORIBETSU_KM2)+"個分",
+    why:"日本は国土の約7割が山で、パネルを置ける平地が少ない。国の2040年目標でも太陽光は最大29%。それ以上は山を削ったり農地をつぶしたりすることになり、土砂災害や地域の反対が起きる。"});
+
+  /* 2 風車 */
+  const tb = r.capKW.wind/KW_PER_TURBINE, tbLim = capAt("wind",8)/KW_PER_TURBINE;
+  add({k:"wind", ic:"🌀", nm:"風車を建てる場所", v:tb, lim:tbLim, higher:false,
+    lv:lv(tb>tbLim*1.5, tb>tbLim*1.03),
+    tag:{bad:"風車を建てる場所がない", warn:"風車の建設が間に合わない", ok:"風車はOK"},
+    now:"必要 <b>"+fmt(tb)+"基</b>（今は"+fmt(NOW_TURBINES)+"基）",
+    limT:"限界 約"+fmt(tbLim)+"基",
+    why:"風が強くて、家から離れていて、送電線が近い場所は限られる。海の上に建てる洋上風力は、計画から運転まで約10年。国の2040年目標は風力4〜8%。"});
+
+  /* 3 ダム */
+  add({k:"hydro", ic:"💧", nm:"ダムをつくる川", v:s.hydro, lim:11, higher:false,
+    lv:lv(s.hydro>11.5, s.hydro>10.5),
+    tag:{bad:"ダムをつくる川がない", warn:"ダムがギリギリ", ok:"水力はOK"},
+    now:"水力 <b>"+s.hydro.toFixed(1)+"%</b>",
+    limT:"限界 11%",
+    why:"大きなダムを建てられる川は、ほとんど使いきっている。新しくダムをつくると村が沈むこともある。国の目標でも水力は2030年度に11%、2040年度に8〜10%。"});
+
+  /* 4 地熱 */
+  add({k:"geo", ic:"♨️", nm:"地熱を掘る場所", v:s.geo, lim:2, higher:false,
+    lv:lv(s.geo>2.2, s.geo>1.8),
+    tag:{bad:"地熱を掘る場所が足りない", warn:"地熱がギリギリ", ok:"地熱はOK"},
+    now:"地熱 <b>"+s.geo.toFixed(1)+"%</b>",
+    limT:"限界 2%",
+    why:"日本の地熱資源は世界3位。でも有望な場所の多くは国立公園の中や温泉地で、開発には地元との話し合いと調査で10年以上かかる。国の2040年目標は1〜2%。"});
+
+  /* 5 バイオマス燃料 */
+  add({k:"bio", ic:"🌲", nm:"バイオマスの燃料", v:s.biomass, lim:6, higher:false,
+    lv:lv(s.biomass>12, s.biomass>6.5),
+    tag:{bad:"バイオマスの燃料が足りない", warn:"バイオマス燃料は輸入たより", ok:"燃料はOK"},
+    now:"バイオマス <b>"+s.biomass.toFixed(1)+"%</b>",
+    limT:"限界 6%",
+    why:"国内の木だけでは足りず、燃料の多くは東南アジアや北米から船で運んでいる（室蘭の発電所もヤシ殻を輸入）。増やすほど「国産エネルギー」ではなくなる。"});
+
+  /* 6 原子力 */
+  const nk = r.capKW.nuclear/KW_PER_UNIT;
+  add({k:"nuke", ic:"⚛️", nm:"原子力発電所の数", v:s.nuclear, lim:23.5, higher:false,
+    lv:lv(s.nuclear>23.5, nk>15.5),
+    tag:{bad:"原発の数が足りない", warn:"原発の再稼働しだい", ok:"原発はOK"},
+    now:"原子力 <b>"+s.nuclear.toFixed(1)+"%</b>（原子炉 約"+nk.toFixed(0)+"基分。動いているのは15基）",
+    limT:"限界 約23%（今ある33基を全部使う）",
+    why:"日本にある原子炉は33基で、再稼働できたのは15基（2026年4月）。33基すべてを動かし、止まる期間を短くしても、つくれるのは電気の2割ちょっと。それ以上は新しくつくるしかないが、場所選び・審査・建設で10年以上かかり、地元の同意も必要。"+
+        (nk>15.5 && s.nuclear<=23.5 ? "この案は、今止まっている原発の再稼働がもっと進むことが前提になる。" : "")});
+
+  /* 7 電気代 */
+  const billLim = B.now.bill*1.3;
+  add({k:"bill", ic:"💸", nm:"電気代", v:r.bill, lim:billLim, higher:false,
+    lv:lv(r.bill>billLim, r.bill>B.now.bill*1.1),
+    tag:{bad:"電気代が爆上がり", warn:"電気代が上がる", ok:"電気代はOK"},
+    now:"月 <b>"+fmt(r.bill)+"円</b>（今の<b>"+(r.bill/B.now.bill).toFixed(2)+"倍</b>）",
+    limT:"限界 今の1.3倍（約"+fmt(billLim)+"円）",
+    why:"家の電気代だけでなく、工場やお店の電気代も上がる。ものの値段が上がり、会社が電気の安い外国へ移ってしまうおそれもある。"+
+        (r.batYen>1 ? "この案では、夕方の電気をためる蓄電池の費用だけで1kWhあたり"+r.batYen.toFixed(1)+"円も上乗せされている。" : "")});
+
+  /* 8 停電 */
+  const firm = r.firmKW/r.peak*100;
+  add({k:"power", ic:"⚡", nm:"曇り・無風の夕方の電気", v:firm, lim:100, higher:true,
+    lv:lv(r.reserve<-35, r.reserve<3),
+    tag:{bad:"夕方に停電する", warn: r.reserve<-5 ? "巨大な蓄電池が必要" : "予備がギリギリ", ok:"停電しない"},
+    now:"つくれる量 <b>"+firm.toFixed(0)+"%</b>（必要な量を100%として）",
+    limT:"必要 100%以上",
+    why:"太陽光は夜、風力は風がないと発電できない。足りない分は蓄電池でためるしかないが、"+
+        (r.batKWh>0 ? "この案では家庭用蓄電池"+dai(r.batKWh/10)+"分（約"+(r.batKWh*BAT_YEN_KWH/1e12).toFixed(0)+"兆円）が必要。" : "")+
+        (r.reserve<-35 ? "これは世界中の電池工場が何年もかけてつくる量で、現実的ではない。" : "")});
+
+  /* 9 CO2 */
+  add({k:"co2", ic:"🌡️", nm:"CO₂の量", v:r.co2, lim:B.now.co2, higher:false,
+    lv:lv(r.co2>B.now.co2+5, r.co2>B.t2030.co2+5),
+    tag:{bad:"CO₂が今より増える", warn:"CO₂の減らし方が足りない", ok:"CO₂はOK"},
+    now:"<b>"+fmt(r.co2)+"g</b>／kWh（2030年目標の案は約"+fmt(B.t2030.co2)+"g）",
+    limT:"限界 今の日本（約"+fmt(B.now.co2)+"g）",
+    why:"日本は「2050年にCO₂の排出を実質ゼロにする」と世界に約束している。今より増える案や、2030年の目標に届かない案は、この約束を守れない。"});
+
+  /* 10 輸入 */
+  const imp = 100-r.dom;
+  add({k:"import", ic:"🌏", nm:"輸入へのたより方", v:imp, lim:80, higher:false,
+    lv:lv(imp>80, imp>60 || s.oil>8),
+    tag:{bad:"輸入が止まると電気も止まる", warn: s.oil>8 ? "中東の事件に弱い" : "輸入たより", ok:"輸入はOK"},
+    now:"燃料を輸入にたよる割合 <b>"+imp.toFixed(0)+"%</b>"+(s.oil>0.5?"（石油"+s.oil.toFixed(0)+"%は96%が中東産）":""),
+    limT:"限界 80%",
+    why:"石油・石炭・LNGはほぼ全部が輸入。戦争や災害で船が止まったり、値段が何倍にもなったりすると、電気が足りなくなったり電気代が急に上がったりする（「6. もしも」で試せる）。"});
+
+  const order = {bad:0, warn:1, ok:2};
+  return L.sort((a,b)=> order[a.lv]-order[b.lv]);
 }
 
+function renderChecks(J){
+  const nb = J.filter(x=>x.lv==="bad").length, nw = J.filter(x=>x.lv==="warn").length;
+  $("checksHead").innerHTML = nb
+    ? '<div class="chk bad"><span class="ci">✕</span><span><b>この案は、このままでは実現できません。</b>重大な問題が'+nb+'つ'+(nw?'、注意が'+nw+'つ':'')+'あります。'+
+      '赤いカードの理由を読んで、フェーダーを直してみよう。</span></div>'
+    : (nw
+      ? '<div class="chk warn"><span class="ci">△</span><span><b>実現できそう。ただし注意が'+nw+'つあります。</b>国の目標の案にも注意は出ます。'+
+        '<b>全部を満たす完璧な答えはありません。</b>どれをがまんするかを決めることが、エネルギーを考えるということです。</span></div>'
+      : '<div class="chk ok"><span class="ci">✓</span><span><b>10の限界をすべてクリア！</b>現実に作れそうで、バランスのとれた案です。</span></div>');
+
+  $("checks").innerHTML = J.map(x=>{
+    const fill = Math.min(100, x.v/(x.lim*2)*100);
+    const over = x.higher ? x.v < x.lim : x.v > x.lim;
+    return '<div class="lim '+x.lv+'" id="lim-'+x.k+'">'+
+      '<div class="lim-top"><span class="ic">'+x.ic+'</span><span class="nm">'+x.nm+'</span>'+
+        '<span class="lim-tag">'+(x.lv==="bad"?"✕ ":x.lv==="warn"?"△ ":"✓ ")+x.tag[x.lv]+'</span></div>'+
+      '<div class="lim-bar'+(over?' over':'')+'"><i style="width:'+fill.toFixed(1)+'%"></i><b data-l="'+(x.higher?"必要":"限界")+'"></b></div>'+
+      '<div class="lim-nums"><span>'+x.now+'</span><span>'+x.limT+'</span></div>'+
+      '<p class="lim-why">'+x.why+'</p>'+
+    '</div>';
+  }).join("");
+}
+
+/* ---------- 卓のすぐ下に出す判定 ---------- */
+function renderVerdict(J, r){
+  const bad = J.filter(x=>x.lv==="bad"), warn = J.filter(x=>x.lv==="warn");
+  const v = $("verdict");
+  v.className = "verdict " + (bad.length ? "bad" : warn.length ? "warn" : "ok");
+  const chip = (x)=> '<button type="button" class="chip '+x.lv+'" data-k="'+x.k+'">'+x.ic+' '+x.tag[x.lv]+'</button>';
+  v.innerHTML =
+    '<div class="vd-h">'+(bad.length
+      ? '✕ この案は、このままでは実現できません <small>理由'+bad.length+'つ'+(warn.length?'・注意'+warn.length+'つ':'')+'</small>'
+      : warn.length ? '△ 実現できそう。でも注意があります <small>注意'+warn.length+'つ</small>'
+                    : '✓ 10の限界をすべてクリア！')+
+    '<small>電気代 月'+fmt(r.bill)+'円（今の'+(r.bill/baseline().now.bill).toFixed(2)+'倍）・CO₂ '+fmt(r.co2)+'g</small></div>'+
+    '<div class="chips">'+bad.map(chip).join("")+warn.map(chip).join("")+
+      (!bad.length && !warn.length ? '<span class="chip ok">✓ 土地・停電・電気代・CO₂ すべてOK</span>' : '')+'</div>';
+  v.querySelectorAll(".chip[data-k]").forEach(c=> c.addEventListener("click", ()=>{
+    const el = $("lim-"+c.dataset.k);
+    if(el){ el.scrollIntoView({behavior:"smooth", block:"center"}); el.animate([{outline:"2px solid #fff"},{outline:"2px solid transparent"}],{duration:1200}); }
+  }));
+}
+
+/* ---------- くらべる ---------- */
+function mixBar(share){
+  return '<div class="mixbar">'+SRC.map(s=> share[s.id]>0.05
+    ? '<i style="width:'+share[s.id]+'%;background:'+s.c+'" title="'+s.name+' '+share[s.id].toFixed(1)+'%"></i>' : '').join("")+'</div>';
+}
+function renderCompare(r, J){
+  const B = baseline();
+  const cols = [{h:"あなたの案", sub:"いま卓にある案", r:r, J:J, me:true}];
+  if(saved) { const sr = calc(saved.v); cols.push({h:"記録した案", sub:saved.t, r:sr, J:judge(sr), v:saved.v, lbl:"記録した案"}); }
+  cols.push({h:"今の日本", sub:"2023年度の実績", r:B.now, J:judge(B.now), v:PRESETS[0].v, lbl:"今の日本"});
+  cols.push({h:"2030年度の目標", sub:"第6次エネルギー基本計画", r:B.t2030, J:judge(B.t2030), v:PRESETS[1].v, lbl:"2030年度の目標"});
+  cols.push({h:"2040年度の目標", sub:"第7次エネルギー基本計画", r:B.t2040, J:judge(B.t2040), v:PRESETS[2].v, lbl:"2040年度の目標"});
+
+  const td = (c, html)=> '<td'+(c.me?' class="me"':'')+'>'+html+'</td>';
+  const re = (x)=> x.share.hydro+x.share.geo+x.share.wind+x.share.solar+x.share.biomass;
+  const cls = (val, good, bad, lowGood)=> lowGood
+    ? (val<=good?"good":val>=bad?"badv":"mid")
+    : (val>=good?"good":val<=bad?"badv":"mid");
+
+  let h = '<thead><tr><th></th>'+cols.map(c=>'<th class="'+(c.me?'me':'')+'">'+c.h+'<small>'+c.sub+'</small></th>').join("")+'</tr></thead><tbody>';
+  h += '<tr><td>電源の配分</td>'+cols.map(c=>td(c, mixBar(c.r.share))).join("")+'</tr>';
+  h += '<tr><td>再エネの割合</td>'+cols.map(c=>td(c, re(c.r).toFixed(0)+'%')).join("")+'</tr>';
+  h += '<tr><td>電気代（月）</td>'+cols.map(c=>td(c, '<span class="'+cls(c.r.bill, B.now.bill*1.02, B.now.bill*1.3, true)+'">'+fmt(c.r.bill)+'円</span>')).join("")+'</tr>';
+  h += '<tr><td>CO₂（g/kWh）</td>'+cols.map(c=>td(c, '<span class="'+cls(c.r.co2, B.t2030.co2+5, B.now.co2+5, true)+'">'+fmt(c.r.co2)+'</span>')).join("")+'</tr>';
+  h += '<tr><td>電気の国産率</td>'+cols.map(c=>td(c, '<span class="'+cls(c.r.dom, 40, 20, false)+'">'+c.r.dom.toFixed(0)+'%</span>')).join("")+'</tr>';
+  h += '<tr><td>夕方の予備率</td>'+cols.map(c=>td(c, '<span class="'+cls(c.r.reserve, 3, -35, false)+'">'+(c.r.reserve>=0?"+":"")+c.r.reserve.toFixed(0)+'%</span>')).join("")+'</tr>';
+  h += '<tr><td>実現できる？</td>'+cols.map(c=>{
+    const b = c.J.filter(x=>x.lv==="bad"), w = c.J.filter(x=>x.lv==="warn");
+    const head = b.length ? '<span class="badv">✕ 理由'+b.length+'つ</span>' : w.length ? '<span class="mid">△ 注意'+w.length+'つ</span>' : '<span class="good">✓ クリア</span>';
+    return td(c, head+'<div class="cmp-probs">'+b.map(x=>'<span class="badv">✕ '+x.tag.bad+'</span>').join("")+
+      w.map(x=>'<span class="mid">△ '+x.tag.warn+'</span>').join("")+'</div>');
+  }).join("")+'</tr>';
+  h += '<tr><td></td>'+cols.map((c,i)=>td(c, c.me ? '' : '<button class="btn ghost load" data-c="'+i+'">卓に読み込む</button>')).join("")+'</tr>';
+  h += '</tbody>';
+  $("cmpTable").innerHTML = h;
+  $("cmpTable").querySelectorAll(".load").forEach(b=> b.addEventListener("click", ()=>{
+    const c = cols[+b.dataset.c]; loadMix(c.v, c.lbl);
+  }));
+
+  const n30 = cols[cols.length-2].J.filter(x=>x.lv!=="ok").length;
+  $("cmpNote").innerHTML = '<b>国の目標にも「△ 注意」が出ていることに注目。</b>'+
+    '国の案も、原発の再稼働が進むこと・太陽光や風力を置く場所を見つけること・蓄電池を増やすことが前提になっている、簡単ではない目標です（2030年度の目標には注意が'+n30+'つ）。'+
+    'あなたの案と国の案、どこが同じで、どこが違う？ その違いはなぜ？';
+
+  $("savedMsg").textContent = saved ? "記録した案：" + saved.t : "まだ記録していません";
+}
 /* =========================================================
    国際情勢イベント
    metric : "bill"（電気代で比べる）/ "reserve"（予備率で比べる）
@@ -1873,7 +2169,6 @@ function buildSources(){
    初期化
    ========================================================= */
 function init(){
-  buildPresets();
   buildMixer();
   buildEvents();
   buildBand();
@@ -1882,7 +2177,6 @@ function init(){
   buildTable();
   buildSources();
   syncAll();
-  markPreset(0);
   render();
 
   $("btnNorm").addEventListener("click", ()=>{
@@ -1892,15 +2186,25 @@ function init(){
     const t2 = SRC.reduce((a,s)=>a+mix[s.id],0);
     const big = SRC.slice().sort((a,b)=>mix[b.id]-mix[a.id])[0];
     mix[big.id] = Math.round((mix[big.id] + (100-t2))*10)/10;
-    syncAll(); markPreset(null); render();
+    syncAll(); render();
   });
   $("btnReset").addEventListener("click", ()=>{
-    SRC.forEach(s=> mix[s.id] = PRESETS[0].v[s.id]||0 );
+    if(totalOf()>0 && !confirm("すべてのフェーダーを0にもどします。よろしいですか？")) return;
+    SRC.forEach(s=> mix[s.id] = 0 );
     activeEvent = null;
     $("events").querySelectorAll(".ev").forEach(x=>x.classList.remove("on"));
     $("evResult").innerHTML = "";
-    syncAll(); markPreset(0); render();
+    syncAll(); render();
   });
+  $("btnSave").addEventListener("click", ()=>{
+    const d = new Date();
+    saved = {v:Object.assign({}, mix), t:(d.getMonth()+1)+"/"+d.getDate()+" "+d.getHours()+":"+String(d.getMinutes()).padStart(2,"0")+" に記録"};
+    try{ localStorage.setItem("ems-saved", JSON.stringify(saved)); }catch(e){}
+    render();
+  });
+  document.querySelectorAll(".extreme .preset").forEach(b=> b.addEventListener("click", ()=>{
+    const p = PRESETS[+b.dataset.p]; loadMix(p.v, p.n);
+  }));
 }
 init();
 </script>
