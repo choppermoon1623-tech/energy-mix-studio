@@ -367,6 +367,38 @@ input[type=range]::-moz-range-thumb{
 .pl-pt{color:var(--txt2)}
 .pl-where{color:var(--txt3);font-size:.74rem;margin-top:auto;padding-top:2px}
 
+.pl-hk{border-top:1px dashed var(--line2);padding-top:9px;margin-top:2px;display:flex;flex-direction:column;gap:8px}
+.pl-hk-h{font-size:.74rem;font-weight:700;color:var(--k)}
+.pl-hk-i{display:flex;flex-direction:column;gap:1px;font-size:.76rem;line-height:1.6}
+.pl-hk-i b{color:var(--txt)}
+.pl-hk-p{font-size:.7rem;color:var(--txt3)}
+.pl-hk-d{color:var(--txt2)}
+.hk-wrap{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;align-items:start}
+.hk-mapbox{background:#0d1a2a;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.hk-mapbox svg{display:block;width:100%;height:auto}
+.hk-m{cursor:pointer;outline:none}
+.hk-m .hk-dot{transition:r .15s}
+.hk-m:hover .hk-dot,.hk-m.on .hk-dot,.hk-m:focus .hk-dot{r:12;stroke:#fff}
+.hk-info{padding:11px 14px;font-size:.8rem;line-height:1.7;color:var(--txt2);border-top:1px solid var(--line);min-height:5.6em}
+.hk-info span{color:var(--txt3);font-size:.74rem}
+.hk-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
+.hk-list li{
+  display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:10px;cursor:pointer;
+  background:#0f141d;border:1px solid var(--line);border-left:3px solid var(--k);outline:none;
+}
+.hk-list li:hover,.hk-list li:focus{background:#151c28}
+.hk-list li.on{background:#18212f;border-color:var(--k)}
+.hk-no{
+  flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;
+  background:var(--k);color:#06101a;font-size:.72rem;font-weight:800;
+}
+.hk-txt{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.35}
+.hk-txt b{font-size:.8rem;font-weight:700}
+.hk-txt small{font-size:.68rem;color:var(--txt3)}
+.hk-km{flex:none;font-weight:800;font-size:.95rem;font-variant-numeric:tabular-nums;color:var(--txt)}
+.hk-km small{font-size:.66rem;color:var(--txt3);margin-left:1px;font-weight:500}
+@media(max-width:760px){ .hk-wrap{grid-template-columns:1fr} }
+
 /* ---------- 表 ---------- */
 .tblwrap{overflow-x:auto;margin-top:6px;border-radius:12px;border:1px solid var(--line)}
 table{border-collapse:collapse;width:100%;min-width:660px;font-size:.8rem}
@@ -581,6 +613,17 @@ footer{text-align:center;color:var(--txt3);font-size:.74rem;padding-top:30px;lin
     そのうち<b>黒い山</b>があれば石炭、<b>丸屋根の大きなタンク</b>と細い煙突の組み合わせならLNG、<b>平たい円筒のタンク</b>がずらりと並んでいれば石油。
     煙突がないのに海沿いに巨大な建屋があれば原子力です。
   </div>
+
+  <h3 class="sub-h">北海道の発電所マップ ― 登別からどれくらい？</h3>
+  <p class="panel-sub" style="margin-bottom:10px">番号を押すと説明が出ます。一覧は登別から近い順。位置はおおよそです。</p>
+  <div class="hk-wrap">
+    <div class="hk-mapbox">
+      <svg id="hkMap" role="img" aria-label="道央・道南の発電所の位置を示した地図"></svg>
+      <div class="hk-info" id="hkInfo" aria-live="polite"></div>
+    </div>
+    <ol class="hk-list" id="hkList"></ol>
+  </div>
+  <p class="gal-credit">地図：国土数値情報をもとにした都道府県境界データ（dataofjapan/land）を簡略化。発電所の情報は北海道電力・各事業者の発表（2026年9月時点で確認）。</p>
 </section>
 
 <!-- ========== 7. データ表 ========== -->
@@ -1084,7 +1127,7 @@ const EVENTS = [
   {id:"quake", ic:"🌏", t:"大地震で原子力発電所が全部止まった", metric:"bill",
    d:"安全確認のため全基が停止。その分をLNG火力でおぎないます。2011年に実際に起きたことです。",
    mixFn:(m)=>{ const n=Object.assign({},m); n.lng=(n.lng||0)+(n.nuclear||0); n.nuclear=0; return n; },
-   tip:"1つの電源に頼りすぎると、それが止まったときに代わりがききません。これが「ミックス」が必要な理由です。"}
+   tip:"1つの電源に頼りすぎると、それが止まったときに代わりがききません。これが「ミックス」が必要な理由です。北海道でも2018年の胆振東部地震で、道内最大の苫東厚真発電所が止まったことをきっかけに、北海道全体が停電（ブラックアウト）しました。"}
 ];
 
 function buildEvents(){
@@ -1557,6 +1600,156 @@ biomass: SKY + GROUND +
   '<circle cx="227" cy="116" r="2.6" fill="#1a2230" stroke="#5c6b80" stroke-width="1"/>'
 };
 
+/* 北海道の輪郭（国土数値情報ベースの dataofjapan/land を簡略化） */
+const HK_COS = 0.72777;
+const HK_FULL = {lon0:139.25, lat1:45.62, K:26.0, w:184, h:112};
+const HK_ZOOM = {lon0:139.75, lon1:142.35, lat0:41.33, lat1:43.47, K:210.0, w:397, h:449};
+const HK_FULL_PATH = "M172,9L178,2L180,2L181,2L183,3L181,4L182,6L182,7L177,7L175,9L171,10L167,13L164,17L162,17L160,16L159,16L158,17L159,18L158,20L153,24L151,27L151,27L148,28L146,31L145,31L144,30L146,28L146,26L147,27L147,26L147,25L148,26L150,24L150,22L149,22L149,21L151,21L152,20L156,16L157,14L156,13L159,14L161,11L163,10L163,7L164,5L165,5L166,9L169,9L172,9ZM44,12L44,10L46,7L45,4L46,6L48,6L49,5L50,3L51,3L53,6L55,7L62,15L65,20L71,28L78,32L79,34L82,36L88,38L95,39L96,43L98,44L102,44L105,44L112,37L115,33L116,35L111,45L110,49L112,51L115,53L115,54L114,54L115,53L115,53L113,53L114,52L113,52L113,53L114,57L116,61L118,61L121,58L124,58L123,59L120,61L119,64L116,63L112,64L110,67L108,69L106,68L106,68L106,67L105,67L104,69L105,70L98,70L97,69L97,68L95,68L91,70L88,71L82,77L78,83L77,87L77,89L77,93L76,94L76,96L74,93L70,91L68,90L61,87L56,82L53,82L50,79L45,78L46,77L40,80L35,83L33,86L32,85L33,86L33,85L32,85L31,82L29,81L28,79L25,79L23,79L22,80L20,84L20,88L22,88L25,91L28,91L29,91L32,96L36,98L37,99L33,102L29,100L27,101L28,99L26,99L26,101L23,102L22,107L19,108L18,110L17,109L16,109L15,108L14,104L16,99L16,99L17,95L15,91L13,91L12,89L10,87L10,85L11,82L11,78L12,76L15,76L17,75L18,73L19,74L20,74L20,73L22,70L24,68L24,67L20,62L21,59L22,60L24,58L29,63L33,62L33,63L36,64L39,63L41,60L41,57L40,55L40,53L39,49L40,47L44,46L45,43L45,44L45,34L47,31L48,25L47,18L44,12ZM34,9L33,4L33,5L34,4L34,5L34,9ZM36,10L37,9L38,10L39,12L37,14L36,12L36,10ZM123,40L123,39L128,34L128,32L130,29L131,29L132,31L134,31L137,31L139,30L137,33L136,32L133,35L130,35L129,37L126,39L125,41L125,42L124,42L124,44L120,45L119,51L119,49L117,49L116,46L123,40ZM140,50L140,48L139,49L139,47L142,47L141,46L142,45L144,45L145,46L145,47L144,47L144,48L143,48L141,49L141,49L140,50ZM130,56L129,55L130,54L132,54L131,55L130,56ZM4,93L3,89L4,88L5,88L6,88L6,88L4,93Z";
+const HK_ZOOM_PATH = "M280,-358L278,-363L278,-371L285,-380L286,-384L285,-387L286,-387L291,-395L292,-399L288,-406L290,-416L296,-410L295,-406L295,-407L296,-408L296,-406L298,-407L299,-405L303,-405L305,-406L305,-408L309,-406L313,-407L322,-413L325,-418L326,-425L328,-427L328,-429L335,-431L338,-429L340,-422L348,-416L349,-409L352,-406L370,-393L384,-373L403,-350L417,-336L418,-334L421,-334L420,-333L422,-330L426,-327L425,-324L427,-319L433,-313L432,-312L434,-309L434,-304L441,-297L445,-288L448,-286L456,-273L463,-265L466,-261L469,-260L469,-259L471,-257L486,-243L488,-238L496,-228L504,-223L506,-223L506,-221L511,-217L531,-204L533,-199L550,-189L553,-185L551,-186L553,-182L560,-176L582,-165L617,-149L634,-144L661,-137L665,-139L668,-136L679,-133L682,-133L687,-135L689,-129L688,-124L690,-123L689,-120L691,-116L694,-116L693,-114L695,-110L695,-108L712,-100L725,-96L745,-94L758,-94L771,-97L773,-99L777,-101L779,-106L788,-112L793,-121L794,-120L799,-126L801,-126L801,-127L803,-128L805,-132L813,-137L821,-146L832,-152L838,-164L845,-172L847,-177L849,-177L851,-182L853,-184L855,-183L856,-174L859,-168L858,-166L856,-163L856,-158L853,-152L842,-138L839,-131L840,-126L839,-124L824,-105L817,-89L818,-82L816,-77L815,-74L812,-71L813,-59L825,-37L852,-27L855,-24L856,-20L855,-19L852,-17L847,-17L848,-18L845,-19L849,-19L849,-20L852,-20L854,-21L854,-23L851,-22L852,-23L850,-23L853,-25L852,-26L850,-27L845,-26L846,-28L844,-26L843,-27L844,-28L840,-26L843,-29L832,-33L833,-29L832,-27L836,-24L835,-23L840,-11L844,13L850,23L862,36L861,37L865,37L878,43L884,33L887,32L887,30L889,30L892,27L892,26L898,22L902,17L913,18L915,16L917,17L918,15L922,17L927,18L926,19L927,21L918,28L915,27L914,30L913,28L911,28L906,31L906,33L901,31L897,32L893,40L891,38L890,39L886,51L888,52L883,56L884,58L883,59L881,59L880,60L882,62L882,64L878,65L878,64L879,62L877,59L864,60L855,61L851,63L848,62L846,63L833,70L831,69L829,67L825,68L820,73L819,77L820,82L818,82L816,85L816,89L812,90L810,92L807,92L806,99L802,100L798,102L791,101L791,103L788,101L784,101L783,99L780,98L780,96L777,96L777,92L780,88L775,86L772,86L769,87L764,94L760,103L764,108L770,112L768,113L753,111L746,109L731,109L724,111L719,110L709,105L705,105L706,101L705,101L704,99L702,100L702,99L699,99L698,97L691,98L675,102L657,111L637,125L588,174L567,203L556,221L546,244L549,245L546,244L547,246L546,246L546,248L546,248L544,254L546,265L548,266L548,269L544,292L544,297L536,308L534,319L535,324L522,312L521,308L518,303L512,298L498,292L491,284L486,282L485,283L483,281L469,279L462,275L460,272L447,268L441,263L433,258L418,252L412,245L406,244L401,240L386,229L374,215L367,211L355,209L355,208L348,207L345,203L342,201L335,193L332,192L329,187L324,185L317,181L316,182L315,180L314,182L313,180L305,178L294,176L288,177L298,172L297,171L287,175L287,173L285,178L283,177L267,182L245,195L223,213L215,216L210,221L205,225L199,234L199,235L194,240L193,244L191,245L183,242L180,238L184,236L187,238L187,240L188,241L189,239L188,237L192,236L188,235L189,234L188,233L187,234L178,231L176,221L171,212L166,210L161,204L158,204L157,201L158,200L156,199L157,196L149,188L147,188L147,186L136,186L127,190L120,185L114,186L111,185L101,195L92,209L83,231L80,243L80,250L83,257L90,261L97,262L99,263L117,282L122,284L128,286L139,282L144,282L146,279L154,284L156,291L160,293L161,292L161,297L164,301L177,312L182,322L183,322L185,326L193,331L202,332L214,339L214,344L219,347L220,350L215,354L208,353L204,359L202,363L199,365L199,366L197,366L196,368L194,367L186,369L184,368L180,364L176,362L157,356L150,358L148,361L149,362L145,363L144,358L146,354L148,358L149,355L148,349L144,346L140,346L136,347L133,351L130,363L122,367L119,371L112,371L108,372L106,375L105,380L104,396L105,402L101,410L94,410L91,412L90,412L78,418L71,432L69,435L60,429L57,428L53,429L52,431L44,425L43,422L40,412L36,403L36,391L40,373L49,356L49,350L53,349L54,350L57,346L58,339L57,337L55,337L56,336L57,337L58,336L59,331L60,325L58,316L59,314L57,308L54,307L53,303L51,301L51,300L47,291L42,285L37,282L26,281L22,270L20,268L20,265L17,263L10,262L10,260L7,260L4,254L5,251L3,243L5,234L8,233L10,227L12,226L14,219L14,213L16,211L14,204L15,198L11,180L14,177L18,169L22,166L27,164L37,163L39,164L45,163L48,160L50,156L60,151L63,142L67,135L70,139L74,141L76,147L81,147L85,145L85,135L91,129L98,115L104,109L118,100L119,92L116,91L114,85L109,81L108,77L107,76L104,69L93,61L88,52L90,45L88,44L90,43L91,41L90,39L91,39L93,32L91,28L96,29L100,28L103,29L109,26L110,22L109,20L114,20L117,24L119,23L121,27L127,33L131,35L131,36L135,36L135,38L137,39L136,41L136,43L148,46L151,49L157,51L157,56L159,58L168,57L169,56L169,53L170,53L172,55L178,54L180,51L183,51L188,48L194,48L194,52L191,56L193,57L193,58L216,68L227,63L235,57L236,54L238,54L237,53L239,53L245,46L256,30L257,11L246,-10L250,-24L250,-28L247,-31L245,-37L241,-54L250,-71L261,-77L267,-77L271,-82L273,-80L275,-82L277,-82L282,-87L287,-94L288,-103L289,-100L290,-100L289,-102L292,-119L291,-144L292,-162L290,-177L294,-180L300,-194L305,-202L307,-207L308,-228L311,-234L312,-246L310,-269L302,-304L280,-358ZM-46,298L-47,295L-50,294L-50,280L-53,274L-52,271L-48,263L-43,263L-38,261L-31,259L-29,256L-29,261L-36,272L-35,280L-38,288L-41,293L-46,295L-46,298Z";
+
+/* =========================================================
+   北海道の発電所（位置はおおよそ）
+   調べた資料：北海道電力 発電所一覧・各社発表（2026年時点）
+   dx,dy は拡大図でマーカーが重ならないようにずらす量(px)
+   ========================================================= */
+const NOBORIBETSU = {lon:141.106, lat:42.413};
+const HK_PLANTS = [
+  {t:"coal", n:"苫東厚真発電所", p:"厚真町", lon:141.820, lat:42.600, dx:24, dy:10,
+   d:"道内最大の火力発電所（石炭、合計165万kW）。北海道の電気の大黒柱。2018年の北海道胆振東部地震でここが止まったことをきっかけに、北海道全体が停電（ブラックアウト）した。"},
+  {t:"lng", n:"石狩湾新港発電所", p:"石狩市", lon:141.300, lat:43.210, dx:22, dy:10,
+   d:"北海道電力で初めてのLNG火力（2019年〜、約57万kW）。燃料のLNGは、となりの北海道ガス石狩LNG基地からパイプラインで届く。2号機・3号機も建設予定。"},
+  {t:"oil", n:"知内発電所", p:"知内町", lon:140.430, lat:41.600, dx:0, dy:0,
+   d:"重油を燃やす石油火力（35万kW×2基）。道南の電気を支える。登別に近い伊達発電所（伊達市）も石油火力だが、2023〜2024年から休止している。"},
+  {t:"nuclear", n:"泊発電所", p:"泊村", lon:140.510, lat:43.040, dx:0, dy:0,
+   d:"道内でただ一つの原子力発電所（3基）。2012年から全基が止まっている。3号機は2025年に国の審査に合格し、知事も再稼働に同意。2027年の再稼働をめざしている（2026年時点）。"},
+  {t:"hydro", n:"豊平峡発電所", p:"札幌市南区（定山渓の奥）", lon:141.160, lat:42.930, dx:0, dy:0,
+   d:"豊平峡ダムの水で発電（約5万kW）。このダムは札幌の水道と、洪水を防ぐ役目もかねている。"},
+  {t:"hydro", n:"京極発電所", p:"京極町", lon:140.870, lat:42.850, dx:0, dy:0,
+   d:"「揚水発電」（60万kW）。電気が余る時間に水を上のダムへくみ上げ、足りない時間に落として発電する。巨大な“水の蓄電池”。"},
+  {t:"geo", n:"森発電所", p:"森町濁川", lon:140.460, lat:42.080, dx:0, dy:0,
+   d:"1982年から動く地熱発電所（2.5万kW）。地下の蒸気が減ってきたため、はじめの5万kWから出力を下げた。熱を使いきるための小さなバイナリー発電所も2023年にできた。"},
+  {t:"wind", n:"祝津風力発電所", p:"室蘭市祝津町", lon:140.955, lat:42.345, dx:-20, dy:18,
+   d:"室蘭市が運営する風車（1,000kW）。つくった電気は白鳥大橋のライトアップや、道の駅みたら室蘭の照明に使われている。"},
+  {t:"wind", n:"石狩湾新港洋上風力発電所", p:"石狩市の沖合", lon:141.270, lat:43.250, dx:-22, dy:-12,
+   d:"2024年に運転を始めた、北海道で初めての本格的な洋上風力。8,000kWの大型風車14基（合計11.2万kW）。稚内や苫前など道北にも風車がたくさん並ぶ。"},
+  {t:"solar", n:"ソフトバンク苫東安平ソーラーパーク", p:"安平町", lon:141.780, lat:42.660, dx:4, dy:-24,
+   d:"約11.1万kWのメガソーラー。敷地は約166ha、パネルは約44万枚。となりの「2」（約6.5万kW）には大型の蓄電池がある。家や工場の屋根の小さな太陽光は、道内のあちこちにある。"},
+  {t:"biomass", n:"室蘭バイオマス発電所", p:"室蘭市港北町", lon:140.985, lat:42.360, dx:-26, dy:-12,
+   d:"国内最大級のバイオマス発電所（約7.5万kW、2020年〜）。燃料は東南アジアから船で運ぶパームヤシの殻（PKS）。"},
+  {t:"biomass", n:"苫東バイオマス発電所", p:"苫小牧市", lon:141.730, lat:42.630, dx:-20, dy:20,
+   d:"2026年2月に運転を始めた（5万kW）。燃料はおもに輸入の木質ペレット。北海道電力も参加している。"},
+  {t:"biomass", n:"紋別バイオマス発電所", p:"紋別市", lon:143.350, lat:44.350, off:true,
+   d:"5万kW（2016年〜）。おもな燃料はオホーツク地域の森林から出る、使い道のなかった木材。地元の木を使うので「国産エネルギー」に近い。"}
+];
+
+function hkKm(a, b){
+  const R = 6371, r = Math.PI/180;
+  const dLa = (b.lat-a.lat)*r, dLo = (b.lon-a.lon)*r;
+  const h = Math.sin(dLa/2)**2 + Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dLo/2)**2;
+  return 2*R*Math.asin(Math.sqrt(h));
+}
+HK_PLANTS.forEach((h,i)=>{ h.no = i+1; h.km = hkKm(NOBORIBETSU, h); });
+
+function hkXY(M, lon, lat){ return [(lon-M.lon0)*HK_COS*M.K, (M.lat1-lat)*M.K]; }
+
+/* 図鑑カードの「北海道では」欄 */
+function hkCardHtml(type){
+  const list = HK_PLANTS.filter(h=>h.t===type);
+  if(!list.length) return "";
+  return '<div class="pl-hk"><div class="pl-hk-h">北海道では</div>'+
+    list.map(h=>'<div class="pl-hk-i"><b>'+h.n+'</b>'+
+      '<span class="pl-hk-p">'+h.p+'・登別から約'+Math.round(h.km)+'km</span>'+
+      '<span class="pl-hk-d">'+h.d+'</span></div>').join("")+
+    '</div>';
+}
+
+/* 地図 */
+function buildHkMap(){
+  const Z = HK_ZOOM, F = HK_FULL;
+  const col = (t)=> SRC[SI[t]].c;
+  let g = '';
+  g += '<rect width="'+Z.w+'" height="'+Z.h+'" fill="#0d1a2a"/>';
+  g += '<path d="'+HK_ZOOM_PATH+'" fill="#1f2b3b" stroke="#3f5470" stroke-width="1.2" stroke-linejoin="round"/>';
+
+  /* 目印の都市 */
+  [["札幌",141.35,43.062,1],["函館",140.729,41.768,1],["苫小牧",141.605,42.634,-1]].forEach(c=>{
+    const [x,y] = hkXY(Z,c[1],c[2]);
+    g += '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="2.4" fill="#7d8a9d"/>'+
+         '<text x="'+(x+5*c[3]).toFixed(1)+'" y="'+(y+(c[3]<0?-6:4)).toFixed(1)+'" fill="#8b98ab" font-size="11"'+
+         (c[3]<0?' text-anchor="end"':'')+'>'+c[0]+'</text>';
+  });
+
+  /* 発電所マーカー（ずらした場合は細い線で本当の位置へ） */
+  HK_PLANTS.forEach(h=>{
+    let x, y, tx, ty;
+    if(h.off){ x = tx = Z.w-22; y = ty = 20; }
+    else {
+      [x,y] = hkXY(Z,h.lon,h.lat);
+      tx = x + (h.dx||0); ty = y + (h.dy||0);
+    }
+    g += '<g class="hk-m" data-no="'+h.no+'" tabindex="0" role="button" aria-label="'+h.no+'. '+h.n+'">'+
+      '<title>'+h.n+'（'+h.p+'）登別から約'+Math.round(h.km)+'km</title>';
+    if(!h.off && (h.dx||h.dy)){
+      g += '<line x1="'+x.toFixed(1)+'" y1="'+y.toFixed(1)+'" x2="'+tx.toFixed(1)+'" y2="'+ty.toFixed(1)+'" stroke="'+col(h.t)+'" stroke-width="1.2" opacity=".8"/>'+
+           '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="2.2" fill="'+col(h.t)+'"/>';
+    }
+    if(h.off){
+      g += '<text x="'+(tx-14).toFixed(1)+'" y="'+(ty+26).toFixed(1)+'" fill="#8b98ab" font-size="10" text-anchor="end">紋別は地図の外 ↗</text>';
+    }
+    g += '<circle class="hk-dot" cx="'+tx.toFixed(1)+'" cy="'+ty.toFixed(1)+'" r="9" fill="'+col(h.t)+'" stroke="#0d1a2a" stroke-width="2"/>'+
+         '<text x="'+tx.toFixed(1)+'" y="'+(ty+3.8).toFixed(1)+'" fill="#06101a" font-size="10.5" font-weight="800" text-anchor="middle">'+h.no+'</text>'+
+         '</g>';
+  });
+
+  /* 登別 */
+  const [nx,ny] = hkXY(Z,NOBORIBETSU.lon,NOBORIBETSU.lat);
+  const star = (cx,cy,R,r)=>{ let d=""; for(let i=0;i<10;i++){ const a=-Math.PI/2+i*Math.PI/5, rr=i%2?r:R;
+    d += (i?"L":"M")+(cx+rr*Math.cos(a)).toFixed(1)+","+(cy+rr*Math.sin(a)).toFixed(1);} return d+"Z"; };
+  g += '<path d="'+star(nx,ny,9,4)+'" fill="#fff" stroke="#ff5c5c" stroke-width="1.5"/>';
+  g += '<text x="'+(nx+4).toFixed(1)+'" y="'+(ny+22).toFixed(1)+'" fill="#fff" font-size="13" font-weight="800">登別</text>';
+
+  /* 位置図（北海道全体） */
+  const s = 0.78, ox = Z.w - F.w*s - 8, oy = Z.h - F.h*s - 8;
+  g += '<g transform="translate('+ox.toFixed(1)+','+oy.toFixed(1)+') scale('+s+')">'+
+    '<rect x="-4" y="-4" width="'+(F.w+8)+'" height="'+(F.h+8)+'" rx="6" fill="#0a1320" stroke="#3f5470"/>'+
+    '<path d="'+HK_FULL_PATH+'" fill="#2a3a50" stroke="#4d6585" stroke-width=".8"/>';
+  const [rx,ry] = hkXY(F,Z.lon0,Z.lat1), [rx2,ry2] = hkXY(F,Z.lon1,Z.lat0);
+  g += '<rect x="'+rx.toFixed(1)+'" y="'+ry.toFixed(1)+'" width="'+(rx2-rx).toFixed(1)+'" height="'+(ry2-ry).toFixed(1)+'" fill="rgba(79,216,255,.12)" stroke="#4fd8ff" stroke-width="1.4"/>';
+  const [fx,fy] = hkXY(F,NOBORIBETSU.lon,NOBORIBETSU.lat);
+  g += '<circle cx="'+fx.toFixed(1)+'" cy="'+fy.toFixed(1)+'" r="2.6" fill="#ff5c5c"/>';
+  const [mx,my] = hkXY(F,143.35,44.35);
+  g += '<circle cx="'+mx.toFixed(1)+'" cy="'+my.toFixed(1)+'" r="2.6" fill="'+col("biomass")+'"/>'+
+       '<text x="'+(mx+5).toFixed(1)+'" y="'+(my+4).toFixed(1)+'" fill="#9fb0c7" font-size="10">紋別</text>'+
+       '<text x="2" y="9" fill="#6b7b94" font-size="10">北海道全体</text></g>';
+
+  $("hkMap").setAttribute("viewBox","0 0 "+Z.w+" "+Z.h);
+  $("hkMap").innerHTML = g;
+
+  /* 一覧（登別から近い順） */
+  const sorted = HK_PLANTS.slice().sort((a,b)=>a.km-b.km);
+  $("hkList").innerHTML = sorted.map(h=>{
+    const s = SRC[SI[h.t]];
+    return '<li data-no="'+h.no+'" tabindex="0" style="--k:'+s.c+'">'+
+      '<span class="hk-no">'+h.no+'</span>'+
+      '<span class="hk-txt"><b>'+h.n+'</b><small>'+s.icon+' '+s.name+'｜'+h.p+'</small></span>'+
+      '<span class="hk-km">'+Math.round(h.km)+'<small>km</small></span></li>';
+  }).join("");
+
+  /* 地図と一覧を連動させる */
+  const hl = (no)=>{
+    document.querySelectorAll(".hk-m").forEach(m=> m.classList.toggle("on", m.dataset.no===no));
+    document.querySelectorAll("#hkList li").forEach(l=> l.classList.toggle("on", l.dataset.no===no));
+    const h = HK_PLANTS[+no-1];
+    $("hkInfo").innerHTML = h ? '<b style="color:'+SRC[SI[h.t]].c+'">'+h.no+'. '+h.n+'</b>'+
+      '<span>（'+h.p+'・登別から約'+Math.round(h.km)+'km）</span><br>'+h.d : "";
+  };
+  document.querySelectorAll(".hk-m, #hkList li").forEach(el=>{
+    el.addEventListener("click", ()=> hl(el.dataset.no));
+    el.addEventListener("keydown", e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); hl(el.dataset.no); } });
+  });
+  hl(String(sorted[0].no));
+}
+
 /* 見分けかた・特徴 */
 const PLANT_INFO = {
   coal:    {look:"黒い石炭の山とベルトコンベア、高い煙突", pt:"燃料の石炭を船で運び、広い貯炭場に積む。煙突がいちばん高い。", where:"海沿い（船で燃料を運ぶため）"},
@@ -1566,7 +1759,7 @@ const PLANT_INFO = {
   nuclear: {look:"丸いドームか四角い建屋。煙突から煙が出ない", pt:"原子炉を分厚いコンクリートで包む。燃やしていないので煙は出ない。海水で冷やす。", where:"海沿い（大量の冷却水が必要）",
             note:"写真の右にある、湯気を出す大きな塔は「冷却塔」。海外の内陸の原発にはありますが、日本の原発は海水で冷やすので冷却塔はありません。出ているのは煙ではなく水蒸気です。"},
   hydro:   {look:"ダムと、山を下る太い鉄の管", pt:"高い所にためた水を落として水車を回す。管が太く長いほど大きな力になる。", where:"山あいの川（落差のある場所）"},
-  geo:     {look:"くねくねした銀色の配管と、白い湯気", pt:"地下の熱で沸いた蒸気を井戸から取り出す。配管が曲がっているのは、熱で伸び縮みするため。", where:"火山の近くで、地下に熱い蒸気がある場所（北海道では森町濁川の森発電所）"},
+  geo:     {look:"くねくねした銀色の配管と、白い湯気", pt:"地下の熱で沸いた蒸気を井戸から取り出す。配管が曲がっているのは、熱で伸び縮みするため。", where:"火山の近くで、地下に熱い蒸気がある場所"},
   wind:    {look:"3枚の羽根。海の上にも建つ", pt:"羽根が長いほどたくさん発電できる。最近のものは羽根の先まで100mを超える。", where:"風の強い海岸・尾根・洋上"},
   solar:   {look:"南に向けて傾けたパネルの列", pt:"傾けるのは太陽に正面を向けるため。列と列の間をあけるのは、影をつくらないため。", where:"日当たりのよい平地・屋根"},
   biomass: {look:"木のチップの山とサイロ、白い水蒸気", pt:"木くずやペレットを燃やす。仕組みは火力と同じだが、燃料が木なのでCO₂は差し引きゼロと数える。", where:"森林の近く・港のそば"}
@@ -1592,6 +1785,7 @@ function buildGallery(){
         '<p class="pl-pt">'+i.pt+'</p>'+
         (i.note ? '<p class="pl-note">📷 '+i.note+'</p>' : '')+
         '<p class="pl-where">📍 建つ場所：'+i.where+'</p>'+
+        hkCardHtml(s.id)+
       '</figcaption></figure>';
   }).join("");
 
@@ -1682,6 +1876,7 @@ function init(){
   buildEvents();
   buildBand();
   buildGallery();
+  buildHkMap();
   buildTable();
   buildSources();
   syncAll();
