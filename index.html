@@ -266,6 +266,24 @@ input[type=range]::-moz-range-thumb{
 .ev-msg{font-size:.82rem;line-height:1.7;color:#ffe0c4}
 .ev-msg b{color:#fff}
 
+/* ---------- 発電所図鑑 ---------- */
+.gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(272px,1fr));gap:14px}
+.pl{
+  margin:0;background:#0f141d;border:1px solid var(--line);border-radius:14px;
+  overflow:hidden;border-top:3px solid var(--k);display:flex;flex-direction:column;
+}
+.pl svg{display:block;width:100%;height:auto;background:#0c1220}
+.pl figcaption{padding:13px 15px 15px;display:flex;flex-direction:column;gap:6px}
+.pl h4{margin:0;font-size:.95rem;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.pl p{margin:0;font-size:.78rem;line-height:1.65}
+.pl-look{color:var(--k);font-weight:600;display:flex;gap:7px;align-items:baseline}
+.pl-look .tag{
+  flex:none;font-size:.62rem;font-weight:700;letter-spacing:.04em;
+  border:1px solid currentColor;border-radius:4px;padding:0 5px;opacity:.85;
+}
+.pl-pt{color:var(--txt2)}
+.pl-where{color:var(--txt3);font-size:.74rem;margin-top:auto;padding-top:2px}
+
 /* ---------- 表 ---------- */
 .tblwrap{overflow-x:auto;margin-top:6px;border-radius:12px;border:1px solid var(--line)}
 table{border-collapse:collapse;width:100%;min-width:660px;font-size:.8rem}
@@ -411,9 +429,21 @@ footer{text-align:center;color:var(--txt3);font-size:.74rem;padding-top:30px;lin
   <div id="evResult"></div>
 </section>
 
-<!-- ========== 6. データ表 ========== -->
+<!-- ========== 6. 発電所図鑑 ========== -->
 <section class="panel">
-  <h2 class="panel-h"><span class="num">6</span>メンバーの能力データ</h2>
+  <h2 class="panel-h"><span class="num">6</span>発電所図鑑 ― どんな形をしているの？</h2>
+  <p class="panel-sub">同じ「発電所」でも見た目はまったく違います。遠くから見て何の発電所か当てられるようになろう。</p>
+  <div class="gallery" id="gallery"></div>
+  <div class="note">
+    <b>見分けかたのコツ：</b>まず<b>煙突</b>をさがす。煙突があれば燃やしている＝火力かバイオマス。
+    そのうち<b>まん丸なタンク</b>があればLNG、<b>黒い山</b>があれば石炭、<b>平たい円筒のタンク</b>が並んでいれば石油。
+    煙突がないのに海沿いに巨大な建屋があれば原子力です。
+  </div>
+</section>
+
+<!-- ========== 7. データ表 ========== -->
+<section class="panel">
+  <h2 class="panel-h"><span class="num">7</span>メンバーの能力データ</h2>
   <p class="panel-sub">計算に使っている数値。授業のスライドの表を、最新の試算でアップデートしたものです。</p>
   <div class="tblwrap"><table id="dataTable"></table></div>
   <div class="note">
@@ -489,8 +519,8 @@ const M2_PER_KW = 15;       // 事業用太陽光 1kWあたりの土地(m2)
 const KW_PER_TURBINE = 4200;// 風車1基の出力(kW)
 const KW_PER_UNIT = 1.0e6;  // 発電所1基(100万kW級)
 const DOME_M2 = 46755;      // 東京ドーム(m2)
-const YAMANOTE_KM2 = 63;    // 山手線の内側(km2)
-const TOKYO_KM2 = 2194;     // 東京都(km2)
+const NOBORIBETSU_KM2 = 212.21; // 登別市(km2)
+const HOKKAIDO_KM2 = 83424;     // 北海道(km2)
 const NOW_TURBINES = 2866;  // 今の日本の風車(基) 2025年末
 const NOW_SOLAR_GW = 79;    // 今の日本の太陽光(GW)
 const NOW_NUKE = 33;        // 今の日本の原子炉(基, 廃炉を除く)
@@ -803,8 +833,9 @@ function renderFeel(r){
 
   h += card("☀️","太陽光パネルを置く土地", solKm2>=100?fmt(solKm2):solKm2.toFixed(1), " km²",
       "設備容量 <b>"+fmt(solGW)+" GW</b>（今の日本は79GW ＝ "+(solGW/NOW_SOLAR_GW).toFixed(1)+"倍）<br>"+
-      "山手線の内側（63km²）<b>"+fmt(solKm2/YAMANOTE_KM2)+"個分</b> ／ 東京都の面積の <b>"+(solKm2/TOKYO_KM2).toFixed(2)+"倍</b>",
-      solKm2/TOKYO_KM2*50);
+      "<b>登別市（212km²）"+(solKm2/NOBORIBETSU_KM2).toFixed(1)+"個分</b> ／ 北海道ぜんぶの <b>"+
+      (solKm2/HOKKAIDO_KM2*100).toFixed(1)+"%</b> をパネルでうめる広さ",
+      solKm2/HOKKAIDO_KM2*100*4);
 
   h += card("🌀","風車（4,200kW級）", fmt(turbines), " 基",
       "今の日本は <b>"+fmt(NOW_TURBINES)+"基</b>（"+(turbines>NOW_TURBINES ? "今の"+(turbines/NOW_TURBINES).toFixed(1)+"倍に増やす必要" : "今より少なくて済む")+"）<br>"+
@@ -969,6 +1000,309 @@ function runEvent(id){
 }
 
 /* =========================================================
+   発電所図鑑 ― それぞれの発電所はどんな形か
+   すべてインラインSVGで描画（viewBox 0 0 240 150）
+   ========================================================= */
+
+/* 風車1基（タワー＋3枚羽根） */
+function turbine(x, baseY, h, rot, col){
+  const hubY = baseY - h, bl = h*0.52;
+  let g = '<line x1="'+x+'" y1="'+baseY+'" x2="'+x+'" y2="'+hubY+'" stroke="'+col+'" stroke-width="2.4" stroke-linecap="round" opacity=".9"/>';
+  for(let i=0;i<3;i++){
+    const a = rot + i*120;
+    g += '<path d="M'+(x-2.4)+','+hubY+' L'+(x+2.4)+','+hubY+' L'+(x+0.9)+','+(hubY-bl)+' L'+(x-0.9)+','+(hubY-bl)+' Z" fill="'+col+'" opacity=".85" transform="rotate('+a+' '+x+' '+hubY+')"/>';
+  }
+  return g + '<circle cx="'+x+'" cy="'+hubY+'" r="2.6" fill="#e8eef7"/>';
+}
+/* 白い煙・湯気 */
+function smoke(x, y, s, op){
+  return '<g opacity="'+(op||.5)+'" fill="#dfe8f5">'+
+    '<circle cx="'+x+'" cy="'+y+'" r="'+(5*s)+'"/>'+
+    '<circle cx="'+(x+6*s)+'" cy="'+(y-6*s)+'" r="'+(7*s)+'"/>'+
+    '<circle cx="'+(x-4*s)+'" cy="'+(y-10*s)+'" r="'+(6*s)+'"/>'+
+    '<circle cx="'+(x+5*s)+'" cy="'+(y-17*s)+'" r="'+(8.5*s)+'"/>'+
+    '<circle cx="'+(x-6*s)+'" cy="'+(y-22*s)+'" r="'+(7*s)+'"/></g>';
+}
+/* 海 */
+function sea(x, w){
+  return '<rect x="'+x+'" y="118" width="'+w+'" height="32" fill="#12293f"/>'+
+    '<path d="M'+x+',124 q8,-3 16,0 t16,0 t16,0 t16,0 t16,0 t16,0 t16,0" fill="none" stroke="#2b5d84" stroke-width="1.4" opacity=".8"/>'+
+    '<path d="M'+x+',133 q8,-3 16,0 t16,0 t16,0 t16,0 t16,0 t16,0 t16,0" fill="none" stroke="#2b5d84" stroke-width="1.2" opacity=".55"/>';
+}
+const SKY = '<rect width="240" height="150" fill="#0c1220"/>'+
+  '<circle cx="204" cy="26" r="1.1" fill="#8aa0bd" opacity=".7"/>'+
+  '<circle cx="186" cy="40" r=".9" fill="#8aa0bd" opacity=".5"/>'+
+  '<circle cx="30" cy="22" r="1" fill="#8aa0bd" opacity=".55"/>';
+const GROUND = '<rect y="118" width="240" height="32" fill="#1b2434"/>'+
+  '<line x1="0" y1="118" x2="240" y2="118" stroke="#2f3b4e" stroke-width="1.5"/>';
+
+const PLANT_SVG = {
+
+/* ---- 石炭火力：黒い石炭の山とベルトコンベア ---- */
+coal: SKY + sea(0,58) + GROUND +
+  smoke(150,34,1,.42) + smoke(178,40,.8,.3) +
+  /* 石炭運搬船 */
+  '<path d="M6,112 L52,112 L48,119 L10,119 Z" fill="#26313f" stroke="#3d4a5f" stroke-width="1"/>'+
+  '<rect x="14" y="104" width="30" height="8" fill="#151a22"/>'+
+  '<rect x="40" y="99" width="10" height="13" fill="#2f3b4e"/>'+
+  /* 貯炭場（黒い山） */
+  '<path d="M58,118 L78,90 L98,118 Z" fill="#14181f" stroke="#39424f" stroke-width="1"/>'+
+  '<path d="M92,118 L108,98 L124,118 Z" fill="#191e26" stroke="#39424f" stroke-width="1"/>'+
+  '<text x="76" y="132" fill="#7d8a9d" font-size="9" text-anchor="middle">石炭の山</text>'+
+  /* ベルトコンベア */
+  '<path d="M86,93 L142,73 L142,78 L86,98 Z" fill="#2c3644" stroke="#4a5769" stroke-width="1"/>'+
+  '<line x1="104" y1="96" x2="104" y2="118" stroke="#4a5769" stroke-width="1.6"/>'+
+  '<line x1="126" y1="88" x2="126" y2="118" stroke="#4a5769" stroke-width="1.6"/>'+
+  /* 建屋＋煙突 */
+  '<rect x="140" y="80" width="68" height="38" fill="#232d3c" stroke="#ff8a4c" stroke-width="1.4"/>'+
+  '<rect x="146" y="88" width="10" height="9" fill="#3a4757"/><rect x="161" y="88" width="10" height="9" fill="#3a4757"/>'+
+  '<rect x="176" y="88" width="10" height="9" fill="#3a4757"/><rect x="191" y="88" width="10" height="9" fill="#3a4757"/>'+
+  '<path d="M145,80 L152,36 L160,36 L157,80 Z" fill="#33404f" stroke="#ff8a4c" stroke-width="1.2"/>'+
+  '<path d="M172,80 L178,44 L185,44 L183,80 Z" fill="#33404f" stroke="#ff8a4c" stroke-width="1.2"/>'+
+  '<rect x="151" y="44" width="10" height="3" fill="#ff5c5c" opacity=".8"/>'+
+  '<rect x="211" y="96" width="24" height="22" fill="#232d3c" stroke="#4a5769" stroke-width="1"/>',
+
+/* ---- LNG火力：白くて丸いタンク ---- */
+lng: SKY + sea(0,44) + GROUND +
+  smoke(196,44,.62,.3) +
+  /* LNG船（丸いタンクを積む） */
+  '<path d="M2,110 L40,110 L36,118 L6,118 Z" fill="#26313f" stroke="#3d4a5f" stroke-width="1"/>'+
+  '<circle cx="14" cy="104" r="6" fill="#cfd8e6" stroke="#8b98ab" stroke-width="1"/>'+
+  '<circle cx="28" cy="104" r="6" fill="#cfd8e6" stroke="#8b98ab" stroke-width="1"/>'+
+  /* 球形タンク3基（LNGの目印） */
+  '<g>'+
+  '<line x1="58" y1="104" x2="58" y2="118" stroke="#5c6b80" stroke-width="2"/>'+
+  '<line x1="50" y1="106" x2="53" y2="118" stroke="#5c6b80" stroke-width="1.6"/>'+
+  '<line x1="66" y1="106" x2="63" y2="118" stroke="#5c6b80" stroke-width="1.6"/>'+
+  '<circle cx="58" cy="92" r="16" fill="#e6ecf5" stroke="#ffb14c" stroke-width="1.6"/>'+
+  '<ellipse cx="53" cy="86" rx="5" ry="3.4" fill="#fbfdff" opacity=".85"/>'+
+  '</g><g>'+
+  '<line x1="95" y1="106" x2="95" y2="118" stroke="#5c6b80" stroke-width="2"/>'+
+  '<line x1="88" y1="108" x2="90" y2="118" stroke="#5c6b80" stroke-width="1.6"/>'+
+  '<line x1="102" y1="108" x2="100" y2="118" stroke="#5c6b80" stroke-width="1.6"/>'+
+  '<circle cx="95" cy="95" r="13" fill="#e6ecf5" stroke="#ffb14c" stroke-width="1.6"/>'+
+  '<ellipse cx="91" cy="90" rx="4" ry="2.8" fill="#fbfdff" opacity=".85"/>'+
+  '</g><g>'+
+  '<line x1="127" y1="108" x2="127" y2="118" stroke="#5c6b80" stroke-width="2"/>'+
+  '<circle cx="127" cy="99" r="10" fill="#e6ecf5" stroke="#ffb14c" stroke-width="1.6"/>'+
+  '<ellipse cx="124" cy="95" rx="3" ry="2.2" fill="#fbfdff" opacity=".85"/></g>'+
+  '<text x="92" y="134" fill="#7d8a9d" font-size="9" text-anchor="middle">球形のLNGタンク</text>'+
+  /* パイプライン */
+  '<path d="M137,101 L152,101 L152,88" fill="none" stroke="#5c6b80" stroke-width="2"/>'+
+  /* 建屋＋低めの煙突 */
+  '<rect x="148" y="84" width="60" height="34" fill="#232d3c" stroke="#ffb14c" stroke-width="1.4"/>'+
+  '<rect x="154" y="91" width="9" height="8" fill="#3a4757"/><rect x="168" y="91" width="9" height="8" fill="#3a4757"/>'+
+  '<rect x="182" y="91" width="9" height="8" fill="#3a4757"/><rect x="196" y="91" width="8" height="8" fill="#3a4757"/>'+
+  '<path d="M190,84 L194,52 L201,52 L200,84 Z" fill="#33404f" stroke="#ffb14c" stroke-width="1.2"/>'+
+  '<rect x="212" y="100" width="22" height="18" fill="#232d3c" stroke="#4a5769" stroke-width="1"/>',
+
+/* ---- 石油火力：平たい円筒タンクがずらり ---- */
+oil: SKY + sea(0,40) + GROUND +
+  smoke(172,40,.9,.38) +
+  /* タンカー */
+  '<path d="M2,110 L36,110 L32,118 L6,118 Z" fill="#26313f" stroke="#3d4a5f" stroke-width="1"/>'+
+  '<rect x="26" y="102" width="8" height="8" fill="#2f3b4e"/>'+
+  /* 円筒タンク（浮き屋根） */
+  '<g stroke="#ff6b6b" stroke-width="1.4" fill="#2a3442">'+
+  '<rect x="46" y="92" width="34" height="26"/><ellipse cx="63" cy="92" rx="17" ry="5"/>'+
+  '<rect x="86" y="97" width="28" height="21"/><ellipse cx="100" cy="97" rx="14" ry="4.2"/>'+
+  '<rect x="120" y="100" width="22" height="18"/><ellipse cx="131" cy="100" rx="11" ry="3.4"/></g>'+
+  '<ellipse cx="63" cy="92" rx="12" ry="3.4" fill="#3a4757"/>'+
+  '<ellipse cx="100" cy="97" rx="10" ry="2.9" fill="#3a4757"/>'+
+  '<text x="94" y="134" fill="#7d8a9d" font-size="9" text-anchor="middle">平たい円筒の石油タンク</text>'+
+  /* 配管 */
+  '<path d="M80,110 L86,110 M114,110 L120,110 M142,108 L152,108 L152,96" fill="none" stroke="#5c6b80" stroke-width="1.8"/>'+
+  /* 建屋＋煙突 */
+  '<rect x="150" y="88" width="58" height="30" fill="#232d3c" stroke="#ff6b6b" stroke-width="1.4"/>'+
+  '<rect x="156" y="95" width="9" height="8" fill="#3a4757"/><rect x="170" y="95" width="9" height="8" fill="#3a4757"/>'+
+  '<rect x="184" y="95" width="9" height="8" fill="#3a4757"/>'+
+  '<path d="M166,88 L172,42 L179,42 L177,88 Z" fill="#33404f" stroke="#ff6b6b" stroke-width="1.2"/>'+
+  '<rect x="171" y="50" width="9" height="3" fill="#ff5c5c" opacity=".8"/>'+
+  '<rect x="212" y="100" width="22" height="18" fill="#232d3c" stroke="#4a5769" stroke-width="1"/>',
+
+/* ---- 原子力：ドームと四角い建屋、煙突から煙は出ない ---- */
+nuclear: SKY + sea(0,52) + GROUND +
+  /* 防潮堤 */
+  '<rect x="46" y="100" width="10" height="18" fill="#2c3644" stroke="#5c6b80" stroke-width="1"/>'+
+  '<text x="28" y="134" fill="#7d8a9d" font-size="9" text-anchor="middle">海水で冷やす</text>'+
+  /* 取水管 */
+  '<path d="M20,112 L46,112" fill="none" stroke="#3d5f80" stroke-width="2.5"/>'+
+  /* 格納容器（ドーム型・PWR） */
+  '<path d="M64,118 L64,86 A20,20 0 0 1 104,86 L104,118 Z" fill="#242f3f" stroke="#b98cff" stroke-width="1.6"/>'+
+  '<path d="M64,86 A20,20 0 0 1 104,86" fill="#2e3a4d" stroke="#b98cff" stroke-width="1.6"/>'+
+  '<circle cx="84" cy="92" r="6" fill="none" stroke="#b98cff" stroke-width="1.2" opacity=".7"/>'+
+  '<circle cx="84" cy="92" r="2" fill="#b98cff" opacity=".9"/>'+
+  /* 四角い原子炉建屋（BWR） */
+  '<rect x="110" y="76" width="42" height="42" fill="#242f3f" stroke="#b98cff" stroke-width="1.6"/>'+
+  '<rect x="110" y="76" width="42" height="8" fill="#2e3a4d" stroke="#b98cff" stroke-width="1.2"/>'+
+  '<rect x="117" y="92" width="9" height="8" fill="#3a4757"/><rect x="132" y="92" width="9" height="8" fill="#3a4757"/>'+
+  /* タービン建屋 */
+  '<rect x="156" y="94" width="56" height="24" fill="#232d3c" stroke="#7a6aa8" stroke-width="1.2"/>'+
+  '<path d="M156,94 L184,86 L212,94" fill="#2a3442" stroke="#7a6aa8" stroke-width="1.2"/>'+
+  /* 排気筒（煙は出ない） */
+  '<line x1="220" y1="118" x2="220" y2="38" stroke="#5c6b80" stroke-width="3"/>'+
+  '<line x1="214" y1="60" x2="226" y2="60" stroke="#5c6b80" stroke-width="1.5"/>'+
+  '<line x1="214" y1="84" x2="226" y2="84" stroke="#5c6b80" stroke-width="1.5"/>'+
+  '<rect x="216" y="38" width="8" height="4" fill="#ff5c5c" opacity=".8"/>'+
+  '<text x="184" y="134" fill="#7d8a9d" font-size="9" text-anchor="middle">煙は出ない</text>',
+
+/* ---- 水力：ダムと山を下る水圧鉄管 ---- */
+hydro: SKY +
+  /* 山 */
+  '<path d="M0,150 L0,66 L36,34 L74,72 L74,150 Z" fill="#1c2836" stroke="#33465c" stroke-width="1"/>'+
+  '<path d="M240,150 L240,60 L206,30 L160,76 L160,150 Z" fill="#1c2836" stroke="#33465c" stroke-width="1"/>'+
+  /* 貯水池 */
+  '<path d="M0,66 L0,118 L98,118 L98,70 Z" fill="#16405e"/>'+
+  '<path d="M6,76 q10,-3 20,0 t20,0 t20,0 t20,0" fill="none" stroke="#3d7fae" stroke-width="1.2" opacity=".8"/>'+
+  '<text x="44" y="62" fill="#7d8a9d" font-size="9" text-anchor="middle">ダム湖</text>'+
+  /* ダム本体（アーチ） */
+  '<path d="M98,58 L118,58 L132,132 L98,132 Z" fill="#39465a" stroke="#4fd8ff" stroke-width="1.6"/>'+
+  '<rect x="96" y="54" width="24" height="5" fill="#6f7f96"/>'+
+  '<line x1="100" y1="54" x2="100" y2="50" stroke="#ffd84f" stroke-width="1.2"/>'+
+  '<line x1="114" y1="54" x2="114" y2="50" stroke="#ffd84f" stroke-width="1.2"/>'+
+  '<path d="M119,72 L122,96 M123,90 L127,116" fill="none" stroke="#54637a" stroke-width="1"/>'+
+  /* 洪水吐きからの放流 */
+  '<path d="M104,72 L116,72 L124,126 L106,126 Z" fill="#cfe8f7" opacity=".5"/>'+
+  '<path d="M108,76 L116,124 M113,74 L121,124" fill="none" stroke="#fff" stroke-width="1.1" opacity=".55"/>'+
+  '<ellipse cx="116" cy="130" rx="14" ry="4" fill="#dff0fb" opacity=".45"/>'+
+  /* 水圧鉄管（山を下る太い管） */
+  '<path d="M160,78 L196,120" fill="none" stroke="#4fd8ff" stroke-width="6" opacity=".55" stroke-linecap="round"/>'+
+  '<path d="M160,78 L196,120" fill="none" stroke="#7de4ff" stroke-width="2" stroke-linecap="round"/>'+
+  '<text x="204" y="86" fill="#7d8a9d" font-size="9" text-anchor="middle">水圧鉄管</text>'+
+  /* 下流の川 */
+  '<rect y="132" width="240" height="18" fill="#16405e"/>'+
+  '<path d="M0,140 q12,-3 24,0 t24,0 t24,0 t24,0 t24,0 t24,0 t24,0 t24,0 t24,0" fill="none" stroke="#3d7fae" stroke-width="1.2" opacity=".7"/>'+
+  /* 発電所建屋 */
+  '<rect x="186" y="112" width="34" height="20" fill="#232d3c" stroke="#4fd8ff" stroke-width="1.4"/>'+
+  '<rect x="192" y="118" width="8" height="7" fill="#3a4757"/><rect x="205" y="118" width="8" height="7" fill="#3a4757"/>',
+
+/* ---- 地熱：くねくねした蒸気配管と白い湯気 ---- */
+geo: SKY +
+  '<path d="M0,150 L0,80 L44,44 L92,86 L140,52 L192,96 L240,70 L240,150 Z" fill="#1c2836" stroke="#33465c" stroke-width="1"/>'+
+  GROUND +
+  smoke(70,64,1.05,.5) + smoke(178,74,.7,.38) +
+  /* 冷却塔（くびれた形） */
+  '<path d="M52,118 L57,84 Q60,76 66,74 Q72,76 75,84 L80,118 Z" fill="#2a3442" stroke="#5cf2a8" stroke-width="1.6"/>'+
+  '<path d="M57,84 Q66,80 75,84" fill="none" stroke="#5cf2a8" stroke-width="1.2" opacity=".6"/>'+
+  '<text x="66" y="126" fill="#7d8a9d" font-size="9" text-anchor="middle">冷却塔</text>'+
+  /* 蒸気井（小さな櫓）と、くねくね配管 */
+  '<path d="M196,100 L200,80 L206,80 L210,100 Z" fill="none" stroke="#7d8a9d" stroke-width="1.4"/>'+
+  '<line x1="198" y1="90" x2="208" y2="90" stroke="#7d8a9d" stroke-width="1"/>'+
+  '<path d="M203,100 L203,106 Q203,112 194,112 L170,112 Q160,112 160,104 L160,98 Q160,90 150,90 L128,90 Q118,90 118,98 L118,104 Q118,112 108,112 L88,112" '+
+    'fill="none" stroke="#8fa0b5" stroke-width="5" stroke-linecap="round" opacity=".45"/>'+
+  '<path d="M203,100 L203,106 Q203,112 194,112 L170,112 Q160,112 160,104 L160,98 Q160,90 150,90 L128,90 Q118,90 118,98 L118,104 Q118,112 108,112 L88,112" '+
+    'fill="none" stroke="#5cf2a8" stroke-width="1.8" stroke-linecap="round"/>'+
+  '<line x1="136" y1="90" x2="136" y2="118" stroke="#4a5769" stroke-width="1.4"/>'+
+  '<line x1="180" y1="112" x2="180" y2="118" stroke="#4a5769" stroke-width="1.4"/>'+
+  '<text x="150" y="126" fill="#7d8a9d" font-size="9" text-anchor="middle">くねくねした蒸気配管</text>'+
+  /* 地下：井戸が熱いマグマ層まで伸びる */
+  '<rect y="130" width="240" height="20" fill="#141a24"/>'+
+  '<line x1="0" y1="130" x2="240" y2="130" stroke="#2f3b4e" stroke-width="1"/>'+
+  '<line x1="203" y1="118" x2="203" y2="146" stroke="#8fa0b5" stroke-width="2"/>'+
+  '<path d="M150,146 q18,-10 36,0 q18,10 36,0" fill="none" stroke="#ff9a3c" stroke-width="2.5" opacity=".75"/>'+
+  '<path d="M150,150 q18,-10 36,0 q18,10 36,0" fill="none" stroke="#ff5c5c" stroke-width="2" opacity=".5"/>'+
+  '<text x="92" y="144" fill="#7d8a9d" font-size="8.5" text-anchor="middle">地下のマグマの熱 →</text>',
+
+/* ---- 風力：3枚の羽根。海の上にも建つ ---- */
+wind: SKY + sea(128,112) +
+  '<path d="M0,150 L0,104 Q40,90 80,106 Q108,118 128,116 L128,150 Z" fill="#1c2836" stroke="#33465c" stroke-width="1"/>'+
+  turbine(34, 104, 58, 18, "#4ce0b0") +
+  turbine(76, 106, 44, -40, "#4ce0b0") +
+  turbine(106, 114, 32, 70, "#3fb894") +
+  /* 洋上（基礎つき） */
+  '<rect x="170" y="112" width="8" height="14" fill="#f0c040" opacity=".85"/>'+
+  turbine(174, 114, 62, 5, "#4ce0b0") +
+  '<rect x="212" y="114" width="6" height="12" fill="#f0c040" opacity=".7"/>'+
+  turbine(215, 116, 44, 48, "#3fb894") +
+  '<text x="64" y="140" fill="#7d8a9d" font-size="9" text-anchor="middle">陸上</text>'+
+  '<text x="192" y="140" fill="#7d8a9d" font-size="9" text-anchor="middle">洋上（海に建てる）</text>',
+
+/* ---- 太陽光：南向きに傾けたパネルがずらり ---- */
+solar: SKY + GROUND +
+  '<circle cx="206" cy="32" r="13" fill="#ffd84f" opacity=".22"/>'+
+  '<circle cx="206" cy="32" r="8" fill="#ffd84f" opacity=".85"/>'+
+  '<g stroke="#ffd84f" stroke-width="1.3">'+
+  '<path d="M206,14 L206,8 M206,56 L206,62 M188,32 L182,32 M224,32 L230,32 M193,19 L189,15 M219,45 L223,49 M219,19 L223,15 M193,45 L189,49" opacity=".55"/></g>'+
+  /* パネル列（奥→手前） */
+  '<g>'+
+  '<path d="M20,78 L74,78 L68,68 L26,68 Z" fill="#1d3a5c" stroke="#ffd84f" stroke-width="1.1"/>'+
+  '<path d="M96,78 L150,78 L144,68 L102,68 Z" fill="#1d3a5c" stroke="#ffd84f" stroke-width="1.1"/>'+
+  '<path d="M172,78 L226,78 L220,68 L178,68 Z" fill="#1d3a5c" stroke="#ffd84f" stroke-width="1.1"/>'+
+  '<line x1="34" y1="78" x2="38" y2="68" stroke="#3d6f9e" stroke-width=".8"/><line x1="48" y1="78" x2="51" y2="68" stroke="#3d6f9e" stroke-width=".8"/><line x1="61" y1="78" x2="63" y2="68" stroke="#3d6f9e" stroke-width=".8"/>'+
+  '<line x1="110" y1="78" x2="114" y2="68" stroke="#3d6f9e" stroke-width=".8"/><line x1="124" y1="78" x2="127" y2="68" stroke="#3d6f9e" stroke-width=".8"/><line x1="137" y1="78" x2="139" y2="68" stroke="#3d6f9e" stroke-width=".8"/>'+
+  '<line x1="186" y1="78" x2="190" y2="68" stroke="#3d6f9e" stroke-width=".8"/><line x1="200" y1="78" x2="203" y2="68" stroke="#3d6f9e" stroke-width=".8"/><line x1="213" y1="78" x2="215" y2="68" stroke="#3d6f9e" stroke-width=".8"/>'+
+  '<line x1="30" y1="78" x2="30" y2="86" stroke="#5c6b80" stroke-width="1.4"/><line x1="66" y1="78" x2="66" y2="86" stroke="#5c6b80" stroke-width="1.4"/>'+
+  '<line x1="106" y1="78" x2="106" y2="86" stroke="#5c6b80" stroke-width="1.4"/><line x1="142" y1="78" x2="142" y2="86" stroke="#5c6b80" stroke-width="1.4"/>'+
+  '<line x1="182" y1="78" x2="182" y2="86" stroke="#5c6b80" stroke-width="1.4"/><line x1="218" y1="78" x2="218" y2="86" stroke="#5c6b80" stroke-width="1.4"/></g>'+
+  /* 手前の大きいパネル列 */
+  '<g>'+
+  '<path d="M8,112 L86,112 L76,94 L18,94 Z" fill="#1d3a5c" stroke="#ffd84f" stroke-width="1.4"/>'+
+  '<path d="M100,112 L178,112 L168,94 L110,94 Z" fill="#1d3a5c" stroke="#ffd84f" stroke-width="1.4"/>'+
+  '<path d="M192,112 L240,112 L232,94 L202,94 Z" fill="#1d3a5c" stroke="#ffd84f" stroke-width="1.4"/>'+
+  '<line x1="27" y1="112" x2="34" y2="94" stroke="#3d6f9e" stroke-width="1"/><line x1="46" y1="112" x2="51" y2="94" stroke="#3d6f9e" stroke-width="1"/><line x1="65" y1="112" x2="68" y2="94" stroke="#3d6f9e" stroke-width="1"/>'+
+  '<line x1="119" y1="112" x2="126" y2="94" stroke="#3d6f9e" stroke-width="1"/><line x1="138" y1="112" x2="143" y2="94" stroke="#3d6f9e" stroke-width="1"/><line x1="157" y1="112" x2="160" y2="94" stroke="#3d6f9e" stroke-width="1"/>'+
+  '<line x1="210" y1="112" x2="216" y2="94" stroke="#3d6f9e" stroke-width="1"/><line x1="226" y1="112" x2="229" y2="94" stroke="#3d6f9e" stroke-width="1"/>'+
+  '<line x1="16" y1="112" x2="16" y2="122" stroke="#5c6b80" stroke-width="1.8"/><line x1="78" y1="112" x2="78" y2="122" stroke="#5c6b80" stroke-width="1.8"/>'+
+  '<line x1="108" y1="112" x2="108" y2="122" stroke="#5c6b80" stroke-width="1.8"/><line x1="170" y1="112" x2="170" y2="122" stroke="#5c6b80" stroke-width="1.8"/>'+
+  '<line x1="200" y1="112" x2="200" y2="122" stroke="#5c6b80" stroke-width="1.8"/></g>'+
+  '<text x="120" y="140" fill="#7d8a9d" font-size="9" text-anchor="middle">南に向けて傾けて並べる</text>',
+
+/* ---- バイオマス：木のチップの山とサイロ ---- */
+biomass: SKY + GROUND +
+  smoke(150,46,.75,.4) +
+  /* 木材チップの山 */
+  '<path d="M6,118 L30,88 L54,118 Z" fill="#4a3a26" stroke="#9ecb6b" stroke-width="1.2"/>'+
+  '<circle cx="24" cy="106" r="1.6" fill="#7a6142"/><circle cx="34" cy="110" r="1.6" fill="#7a6142"/><circle cx="29" cy="98" r="1.6" fill="#7a6142"/>'+
+  '<text x="30" y="134" fill="#7d8a9d" font-size="9" text-anchor="middle">木のチップ</text>'+
+  /* 丸太 */
+  '<g stroke="#9ecb6b" stroke-width="1" fill="#57432c">'+
+  '<ellipse cx="66" cy="112" rx="4" ry="4"/><ellipse cx="75" cy="112" rx="4" ry="4"/><ellipse cx="70.5" cy="104" rx="4" ry="4"/></g>'+
+  /* サイロ2基 */
+  '<g stroke="#9ecb6b" stroke-width="1.5" fill="#2a3442">'+
+  '<rect x="92" y="70" width="24" height="48"/><path d="M92,70 L104,58 L116,70 Z"/>'+
+  '<rect x="122" y="80" width="20" height="38"/><path d="M122,80 L132,70 L142,80 Z"/></g>'+
+  '<line x1="96" y1="82" x2="112" y2="82" stroke="#4a5769" stroke-width="1"/>'+
+  '<line x1="96" y1="96" x2="112" y2="96" stroke="#4a5769" stroke-width="1"/>'+
+  '<text x="117" y="134" fill="#7d8a9d" font-size="9" text-anchor="middle">サイロ</text>'+
+  /* 建屋＋煙突（白い水蒸気） */
+  '<rect x="150" y="86" width="60" height="32" fill="#232d3c" stroke="#9ecb6b" stroke-width="1.4"/>'+
+  '<rect x="157" y="94" width="9" height="8" fill="#3a4757"/><rect x="171" y="94" width="9" height="8" fill="#3a4757"/>'+
+  '<rect x="185" y="94" width="9" height="8" fill="#3a4757"/>'+
+  '<path d="M144,86 L148,52 L155,52 L154,86 Z" fill="#33404f" stroke="#9ecb6b" stroke-width="1.2"/>'+
+  /* トラック */
+  '<rect x="212" y="104" width="18" height="10" fill="#2c3644" stroke="#5c6b80" stroke-width="1"/>'+
+  '<circle cx="217" cy="116" r="2.6" fill="#1a2230" stroke="#5c6b80" stroke-width="1"/>'+
+  '<circle cx="227" cy="116" r="2.6" fill="#1a2230" stroke="#5c6b80" stroke-width="1"/>'
+};
+
+/* 見分けかた・特徴 */
+const PLANT_INFO = {
+  coal:    {look:"黒い石炭の山とベルトコンベア、高い煙突", pt:"燃料の石炭を船で運び、広い貯炭場に積む。煙突がいちばん高い。", where:"海沿い（船で燃料を運ぶため）"},
+  lng:     {look:"白くて丸い球形タンク", pt:"−162℃に冷やした液体の天然ガスを丸いタンクにためる。まん丸なタンクが目印。", where:"海沿い（LNG船が着く港のそば）"},
+  oil:     {look:"平たい円筒のタンクがずらり", pt:"石油はふつうの液体なので、ふた付きの平たい円柱のタンクにためる。", where:"海沿い（製油所のそば）"},
+  nuclear: {look:"丸いドームか四角い建屋。煙突から煙が出ない", pt:"原子炉を分厚いコンクリートで包む。燃やしていないので煙は出ない。海水で冷やす。", where:"海沿い（大量の冷却水が必要）"},
+  hydro:   {look:"ダムと、山を下る太い鉄の管", pt:"高い所にためた水を落として水車を回す。管が太く長いほど大きな力になる。", where:"山あいの川（落差のある場所）"},
+  geo:     {look:"くねくねした銀色の配管と、白い湯気", pt:"地下の熱で沸いた蒸気を井戸から取り出す。配管が曲がっているのは、熱で伸び縮みするため。", where:"火山のふもと（登別・洞爺など）"},
+  wind:    {look:"3枚の羽根。海の上にも建つ", pt:"羽根が長いほどたくさん発電できる。最近のものは羽根の先まで100mを超える。", where:"風の強い海岸・尾根・洋上"},
+  solar:   {look:"南に向けて傾けたパネルの列", pt:"傾けるのは太陽に正面を向けるため。列と列の間をあけるのは、影をつくらないため。", where:"日当たりのよい平地・屋根"},
+  biomass: {look:"木のチップの山とサイロ、白い水蒸気", pt:"木くずやペレットを燃やす。仕組みは火力と同じだが、燃料が木なのでCO₂は差し引きゼロと数える。", where:"森林の近く・港のそば"}
+};
+
+function buildGallery(){
+  $("gallery").innerHTML = SRC.map(s=>{
+    const i = PLANT_INFO[s.id];
+    return '<figure class="pl" style="--k:'+s.c+'">'+
+      '<svg viewBox="0 0 240 150" preserveAspectRatio="xMidYMid meet" role="img" aria-label="'+s.name+'の発電所のイメージ">'+PLANT_SVG[s.id]+'</svg>'+
+      '<figcaption>'+
+        '<h4>'+s.icon+' '+s.name+'<span class="role '+s.role+'">'+s.roleJa+'</span></h4>'+
+        '<p class="pl-look"><span class="tag">見分けかた</span>'+i.look+'</p>'+
+        '<p class="pl-pt">'+i.pt+'</p>'+
+        '<p class="pl-where">📍 建つ場所：'+i.where+'</p>'+
+      '</figcaption></figure>';
+  }).join("");
+}
+
+/* =========================================================
    データ表
    ========================================================= */
 function buildTable(){
@@ -1022,6 +1356,7 @@ function init(){
   buildPresets();
   buildMixer();
   buildEvents();
+  buildGallery();
   buildTable();
   buildSources();
   syncAll();
