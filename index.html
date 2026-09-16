@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>エネルギーミックス・スタジオ</title>
+<meta name="description" content="中学生向け。電源構成を自分で決めると、電気代・CO2・国産率・停電リスク・必要な設備の量がその場でわかるシミュレータ。">
+<style>
+:root{
+  --bg:#0a0c10;
+  --bg2:#121620;
+  --panel:#161b26;
+  --panel2:#1d2431;
+  --line:#2c3545;
+  --line2:#3d4a5f;
+  --txt:#e8eef7;
+  --txt2:#9fb0c7;
+  --txt3:#6b7b94;
+  --cyan:#4fd8ff;
+  --cyan-d:#1a9fc4;
+  --yellow:#ffd84f;
+  --orange:#ff9a3c;
+  --red:#ff5c5c;
+  --green:#5cf2a8;
+  --purple:#b98cff;
+  --shadow:0 8px 30px rgba(0,0,0,.55);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:
+    radial-gradient(1200px 700px at 15% -10%, #1b2434 0%, transparent 60%),
+    radial-gradient(900px 600px at 95% 0%, #1a2130 0%, transparent 55%),
+    var(--bg);
+  color:var(--txt);
+  font-family:"Segoe UI","Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;
+  line-height:1.7;
+  -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px 80px}
+
+/* ---------- ヘッダー ---------- */
+header{
+  padding-block:34px 26px;
+  text-align:center;
+  position:relative;
+}
+header::after{
+  content:"";position:absolute;left:50%;bottom:0;transform:translateX(-50%);
+  width:min(100%,560px);height:1px;
+  background:linear-gradient(90deg,transparent,var(--cyan),transparent);
+  opacity:.5;
+}
+.logo-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:.72rem;letter-spacing:.18em;color:var(--cyan);
+  border:1px solid var(--cyan-d);border-radius:999px;
+  padding:4px 14px;margin-bottom:14px;
+  background:rgba(79,216,255,.07);
+}
+h1{
+  font-size:clamp(1.5rem,4.6vw,2.5rem);
+  margin:0 0 10px;line-height:1.25;font-weight:800;
+  background:linear-gradient(180deg,#fff 30%,var(--cyan) 130%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 22px rgba(79,216,255,.35));
+}
+.sub{color:var(--txt2);font-size:clamp(.82rem,2.4vw,.98rem);margin:0 auto;max-width:640px}
+
+/* ---------- 共通パネル ---------- */
+.panel{
+  background:linear-gradient(180deg,var(--panel2),var(--panel));
+  border:1px solid var(--line);
+  border-radius:16px;
+  box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,.05);
+  padding:20px;
+  margin-top:22px;
+}
+.panel-h{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  margin:0 0 4px;font-size:1.06rem;font-weight:700;
+}
+.panel-h .num{
+  display:inline-grid;place-items:center;
+  width:26px;height:26px;border-radius:8px;flex:none;
+  background:linear-gradient(180deg,var(--cyan),var(--cyan-d));
+  color:#04121a;font-size:.84rem;font-weight:800;
+}
+.panel-sub{color:var(--txt3);font-size:.82rem;margin:0 0 16px}
+
+/* ---------- プリセット ---------- */
+.presets{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.preset{
+  background:var(--panel2);border:1px solid var(--line2);color:var(--txt2);
+  border-radius:10px;padding:7px 13px;font-size:.8rem;cursor:pointer;
+  font-family:inherit;transition:.15s;white-space:nowrap;
+}
+.preset:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(79,216,255,.08)}
+.preset.on{border-color:var(--cyan);color:#04121a;background:linear-gradient(180deg,var(--cyan),var(--cyan-d));font-weight:700}
+
+/* ---------- ミキサー ---------- */
+.mixer{display:grid;gap:9px}
+.ch{
+  display:grid;
+  grid-template-columns:152px 1fr 92px;
+  align-items:center;gap:12px;
+  background:rgba(255,255,255,.017);
+  border:1px solid transparent;border-left:3px solid var(--k);
+  border-radius:10px;padding:8px 12px;transition:.15s;
+}
+.ch:hover{background:rgba(255,255,255,.045);border-color:var(--line);border-left-color:var(--k)}
+.ch-name{font-size:.86rem;font-weight:600;display:flex;align-items:center;gap:6px;min-width:0}
+.ch-name .ico{font-size:1rem;flex:none}
+.ch-name .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.role{
+  font-size:.6rem;padding:1px 6px;border-radius:4px;flex:none;
+  border:1px solid currentColor;opacity:.75;letter-spacing:.04em;
+}
+.role.base{color:var(--cyan)}
+.role.drum{color:var(--orange)}
+.role.solo{color:var(--yellow)}
+
+input[type=range]{
+  -webkit-appearance:none;appearance:none;width:100%;height:22px;
+  background:transparent;cursor:pointer;margin:0;
+}
+input[type=range]::-webkit-slider-runnable-track{
+  height:8px;border-radius:99px;
+  background:linear-gradient(90deg,var(--k) 0%,var(--k) var(--p),#232b39 var(--p),#232b39 100%);
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.6);
+}
+input[type=range]::-moz-range-track{height:8px;border-radius:99px;background:#232b39}
+input[type=range]::-moz-range-progress{height:8px;border-radius:99px;background:var(--k)}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:20px;height:20px;border-radius:50%;margin-top:-6px;
+  background:radial-gradient(circle at 35% 30%,#fdfdfd,#b9c4d4 55%,#7b8698);
+  border:1px solid #58627a;
+  box-shadow:0 2px 6px rgba(0,0,0,.6),0 0 12px var(--k);
+}
+input[type=range]::-moz-range-thumb{
+  width:20px;height:20px;border-radius:50%;border:1px solid #58627a;
+  background:radial-gradient(circle at 35% 30%,#fdfdfd,#b9c4d4 55%,#7b8698);
+  box-shadow:0 2px 6px rgba(0,0,0,.6),0 0 12px var(--k);
+}
+.ch-val{display:flex;align-items:center;gap:3px;justify-content:flex-end}
+.ch-val input[type=number]{
+  width:50px;background:#0c1018;border:1px solid var(--line2);color:var(--txt);
+  border-radius:7px;padding:4px 5px;text-align:right;font-family:inherit;
+  font-size:.92rem;font-weight:700;font-variant-numeric:tabular-nums;
+}
+.ch-val input[type=number]:focus{outline:none;border-color:var(--k);box-shadow:0 0 0 2px rgba(79,216,255,.16)}
+.ch-val input::-webkit-outer-spin-button,.ch-val input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.ch-val input[type=number]{-moz-appearance:textfield}
+.ch-val .pct{font-size:.74rem;color:var(--txt3)}
+
+/* ---------- 合計バー ---------- */
+.total-bar{
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  margin-top:14px;padding:12px 16px;border-radius:12px;
+  background:#0c1018;border:1px solid var(--line);
+}
+.total-num{font-size:1.5rem;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.total-num.ok{color:var(--green)}
+.total-num.ng{color:var(--orange)}
+.total-msg{font-size:.78rem;color:var(--txt3);flex:1;min-width:160px}
+.btn{
+  background:linear-gradient(180deg,var(--cyan),var(--cyan-d));color:#04121a;
+  border:none;border-radius:9px;padding:8px 16px;font-weight:700;font-size:.82rem;
+  cursor:pointer;font-family:inherit;white-space:nowrap;transition:.15s;
+}
+.btn:hover{filter:brightness(1.12)}
+.btn.ghost{background:transparent;border:1px solid var(--line2);color:var(--txt2)}
+.btn.ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+
+/* ---------- メーター（3つのものさし＋1） ---------- */
+.gauges{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.gauge{
+  background:linear-gradient(180deg,#1a2130,#12171f);
+  border:1px solid var(--line);border-radius:14px;
+  padding:16px 12px 14px;text-align:center;position:relative;overflow:hidden;
+}
+.gauge::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(circle at 50% 18%,var(--g,transparent) 0%,transparent 62%);
+  opacity:.1;
+}
+.gauge-t{font-size:.76rem;color:var(--txt2);margin-bottom:2px;font-weight:600}
+.gauge-t small{display:block;font-size:.62rem;color:var(--txt3);font-weight:400}
+.gauge svg{display:block;margin:4px auto 0;max-width:100%}
+.gauge-v{font-size:1.32rem;font-weight:800;line-height:1.15;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.gauge-u{font-size:.68rem;color:var(--txt3);display:block;font-weight:400;letter-spacing:0}
+.gauge-note{font-size:.67rem;color:var(--txt3);margin-top:7px;line-height:1.45;min-height:2.6em}
+.gauge-note b{font-weight:700}
+
+/* ---------- 円グラフ＋総合評価 ---------- */
+.result-top{display:grid;grid-template-columns:230px 1fr;gap:22px;align-items:center}
+.donut-box{text-align:center}
+.donut-box svg{max-width:100%;height:auto}
+.rank{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:12px}
+.rank-badge{
+  width:74px;height:74px;border-radius:18px;display:grid;place-items:center;flex:none;
+  font-size:2.1rem;font-weight:900;color:#04121a;line-height:1;
+  background:linear-gradient(160deg,var(--rc,var(--cyan)),color-mix(in srgb,var(--rc,var(--cyan)) 60%,#000));
+  box-shadow:0 0 28px color-mix(in srgb,var(--rc,var(--cyan)) 45%,transparent);
+}
+.rank-txt{flex:1;min-width:190px}
+.rank-txt h3{margin:0 0 3px;font-size:1.06rem}
+.rank-txt p{margin:0;font-size:.82rem;color:var(--txt2)}
+.legend{display:grid;grid-template-columns:repeat(auto-fill,minmax(122px,1fr));gap:4px 10px;margin-top:6px}
+.lg{display:flex;align-items:center;gap:6px;font-size:.75rem;color:var(--txt2)}
+.lg i{width:9px;height:9px;border-radius:3px;flex:none}
+.lg b{color:var(--txt);font-variant-numeric:tabular-nums;margin-left:auto;font-weight:700}
+
+/* ---------- 実感カード ---------- */
+.feel{display:grid;grid-template-columns:repeat(auto-fit,minmax(232px,1fr));gap:14px}
+.fc{
+  background:#0f141d;border:1px solid var(--line);border-radius:14px;padding:16px;
+  display:flex;flex-direction:column;gap:9px;
+}
+.fc-h{display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--txt2);font-weight:600}
+.fc-h .ic{font-size:1.15rem}
+.fc-v{font-size:1.5rem;font-weight:800;line-height:1.15;font-variant-numeric:tabular-nums;color:var(--cyan)}
+.fc-v small{font-size:.72rem;color:var(--txt3);font-weight:500;margin-left:3px}
+.fc-cmp{font-size:.74rem;color:var(--txt3);line-height:1.5;margin-top:auto}
+.fc-cmp b{color:var(--yellow);font-weight:700}
+.iconbar{display:flex;flex-wrap:wrap;gap:2px;line-height:1;font-size:.82rem;max-height:3.6em;overflow:hidden}
+.bar-cmp{height:9px;border-radius:99px;background:#232b39;overflow:hidden;position:relative}
+.bar-cmp i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--cyan),var(--yellow))}
+
+/* ---------- 現実チェック ---------- */
+.checks{display:grid;gap:9px}
+.chk{
+  display:flex;gap:11px;align-items:flex-start;
+  padding:11px 14px;border-radius:11px;font-size:.83rem;line-height:1.6;
+  border:1px solid;
+}
+.chk .ci{font-size:1.05rem;flex:none;line-height:1.35}
+.chk.ok{background:rgba(92,242,168,.05);border-color:rgba(92,242,168,.28);color:#bff0d8}
+.chk.warn{background:rgba(255,154,60,.06);border-color:rgba(255,154,60,.3);color:#ffd9b0}
+.chk.bad{background:rgba(255,92,92,.07);border-color:rgba(255,92,92,.33);color:#ffc4c4}
+.chk b{color:#fff}
+
+/* ---------- 国際情勢イベント ---------- */
+.ev-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:11px}
+.ev{
+  background:#0f141d;border:1px solid var(--line2);border-radius:12px;
+  padding:14px;cursor:pointer;text-align:left;font-family:inherit;color:var(--txt);
+  transition:.15s;display:flex;flex-direction:column;gap:5px;
+}
+.ev:hover{border-color:var(--orange);background:rgba(255,154,60,.06);transform:translateY(-2px)}
+.ev.on{border-color:var(--orange);background:rgba(255,154,60,.11);box-shadow:0 0 22px rgba(255,154,60,.18)}
+.ev-t{font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:7px}
+.ev-d{font-size:.72rem;color:var(--txt3);line-height:1.5}
+.ev-res{
+  margin-top:14px;padding:16px;border-radius:13px;
+  background:linear-gradient(180deg,rgba(255,154,60,.09),rgba(255,92,92,.05));
+  border:1px solid rgba(255,154,60,.32);
+}
+.ev-res h4{margin:0 0 10px;font-size:.95rem;color:var(--orange);display:flex;align-items:center;gap:7px}
+.ev-cmp{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;margin-bottom:12px}
+.ev-side{text-align:center;padding:11px 8px;border-radius:10px;background:rgba(0,0,0,.3)}
+.ev-side .l{font-size:.68rem;color:var(--txt3);display:block;margin-bottom:2px}
+.ev-side .v{font-size:1.25rem;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.2}
+.ev-side .v small{font-size:.66rem;font-weight:500;color:var(--txt3)}
+.ev-arrow{font-size:1.3rem;color:var(--orange)}
+.ev-msg{font-size:.82rem;line-height:1.7;color:#ffe0c4}
+.ev-msg b{color:#fff}
+
+/* ---------- 表 ---------- */
+.tblwrap{overflow-x:auto;margin-top:6px;border-radius:12px;border:1px solid var(--line)}
+table{border-collapse:collapse;width:100%;min-width:660px;font-size:.8rem}
+th,td{padding:9px 12px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th{background:#0c1018;color:var(--txt2);font-weight:600;position:sticky;top:0;font-size:.75rem}
+td:first-child,th:first-child{text-align:left}
+tbody tr:hover{background:rgba(79,216,255,.05)}
+tbody tr:last-child td{border-bottom:none}
+.v-good{color:var(--cyan)}
+.v-bad{color:var(--orange)}
+
+/* ---------- 学習メモ・出典 ---------- */
+.note{
+  background:rgba(79,216,255,.05);border-left:3px solid var(--cyan);
+  border-radius:0 10px 10px 0;padding:13px 16px;font-size:.81rem;
+  color:var(--txt2);line-height:1.75;margin-top:16px;
+}
+.note b{color:var(--cyan)}
+details.src{margin-top:22px;border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:0 18px}
+details.src summary{cursor:pointer;padding:14px 0;font-size:.86rem;font-weight:600;color:var(--txt2)}
+details.src summary:hover{color:var(--cyan)}
+details.src[open] summary{border-bottom:1px solid var(--line);margin-bottom:12px}
+details.src ul{margin:0 0 16px;padding-left:20px;font-size:.78rem;color:var(--txt3);line-height:1.85}
+details.src a{color:var(--cyan);text-decoration:none}
+details.src a:hover{text-decoration:underline}
+footer{text-align:center;color:var(--txt3);font-size:.74rem;padding-top:30px;line-height:1.9}
+
+/* ---------- レスポンシブ ---------- */
+@media(max-width:900px){
+  .gauges{grid-template-columns:repeat(2,1fr)}
+  .result-top{grid-template-columns:1fr;gap:14px}
+  .donut-box{max-width:220px;margin:0 auto}
+}
+@media(max-width:620px){
+  .wrap{padding:0 12px 60px}
+  .panel{padding:15px 13px;border-radius:13px}
+  .ch{grid-template-columns:1fr auto;gap:4px 10px;padding:9px 11px}
+  .ch-name{grid-column:1;font-size:.84rem}
+  .ch-val{grid-column:2;justify-content:flex-end}
+  .ch input[type=range]{grid-column:1/-1;order:3}
+  .ev-cmp{grid-template-columns:1fr;gap:7px}
+  .ev-arrow{transform:rotate(90deg)}
+  .rank-badge{width:60px;height:60px;font-size:1.7rem}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="logo-badge">⚡ ENERGY MIX STUDIO</div>
+  <h1>あなたのバンドを組もう</h1>
+  <p class="sub">電気をつくる方法（バンドメンバー）の割合を自分で決めると、<br>
+  <b>電気代・CO₂・電気の国産率・停電しにくさ</b>がその場で計算されます。</p>
+</header>
+
+<!-- ========== 1. ミキサー ========== -->
+<section class="panel">
+  <h2 class="panel-h"><span class="num">1</span>ミキシング卓 ― 電源構成を決める</h2>
+  <p class="panel-sub">フェーダーを動かして、合計が100%になるように配分しよう。数字を直接入力してもOK。</p>
+
+  <div class="presets" id="presets"></div>
+  <div class="mixer" id="mixer"></div>
+
+  <div class="total-bar">
+    <div><span class="total-num" id="totalNum">100.0</span><span style="font-size:.9rem;color:var(--txt3)">%</span></div>
+    <div class="total-msg" id="totalMsg">合計100%です。</div>
+    <button class="btn ghost" id="btnNorm">100%にそろえる</button>
+    <button class="btn ghost" id="btnReset">リセット</button>
+  </div>
+</section>
+
+<!-- ========== 2. 4つのものさし ========== -->
+<section class="panel">
+  <h2 class="panel-h"><span class="num">2</span>4つのものさしで採点</h2>
+  <p class="panel-sub">授業でやった「3つのものさし」＋「止まらずに電気が届くか」で評価します。</p>
+
+  <div class="result-top">
+    <div class="donut-box">
+      <svg id="donut" viewBox="0 0 200 200" width="200" height="200" role="img" aria-label="電源構成の円グラフ"></svg>
+    </div>
+    <div>
+      <div class="rank">
+        <div class="rank-badge" id="rankBadge">A</div>
+        <div class="rank-txt">
+          <h3 id="rankTitle">バランス型のバンド</h3>
+          <p id="rankMsg">総合スコアと講評がここに出ます。</p>
+        </div>
+      </div>
+      <div class="legend" id="legend"></div>
+    </div>
+  </div>
+
+  <div class="gauges" style="margin-top:20px">
+    <div class="gauge" style="--g:var(--yellow)">
+      <div class="gauge-t">① 電気代<small>4人家族・1か月</small></div>
+      <svg viewBox="0 0 120 74" width="120" height="74"><g id="gA"></g></svg>
+      <div class="gauge-v" id="vA">—<span class="gauge-u">円 / 月</span></div>
+      <div class="gauge-note" id="nA"></div>
+    </div>
+    <div class="gauge" style="--g:var(--green)">
+      <div class="gauge-t">② CO₂排出量<small>電気1kWhあたり</small></div>
+      <svg viewBox="0 0 120 74" width="120" height="74"><g id="gB"></g></svg>
+      <div class="gauge-v" id="vB">—<span class="gauge-u">g-CO₂ / kWh</span></div>
+      <div class="gauge-note" id="nB"></div>
+    </div>
+    <div class="gauge" style="--g:var(--cyan)">
+      <div class="gauge-t">③ 電気の国産率<small>輸入に頼らない割合</small></div>
+      <svg viewBox="0 0 120 74" width="120" height="74"><g id="gC"></g></svg>
+      <div class="gauge-v" id="vC">—<span class="gauge-u">%</span></div>
+      <div class="gauge-note" id="nC"></div>
+    </div>
+    <div class="gauge" style="--g:var(--purple)">
+      <div class="gauge-t">④ 安定供給<small>ピーク時の予備率</small></div>
+      <svg viewBox="0 0 120 74" width="120" height="74"><g id="gD"></g></svg>
+      <div class="gauge-v" id="vD">—<span class="gauge-u">% 予備</span></div>
+      <div class="gauge-note" id="nD"></div>
+    </div>
+  </div>
+
+  <div class="note" id="billBreak"></div>
+</section>
+
+<!-- ========== 3. 実感 ========== -->
+<section class="panel">
+  <h2 class="panel-h"><span class="num">3</span>それ、本当に置ける？ ― 必要な設備の量</h2>
+  <p class="panel-sub">日本全体の1年分の電気（約9,850億kWh）をこの構成でつくるには、どれだけの設備が要るのか。</p>
+  <div class="feel" id="feel"></div>
+</section>
+
+<!-- ========== 4. 現実チェック ========== -->
+<section class="panel">
+  <h2 class="panel-h"><span class="num">4</span>現実チェック</h2>
+  <p class="panel-sub">「増やしたいけど、日本では増やせない理由」がここに出ます。</p>
+  <div class="checks" id="checks"></div>
+</section>
+
+<!-- ========== 5. 国際情勢 ========== -->
+<section class="panel">
+  <h2 class="panel-h"><span class="num">5</span>もしも、世界で何かが起きたら</h2>
+  <p class="panel-sub">カードを押すと、その出来事が起きたときに「あなたのバンド」がどうなるか計算します。もう一度押すと元に戻ります。</p>
+  <div class="ev-grid" id="events"></div>
+  <div id="evResult"></div>
+</section>
+
+<!-- ========== 6. データ表 ========== -->
+<section class="panel">
+  <h2 class="panel-h"><span class="num">6</span>メンバーの能力データ</h2>
+  <p class="panel-sub">計算に使っている数値。授業のスライドの表を、最新の試算でアップデートしたものです。</p>
+  <div class="tblwrap"><table id="dataTable"></table></div>
+  <div class="note">
+    <b>読み方のヒント：</b>「変換効率」は燃料や自然の力のうち何%を電気にできるか。
+    効率が低くても<b>燃料代がタダ</b>（太陽光・風力・水力・地熱）なら、発電コストは安くなります。
+    効率だけ・値段だけで決められないのが、エネルギーの難しさです。
+  </div>
+</section>
+
+<details class="src">
+  <summary>📚 データの出典と、計算のしかた（先生・生徒むけ）</summary>
+  <div id="srcBody"></div>
+</details>
+
+<footer>
+  エネルギーミックス・スタジオ ｜ 中学校 理科・社会 授業用シミュレータ<br>
+  数値は公表資料にもとづく概算です。学習用に単純化しています。
+</footer>
+</div>
+<script>
+"use strict";
+
+/* =========================================================
+   電源データ
+   eff   : エネルギー変換効率(%)  ※授業スライドの値
+   lcoe  : 発電コスト(円/kWh)     ※2025年2月 発電コスト検証WG(2040年試算)ほか
+   fuelS : lcoeのうち燃料費が占める割合
+   co2   : ライフサイクルCO2(g-CO2/kWh)
+   cf    : 実際の設備利用率(設備量の見積りに使用)
+   firm  : 曇り・無風のピーク時に頼れる割合(供給信頼度)
+   dom   : 国産(輸入に頼らない)度合い 0〜1
+   ========================================================= */
+const SRC = [
+  {id:"coal",   name:"火力(石炭)", icon:"🪨", role:"drum", roleJa:"ドラム",  c:"#ff8a4c",
+   eff:43, lcoe:12.5, fuelS:.52, co2:943, cf:.70, firm:.85, dom:0,
+   from:"オーストラリア72%・インドネシア13%", mideast:0, aus:.72},
+  {id:"lng",    name:"火力(LNG)",  icon:"🔥", role:"drum", roleJa:"ドラム",  c:"#ffb14c",
+   eff:55, lcoe:13.7, fuelS:.66, co2:474, cf:.50, firm:.85, dom:0,
+   from:"オーストラリア38%・マレーシア16%", mideast:.06, aus:.38},
+  {id:"oil",    name:"火力(石油)", icon:"🛢️", role:"drum", roleJa:"ドラム",  c:"#ff6b6b",
+   eff:43, lcoe:26.0, fuelS:.77, co2:738, cf:.25, firm:.85, dom:0,
+   from:"中東96%(UAE44%・サウジ40%)", mideast:.96, aus:0},
+  {id:"nuclear",name:"原子力",     icon:"⚛️", role:"base", roleJa:"ベース",  c:"#b98cff",
+   eff:33, lcoe:12.5, fuelS:.12, co2:19,  cf:.70, firm:.92, dom:1,
+   from:"ウランは輸入だが数年分を備蓄でき「準国産」扱い", mideast:0, aus:0},
+  {id:"hydro",  name:"水力",       icon:"💧", role:"base", roleJa:"ベース",  c:"#4fd8ff",
+   eff:80, lcoe:11.0, fuelS:0,   co2:11,  cf:.45, firm:.80, dom:1,
+   from:"国産（燃料いらず）", mideast:0, aus:0},
+  {id:"geo",    name:"地熱",       icon:"♨️", role:"base", roleJa:"ベース",  c:"#5cf2a8",
+   eff:8,  lcoe:16.0, fuelS:0,   co2:13,  cf:.70, firm:.90, dom:1,
+   from:"国産（燃料いらず）", mideast:0, aus:0},
+  {id:"wind",   name:"風力",       icon:"🌀", role:"solo", roleJa:"ソロ",    c:"#4ce0b0",
+   eff:25, lcoe:12.0, fuelS:0,   co2:26,  cf:.25, firm:.05, dom:1,
+   from:"国産（燃料いらず）", mideast:0, aus:0},
+  {id:"solar",  name:"太陽光",     icon:"☀️", role:"solo", roleJa:"ソロ",    c:"#ffd84f",
+   eff:10, lcoe:8.0,  fuelS:0,   co2:38,  cf:.15, firm:.05, dom:1,
+   from:"国産（燃料いらず）", mideast:0, aus:0},
+  {id:"biomass",name:"バイオマス", icon:"🌲", role:"drum", roleJa:"ドラム",  c:"#9ecb6b",
+   eff:1,  lcoe:25.6, fuelS:.47, co2:0,   cf:.70, firm:.90, dom:.4,
+   from:"木質ペレットの多くは北米・東南アジアから輸入", mideast:0, aus:0}
+];
+const SI = {}; SRC.forEach((s,i)=>SI[s.id]=i);
+
+/* ---------- 定数 ---------- */
+const E_TOTAL   = 9.85e11;  // 日本の年間発電電力量(kWh) 2023年度
+const PEAK_KW   = 1.60e8;   // 最大電力(kW) 約1.6億kW
+const OTHER_YEN = 17.0;     // 発電以外の費用(送配電・小売・再エネ賦課金・税) 円/kWh
+const HOUSE_KWH = 400;      // 4人家族の1か月の電気使用量(kWh)
+const HOUSEHOLD = 5.6e7;    // 世帯数
+const BAT_YEN_KWH = 50000;  // 系統用蓄電池 設備費(円/kWh)
+const BAT_LIFE  = 15;       // 蓄電池の寿命(年)
+const M2_PER_KW = 15;       // 事業用太陽光 1kWあたりの土地(m2)
+const KW_PER_TURBINE = 4200;// 風車1基の出力(kW)
+const KW_PER_UNIT = 1.0e6;  // 発電所1基(100万kW級)
+const DOME_M2 = 46755;      // 東京ドーム(m2)
+const YAMANOTE_KM2 = 63;    // 山手線の内側(km2)
+const TOKYO_KM2 = 2194;     // 東京都(km2)
+const NOW_TURBINES = 2866;  // 今の日本の風車(基) 2025年末
+const NOW_SOLAR_GW = 79;    // 今の日本の太陽光(GW)
+const NOW_NUKE = 33;        // 今の日本の原子炉(基, 廃炉を除く)
+const CEDAR_KG = 14;        // スギ1本が1年に吸うCO2(kg)
+const CO2_2013 = 5.7;       // 2013年度の電力由来CO2(億t) 目安
+
+/* ---------- プリセット ---------- */
+const PRESETS = [
+  {n:"今の日本 (2023年度)", v:{coal:28.3,lng:33.7,oil:7.4,nuclear:7.7,hydro:7.6,geo:0.3,wind:1.1,solar:9.8,biomass:4.1}},
+  {n:"2030年度の目標",      v:{coal:19,lng:21,oil:2,nuclear:21,hydro:11,geo:1,wind:5,solar:15,biomass:5}},
+  {n:"2040年度の目標",      v:{coal:12,lng:18,oil:2,nuclear:20,hydro:9,geo:1.5,wind:6,solar:26,biomass:5.5}},
+  {n:"再エネだけ",          v:{coal:0,lng:0,oil:0,nuclear:0,hydro:12,geo:3,wind:25,solar:55,biomass:5}},
+  {n:"火力だけ",            v:{coal:30,lng:55,oil:15,nuclear:0,hydro:0,geo:0,wind:0,solar:0,biomass:0}},
+  {n:"原子力たより",        v:{coal:5,lng:20,oil:0,nuclear:50,hydro:10,geo:1,wind:3,solar:10,biomass:1}}
+];
+
+/* =========================================================
+   計算エンジン
+   opt: {fuelMult:{id:倍率}, peakMult:数, vreMult:数, forceZero:[id]}
+   ========================================================= */
+function calc(rawMix, opt){
+  opt = opt || {};
+  const fm = opt.fuelMult || {};
+  const peakMult = opt.peakMult || 1;
+  const vreMult  = (opt.vreMult === undefined) ? 1 : opt.vreMult;
+
+  // 1) 100%に正規化（合計が100でなくても結果が出るように）
+  let mix = {}, sum = 0;
+  SRC.forEach(s=>{ let v = Math.max(0, rawMix[s.id]||0);
+    if(opt.forceZero && opt.forceZero.indexOf(s.id)>=0) v = 0;
+    mix[s.id]=v; sum+=v; });
+  if(sum<=0){ mix.lng=100; sum=100; }
+  const share = {}; SRC.forEach(s=> share[s.id] = mix[s.id]/sum*100 );
+
+  // 2) 変動再エネ(太陽光・風力)の割合 → 出力抑制(捨てる電気)
+  const vre = share.solar + share.wind;
+  const curtail = Math.min(.5, Math.max(0, (vre-30)/130)); // 0〜50%
+
+  // 3) 発電コスト（燃料高騰・出力抑制を反映）
+  let gen = 0, fuelYen = 0;
+  SRC.forEach(s=>{
+    const mult = fm[s.id] || 1;
+    let c = s.lcoe*(1-s.fuelS) + s.lcoe*s.fuelS*mult;
+    if(s.id==="solar"||s.id==="wind") c = c/(1-curtail);  // 捨てる分だけ割高に
+    gen += share[s.id]/100 * c;
+    fuelYen += share[s.id]/100 * s.lcoe * s.fuelS * mult * (1-s.dom);
+  });
+
+  // 4) 設備容量(kW)と、曇り・無風のピーク時に頼れる供給力
+  const capKW = {}; let firmKW = 0;
+  SRC.forEach(s=>{
+    let e = E_TOTAL * share[s.id]/100;
+    if(s.id==="solar"||s.id==="wind") e = e/(1-curtail); // 捨てる分も作る必要あり
+    capKW[s.id] = e/(8760*s.cf);
+    const f = (s.id==="solar"||s.id==="wind") ? s.firm*vreMult : s.firm;
+    firmKW += capKW[s.id]*f;
+  });
+  const peak = PEAK_KW*peakMult;
+  const reserve = (firmKW/peak - 1)*100;      // 予備率(%) 蓄電池なし
+
+  // 5) 足りない分を蓄電池でうめる
+  const gapKW = Math.max(0, peak - firmKW);
+  const batHours = 4 + 0.7*Math.max(0, vre-25); // 変動再エネが多いほど長時間必要
+  const batKWh = gapKW * batHours;
+  const batYen = batKWh*BAT_YEN_KWH/BAT_LIFE/E_TOTAL; // 円/kWh に換算
+
+  // 6) 電気料金
+  const unit = gen + batYen + OTHER_YEN;
+  const bill = unit*HOUSE_KWH;
+
+  // 7) CO2
+  let co2 = 0; SRC.forEach(s=> co2 += share[s.id]/100*s.co2 );
+  const co2Oku = co2*E_TOTAL/1e6/1e8;  // 億トン/年
+
+  // 8) 電気の国産率
+  let dom = 0; SRC.forEach(s=> dom += share[s.id]*s.dom );
+
+  // 9) 中東・豪州への依存度
+  let mideast=0, aus=0;
+  SRC.forEach(s=>{ mideast += share[s.id]*s.mideast; aus += share[s.id]*s.aus; });
+
+  // 10) スコア
+  const cl=(x)=>Math.max(0,Math.min(100,x));
+  const sBill = cl((26000-bill)/160);
+  const sCO2  = cl((700-co2)/7);
+  const sDom  = cl(dom/0.7);
+  const sStab = cl((reserve+60)/0.7);
+  const score = sBill*.3 + sCO2*.3 + sDom*.2 + sStab*.2;
+
+  return {share,sum,vre,curtail,gen,batYen,unit,bill,co2,co2Oku,dom,
+          capKW,firmKW,reserve,gapKW,batKWh,batHours,peak,
+          fuelYen, fuelCho: fuelYen*E_TOTAL/1e12,
+          mideast,aus,score,sBill,sCO2,sDom,sStab};
+}
+
+/* =========================================================
+   描画ヘルパー
+   ========================================================= */
+const $ = (id)=>document.getElementById(id);
+const fmt = (n,d)=> n.toLocaleString("ja-JP",{minimumFractionDigits:d||0,maximumFractionDigits:d||0});
+const clampNum = (v)=> Math.max(0, Math.min(100, v));
+const dai = (n)=> n>=1e8 ? (n/1e8).toFixed(2)+"億台" : (n>=1e4 ? fmt(n/1e4)+"万台" : fmt(n)+"台");
+
+function arcPath(cx,cy,r,a0,a1){
+  const p=(a)=>[cx+r*Math.cos(a*Math.PI/180), cy-r*Math.sin(a*Math.PI/180)];
+  const s=p(a0), e=p(a1);
+  const large = Math.abs(a1-a0)>180 ? 1 : 0;
+  const sweep = a1<a0 ? 1 : 0;
+  return "M"+s[0].toFixed(2)+","+s[1].toFixed(2)+" A"+r+","+r+" 0 "+large+" "+sweep+" "+e[0].toFixed(2)+","+e[1].toFixed(2);
+}
+/* 半円メーター t=0〜1 */
+function drawGauge(gid, t, color){
+  t = Math.max(0, Math.min(1, t));
+  const cx=60, cy=64, r=45;
+  let h = '<path d="'+arcPath(cx,cy,r,180,0)+'" fill="none" stroke="#232b39" stroke-width="10" stroke-linecap="round"/>';
+  if(t>0.004){
+    h += '<path d="'+arcPath(cx,cy,r,180,180-180*t)+'" fill="none" stroke="'+color+'" stroke-width="10" stroke-linecap="round" style="filter:drop-shadow(0 0 6px '+color+')"/>';
+  }
+  // 目盛り
+  for(let i=0;i<=4;i++){
+    const a=180-45*i, x1=cx+(r-9)*Math.cos(a*Math.PI/180), y1=cy-(r-9)*Math.sin(a*Math.PI/180);
+    const x2=cx+(r-14)*Math.cos(a*Math.PI/180), y2=cy-(r-14)*Math.sin(a*Math.PI/180);
+    h += '<line x1="'+x1.toFixed(1)+'" y1="'+y1.toFixed(1)+'" x2="'+x2.toFixed(1)+'" y2="'+y2.toFixed(1)+'" stroke="#4a566b" stroke-width="1.5"/>';
+  }
+  // 針
+  const a = 180-180*t;
+  const nx = cx+(r-3)*Math.cos(a*Math.PI/180), ny = cy-(r-3)*Math.sin(a*Math.PI/180);
+  h += '<line x1="'+cx+'" y1="'+cy+'" x2="'+nx.toFixed(1)+'" y2="'+ny.toFixed(1)+'" stroke="#e8eef7" stroke-width="2" stroke-linecap="round"/>';
+  h += '<circle cx="'+cx+'" cy="'+cy+'" r="4.5" fill="#cfd8e6"/>';
+  $(gid).innerHTML = h;
+}
+
+/* =========================================================
+   状態
+   ========================================================= */
+let mix = {};
+PRESETS[0].v && Object.assign(mix, PRESETS[0].v);
+let activeEvent = null;
+
+/* ---------- ミキサー構築 ---------- */
+function buildMixer(){
+  $("mixer").innerHTML = SRC.map(s=>
+    '<div class="ch" style="--k:'+s.c+'">'+
+      '<div class="ch-name"><span class="ico">'+s.icon+'</span>'+
+        '<span class="nm">'+s.name+'</span>'+
+        '<span class="role '+s.role+'">'+s.roleJa+'</span></div>'+
+      '<input type="range" min="0" max="100" step="0.5" value="'+(mix[s.id]||0)+'" data-id="'+s.id+'" aria-label="'+s.name+'の割合">'+
+      '<div class="ch-val"><input type="number" min="0" max="100" step="0.5" value="'+(mix[s.id]||0)+'" data-id="'+s.id+'" aria-label="'+s.name+'の割合(数値)"><span class="pct">%</span></div>'+
+    '</div>').join("");
+
+  $("mixer").querySelectorAll("input").forEach(el=>{
+    el.addEventListener("input", e=>{
+      const id = e.target.dataset.id;
+      let v = parseFloat(e.target.value);
+      if(isNaN(v)) v = 0;
+      v = clampNum(v);
+      mix[id] = v;
+      syncChannel(id);
+      markPreset(null);
+      render();
+    });
+  });
+}
+function syncChannel(id){
+  $("mixer").querySelectorAll('input[data-id="'+id+'"]').forEach(el=>{
+    if(document.activeElement!==el) el.value = mix[id];
+    if(el.type==="range") el.style.setProperty("--p", mix[id]+"%");
+  });
+}
+function syncAll(){ SRC.forEach(s=>syncChannel(s.id)); }
+
+/* ---------- プリセット ---------- */
+function buildPresets(){
+  $("presets").innerHTML = PRESETS.map((p,i)=>'<button class="preset" data-i="'+i+'">'+p.n+'</button>').join("");
+  $("presets").querySelectorAll(".preset").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      const p = PRESETS[+b.dataset.i];
+      SRC.forEach(s=> mix[s.id] = p.v[s.id]||0 );
+      syncAll(); markPreset(+b.dataset.i); render();
+    });
+  });
+}
+function markPreset(i){
+  $("presets").querySelectorAll(".preset").forEach((b,j)=> b.classList.toggle("on", j===i));
+}
+
+/* ---------- 円グラフ ---------- */
+function drawDonut(r){
+  const R=68, C=2*Math.PI*R;
+  let off=0, h='<circle cx="100" cy="100" r="'+R+'" fill="none" stroke="#1b2230" stroke-width="30"/>';
+  SRC.forEach(s=>{
+    const v = r.share[s.id]; if(v<=0.05) return;
+    const len = C*v/100;
+    h += '<circle cx="100" cy="100" r="'+R+'" fill="none" stroke="'+s.c+'" stroke-width="30"'+
+         ' stroke-dasharray="'+len.toFixed(2)+' '+(C-len).toFixed(2)+'"'+
+         ' stroke-dashoffset="'+(-off).toFixed(2)+'" transform="rotate(-90 100 100)"><title>'+s.name+' '+v.toFixed(1)+'%</title></circle>';
+    off += len;
+  });
+  const re = r.share.hydro+r.share.geo+r.share.wind+r.share.solar+r.share.biomass;
+  h += '<text x="100" y="94" text-anchor="middle" fill="#9fb0c7" font-size="11">再エネ</text>';
+  h += '<text x="100" y="116" text-anchor="middle" fill="#4fd8ff" font-size="25" font-weight="800">'+re.toFixed(0)+'%</text>';
+  $("donut").innerHTML = h;
+}
+
+/* =========================================================
+   メイン描画
+   ========================================================= */
+const FOREST_OKU = 0.47; // 日本の森林が1年に吸収するCO2(億t)
+
+function render(){
+  const r = calc(mix);
+
+  /* --- 合計バー --- */
+  const tot = SRC.reduce((a,s)=>a+(mix[s.id]||0),0);
+  const tn = $("totalNum");
+  tn.textContent = tot.toFixed(1);
+  tn.className = "total-num " + (Math.abs(tot-100)<0.05 ? "ok" : "ng");
+  $("totalMsg").textContent = Math.abs(tot-100)<0.05
+    ? "合計100%。バンド編成できました。"
+    : (tot<100 ? "あと "+(100-tot).toFixed(1)+"% 足りません（下の結果は100%に直して計算しています）"
+               : (tot-100).toFixed(1)+"% 多すぎます（下の結果は100%に直して計算しています）");
+
+  /* --- 円グラフ・凡例 --- */
+  drawDonut(r);
+  $("legend").innerHTML = SRC.filter(s=>r.share[s.id]>0.05).map(s=>
+    '<span class="lg"><i style="background:'+s.c+'"></i>'+s.name+'<b>'+r.share[s.id].toFixed(1)+'%</b></span>').join("");
+
+  /* --- ①電気代 --- */
+  drawGauge("gA", (r.bill-8000)/18000, r.bill<14000?"#5cf2a8":(r.bill<19000?"#ffd84f":"#ff6b6b"));
+  $("vA").innerHTML = fmt(r.bill)+'<span class="gauge-u">円 / 月</span>';
+  const dBill = r.bill-12312;
+  const dCol = dBill>300 ? "#ff9a3c" : (dBill<-300 ? "#5cf2a8" : "#9fb0c7");
+  $("nA").innerHTML = '今の日本＝約12,300円<br><b style="color:'+dCol+'">'+
+    (dBill>0?"+":"")+fmt(dBill)+'円</b> / 月';
+
+  /* --- ②CO2 --- */
+  drawGauge("gB", r.co2/950, r.co2<200?"#5cf2a8":(r.co2<500?"#ffd84f":"#ff6b6b"));
+  $("vB").innerHTML = fmt(r.co2)+'<span class="gauge-u">g-CO₂ / kWh</span>';
+  const cut = (1-r.co2Oku/CO2_2013)*100;
+  const cutCol = cut>0 ? "#5cf2a8" : "#ff6b6b";
+  $("nB").innerHTML = '日本全体で年 <b>'+r.co2Oku.toFixed(2)+'億トン</b><br>2013年度比 <b style="color:'+cutCol+'">'+
+    (cut>=0?"−":"+")+Math.abs(cut).toFixed(0)+'%</b>';
+
+  /* --- ③国産率 --- */
+  drawGauge("gC", r.dom/100, r.dom>60?"#5cf2a8":(r.dom>30?"#ffd84f":"#ff6b6b"));
+  $("vC").innerHTML = r.dom.toFixed(1)+'<span class="gauge-u">%</span>';
+  $("nC").innerHTML = '輸入に頼る割合 <b>'+(100-r.dom).toFixed(0)+'%</b><br>燃料代 年 <b>'+r.fuelCho.toFixed(1)+'兆円</b>が海外へ';
+
+  /* --- ④安定供給 --- */
+  drawGauge("gD", (r.reserve+60)/90, r.reserve>3?"#5cf2a8":(r.reserve>-15?"#ffd84f":"#ff6b6b"));
+  $("vD").innerHTML = (r.reserve>=0?"+":"")+r.reserve.toFixed(0)+'<span class="gauge-u">% 予備</span>';
+  $("nD").innerHTML = r.reserve>=3
+    ? '曇り・無風の夕方でも<br><b style="color:#5cf2a8">そのまま電気が足りる</b>'
+    : (r.reserve>=-10
+       ? '夕方は少し足りない<br><b style="color:#ffd84f">蓄電池でおぎなう</b>'
+       : (r.reserve>=-35
+          ? '夕方に大きく足りない<br><b style="color:#ff9a3c">巨大な蓄電池が必要</b>'
+          : '夕方に電気がない<br><b style="color:#ff6b6b">蓄電池でも埋めきれない</b>'));
+
+  /* --- 総合評価 --- */
+  const rk = r.score>=85?["S","#5cf2a8","文句なしの名バンド","4つのものさしすべてで高得点。ただし本当に実現できるか、下の「現実チェック」も見てみよう。"]
+           : r.score>=72?["A","#4fd8ff","かなり良いバランス","弱点をおぎない合えています。もう一歩、苦手なものさしを伸ばせるかな？"]
+           : r.score>=58?["B","#ffd84f","まずまずのバンド","どこかのものさしが足を引っぱっています。どれを直す？"]
+           : r.score>=44?["C","#ff9a3c","かたよりが大きい","得意な音は出るけれど、曲としては危ういバンドです。"]
+           :             ["D","#ff5c5c","このままでは演奏できない","電気代・CO₂・停電のどれかが危険な水準です。"];
+  $("rankBadge").textContent = rk[0];
+  $("rankBadge").style.setProperty("--rc", rk[1]);
+  $("rankTitle").textContent = rk[2];
+  $("rankMsg").innerHTML = rk[3]+' <span style="color:var(--txt3)">（総合 '+r.score.toFixed(0)+
+    '点 ／ 電気代'+r.sBill.toFixed(0)+'・CO₂'+r.sCO2.toFixed(0)+'・国産率'+r.sDom.toFixed(0)+'・安定'+r.sStab.toFixed(0)+'）</span>';
+
+  /* --- 電気代の内訳 --- */
+  $("billBreak").innerHTML = '<b>電気代の内訳（1kWhあたり）：</b> 発電そのもの <b>'+r.gen.toFixed(1)+'円</b>'+
+    (r.batYen>0.05 ? ' ＋ 蓄電池など <b>'+r.batYen.toFixed(1)+'円</b>' : '')+
+    ' ＋ 送電線・小売・再エネ賦課金・税 <b>'+OTHER_YEN.toFixed(0)+'円</b> ＝ <b>'+r.unit.toFixed(1)+'円/kWh</b>。'+
+    'これに1か月の使用量400kWh（4人家族）をかけています。'+
+    (r.curtail>0.01 ? '<br>※変動する再エネが多いため、つくった電気の <b>'+(r.curtail*100).toFixed(0)+
+      '%</b> は使いきれず捨てることになります（その分、設備を多めに建てる必要があります）。' : '');
+
+  renderFeel(r);
+  const badCount = renderChecks(r);
+  if(badCount>0){
+    $("rankBadge").style.setProperty("--rc", "#ff5c5c");
+    $("rankMsg").innerHTML = '<b style="color:#ff5c5c">点数は出ましたが、現実チェックで重大な問題が'+badCount+
+      '件あります。</b>日本では実際に作れない構成です。下の「現実チェック」を見て直そう。'+
+      ' <span style="color:var(--txt3)">（机上の総合 '+r.score.toFixed(0)+'点）</span>';
+    $("rankTitle").textContent = "紙の上では good、でも実現できない";
+  }
+  if(activeEvent) runEvent(activeEvent);
+}
+
+/* ---------- 実感カード ---------- */
+function card(ic,title,val,unit,cmp,bar){
+  return '<div class="fc"><div class="fc-h"><span class="ic">'+ic+'</span>'+title+'</div>'+
+    '<div class="fc-v">'+val+'<small>'+unit+'</small></div>'+
+    (bar!==undefined?'<div class="bar-cmp"><i style="width:'+Math.min(100,bar)+'%"></i></div>':'')+
+    '<div class="fc-cmp">'+cmp+'</div></div>';
+}
+function renderFeel(r){
+  const solGW   = r.capKW.solar/1e6;
+  const solKm2  = r.capKW.solar*M2_PER_KW/1e6;
+  const turbines= r.capKW.wind/KW_PER_TURBINE;
+  const nukes   = r.capKW.nuclear/KW_PER_UNIT;
+  const thermal = (r.capKW.coal+r.capKW.lng+r.capKW.oil)/KW_PER_UNIT;
+  const batGWh  = r.batKWh/1e6;
+  const batCho  = r.batKWh*BAT_YEN_KWH/1e12;
+  const forestX = r.co2Oku/FOREST_OKU;
+
+  let h = "";
+
+  h += card("☀️","太陽光パネルを置く土地", solKm2>=100?fmt(solKm2):solKm2.toFixed(1), " km²",
+      "設備容量 <b>"+fmt(solGW)+" GW</b>（今の日本は79GW ＝ "+(solGW/NOW_SOLAR_GW).toFixed(1)+"倍）<br>"+
+      "山手線の内側（63km²）<b>"+fmt(solKm2/YAMANOTE_KM2)+"個分</b> ／ 東京都の面積の <b>"+(solKm2/TOKYO_KM2).toFixed(2)+"倍</b>",
+      solKm2/TOKYO_KM2*50);
+
+  h += card("🌀","風車（4,200kW級）", fmt(turbines), " 基",
+      "今の日本は <b>"+fmt(NOW_TURBINES)+"基</b>（"+(turbines>NOW_TURBINES ? "今の"+(turbines/NOW_TURBINES).toFixed(1)+"倍に増やす必要" : "今より少なくて済む")+"）<br>"+
+      "500m間隔で一列に並べると <b>"+fmt(turbines*0.5)+" km</b>（日本列島は約3,000km）",
+      turbines/NOW_TURBINES*20);
+
+  const nukeMsg = nukes>NOW_NUKE
+      ? "<b style=\"color:#ff5c5c\">今ある原発を全部動かしても足りません</b>"
+      : "今ある原子炉の数でまかなえる範囲です";
+  h += card("⚛️","原子力発電所（100万kW級）", nukes.toFixed(1), " 基",
+      "日本にある原子炉は <b>"+NOW_NUKE+"基</b>（再稼働ずみは14基）<br>"+nukeMsg,
+      nukes/NOW_NUKE*100);
+
+  h += card("🔥","火力発電所（100万kW級）", thermal.toFixed(1), " 基",
+      "燃料を買うお金が毎年 <b>"+r.fuelCho.toFixed(1)+"兆円</b> 海外へ出ていきます<br>"+
+      "（今の日本は約6.7兆円。国民1人あたり年 <b>"+fmt(r.fuelCho*1e12/1.2e8)+"円</b>）");
+
+  const batMsg = batGWh<=0.001
+      ? "今のところ必要ありません。火力や原子力・水力が調整役をしています。"
+      : "家庭用蓄電池（10kWh）<b>"+dai(r.batKWh/10)+"分</b><br>"+
+        "設備の値段は <b>"+batCho.toFixed(1)+"兆円</b>（"+r.batHours.toFixed(0)+"時間分をためる想定）";
+  h += card("🔋","うめ合わせに必要な蓄電池", batGWh<1?batGWh.toFixed(2):fmt(batGWh), " GWh", batMsg,
+      batGWh/500*100);
+
+  h += card("🌲","1年に出るCO₂", r.co2Oku.toFixed(2), " 億トン",
+      "日本の森林が1年に吸えるCO₂の <b>"+forestX.toFixed(1)+"倍</b><br>"+
+      "（森林の吸収量は年 約0.47億トン。出した分を森だけで吸うのは無理）",
+      Math.min(100, forestX/12*100));
+
+  $("feel").innerHTML = h;
+}
+
+/* ---------- 現実チェック ---------- */
+function renderChecks(r){
+  const s = r.share, out = [];
+  let badCount = 0;
+  const add = (lv,ic,t)=>{ if(lv==="bad") badCount++;
+    out.push('<div class="chk '+lv+'"><span class="ci">'+ic+'</span><span>'+t+'</span></div>'); };
+
+  if(s.hydro>10.5) add("bad","🚫","<b>水力 "+s.hydro.toFixed(0)+"% は無理があります。</b> ダムを建てられる川はほぼ開発ずみ。国の2040年目標でも水力は8〜10%どまりです。");
+  if(s.geo>2.2) add("bad","♨️","<b>地熱 "+s.geo.toFixed(1)+"% は厳しい。</b> 日本の地熱資源量は世界3位ですが、有望な場所の多くが国立公園の中や温泉地。合意を得るのに10年以上かかります（目標でも1〜2%）。");
+  if(s.biomass>6.5) add("warn","🌲","<b>バイオマス "+s.biomass.toFixed(0)+"% は燃料が足りません。</b> 木質ペレットの多くは北米や東南アジアからの輸入。増やすほど「国産エネルギー」ではなくなります。");
+  if(s.nuclear>25) add("bad","⚛️","<b>原子力 "+s.nuclear.toFixed(0)+"% はすぐには作れません。</b> 今ある原子炉を全部動かしても2割程度。新しく1基つくるには建設だけで10年以上かかります。");
+  if(s.solar>30) add("bad","☀️","<b>太陽光 "+s.solar.toFixed(0)+"% は置く場所が足りません。</b> 日本は国土の約7割が山で平地が少ない。目標でも23〜29%です。山を削って置くと土砂災害の危険も増えます。");
+  else if(s.solar>20) add("warn","☀️","太陽光 "+s.solar.toFixed(0)+"%。目標の上限（29%）に近づいています。屋根・駐車場・耕作放棄地まで総動員する必要があります。");
+  if(s.wind>9) add("warn","🌀","<b>風力 "+s.wind.toFixed(0)+"% は時間がかかります。</b> 目標は4〜8%。陸上で風のよい場所は限られ、洋上風力は計画から運転開始まで約10年かかります。");
+  if(s.oil>8) add("warn","🛢️","<b>石油 "+s.oil.toFixed(0)+"% は危険です。</b> 石油の96%は中東から。値段も一番高く、中東で何かあれば直撃します。");
+  if(r.vre>45) add("bad","🔋","<b>天気まかせの電源が "+r.vre.toFixed(0)+"%。</b> 太陽光＋風力がこの割合になると、巨大な蓄電池と、使いきれず捨てる電気が大量に発生します。どちらも電気代に返ってきます。");
+  if(r.reserve<-35) add("bad","⚡","<b>曇り・無風の夕方に電気がまったく足りません（予備率 "+r.reserve.toFixed(0)+"%）。</b> 必要な蓄電池は "+fmt(r.batKWh/1e6)+"GWh。これは世界中の電池工場をフル稼働させても何年もかかる量で、現実的ではありません。");
+  else if(r.reserve<-5) add("warn","⚡","予備率 "+r.reserve.toFixed(0)+"%。夕方に足りない分を <b>"+fmt(r.batKWh/1e6)+"GWh の蓄電池</b>でおぎなう前提です。その費用は電気代に上乗せされています（"+r.batYen.toFixed(1)+"円/kWh）。");
+  else if(r.reserve<3) add("warn","⚡","予備率 "+r.reserve.toFixed(0)+"%。ギリギリです。発電所が1つ事故で止まると停電のおそれがあります（ふつうは3〜8%の余裕を持ちます）。");
+  if(r.dom<20) add("bad","🌏","<b>電気の国産率が "+r.dom.toFixed(0)+"% しかありません。</b> 輸入が止まったら、日本の電気も止まります。");
+  if(r.co2>500) add("bad","🌡️","<b>CO₂が多すぎます（"+fmt(r.co2)+"g/kWh）。</b> 日本は2050年にCO₂排出を実質ゼロにすると世界に約束しています。");
+  if(r.bill>16000) add("bad","💸","<b>電気代が月 "+fmt(r.bill)+"円。</b> 工場の電気代も上がるので、ものの値段が上がり、会社が海外に移ってしまうかもしれません。");
+
+  if(!out.length){
+    add("ok","✅","大きな問題は見つかりませんでした。現実に作れそうで、電気代・CO₂・停電のバランスが取れた構成です。");
+  } else {
+    out.unshift('<div class="chk ok"><span class="ci">💡</span><span>下の指摘を読んで、フェーダーを調整してみよう。'+
+      '<b>全部を満たす完璧な答えはありません。</b> どれを我慢するかを決めることが、エネルギーを考えるということです。</span></div>');
+  }
+  $("checks").innerHTML = out.join("");
+  return badCount;
+}
+
+/* =========================================================
+   国際情勢イベント
+   metric : "bill"（電気代で比べる）/ "reserve"（予備率で比べる）
+   ========================================================= */
+const EVENTS = [
+  {id:"mideast", ic:"🔥", t:"中東で紛争が起きた", metric:"bill",
+   d:"日本が輸入する石油の96%は中東から。タンカーの通り道がふさがれ、石油は3倍、LNGも1.4倍に。",
+   opt:{fuelMult:{oil:3.0, lng:1.4}},
+   tip:"石油火力を減らしておくほど、この打撃は小さくなります。"},
+
+  {id:"aus", ic:"🚢", t:"オーストラリアからの輸出が止まった", metric:"bill",
+   d:"石炭の72%、LNGの38%はオーストラリア産。大災害や政策変更で輸出が止まったら？",
+   opt:{fuelMult:{coal:2.5, lng:1.6}},
+   tip:"「中東さえ避ければ安心」ではありません。石炭もLNGも1つの国に頼りすぎです。"},
+
+  {id:"lngwar", ic:"⚓", t:"世界のLNG争奪戦", metric:"bill",
+   d:"ヨーロッパが天然ガスを買い集め、LNGの値段が3倍に。2022年に実際に起きたことです。",
+   opt:{fuelMult:{lng:3.0}},
+   tip:"2022〜2023年、日本の電気代が一気に上がったのはこれが大きな原因でした。"},
+
+  {id:"yen", ic:"💱", t:"1ドル200円の急な円安", metric:"bill",
+   d:"燃料はドルで買います。円が安くなると、同じ量を買うのに多くの円が必要になります。",
+   opt:{fuelMult:{coal:1.35, lng:1.35, oil:1.35, nuclear:1.35, biomass:1.35}},
+   tip:"燃料のいらない電源（水力・地熱・風力・太陽光）は円安の影響を受けません。"},
+
+  {id:"heat", ic:"🌡️", t:"記録的な猛暑", metric:"reserve",
+   d:"エアコンで電気の使用量が12%増加。いちばん危ないのは、太陽が沈んだ直後の夕方7時。",
+   opt:{peakMult:1.12},
+   tip:"猛暑の昼は太陽光が大活躍。でも夕方、太陽光がゼロになってもエアコンは止まりません。"},
+
+  {id:"quake", ic:"🌏", t:"大地震で原子力発電所が全部止まった", metric:"bill",
+   d:"安全確認のため全基が停止。その分をLNG火力でおぎないます。2011年に実際に起きたことです。",
+   mixFn:(m)=>{ const n=Object.assign({},m); n.lng=(n.lng||0)+(n.nuclear||0); n.nuclear=0; return n; },
+   tip:"1つの電源に頼りすぎると、それが止まったときに代わりがききません。これが「ミックス」が必要な理由です。"}
+];
+
+function buildEvents(){
+  $("events").innerHTML = EVENTS.map(e=>
+    '<button class="ev" data-id="'+e.id+'"><span class="ev-t">'+e.ic+' '+e.t+'</span>'+
+    '<span class="ev-d">'+e.d+'</span></button>').join("");
+  $("events").querySelectorAll(".ev").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      activeEvent = (activeEvent===b.dataset.id) ? null : b.dataset.id;
+      $("events").querySelectorAll(".ev").forEach(x=> x.classList.toggle("on", x.dataset.id===activeEvent));
+      if(activeEvent) runEvent(activeEvent); else $("evResult").innerHTML = "";
+    });
+  });
+}
+
+function runEvent(id){
+  const e = EVENTS.find(x=>x.id===id); if(!e) return;
+  const base  = calc(mix);
+  const after = calc(e.mixFn ? e.mixFn(mix) : mix, e.opt);
+
+  let h = '<div class="ev-res"><h4>'+e.ic+' '+e.t+' ── あなたのバンドはどうなる？</h4>';
+
+  if(e.metric==="bill"){
+    const d = after.bill - base.bill;
+    const pct = base.bill>0 ? d/base.bill*100 : 0;
+    h += '<div class="ev-cmp">'+
+      '<div class="ev-side"><span class="l">いつもの電気代</span><span class="v">'+fmt(base.bill)+'<small> 円/月</small></span></div>'+
+      '<div class="ev-arrow">➜</div>'+
+      '<div class="ev-side" style="border:1px solid rgba(255,154,60,.5)"><span class="l">この出来事のあと</span>'+
+      '<span class="v" style="color:'+(d>200?"#ff9a3c":"#5cf2a8")+'">'+fmt(after.bill)+'<small> 円/月</small></span></div></div>';
+    if(Math.abs(d)<60){
+      h += '<p class="ev-msg"><b style="color:#5cf2a8">ほとんど影響を受けませんでした。</b>'+
+        'この出来事で値上がりする燃料を、あなたのバンドはあまり使っていないからです。'+
+        'エネルギーの「安全保障」とは、こういう状態をつくることです。<br>'+e.tip+'</p>';
+    } else {
+      h += '<p class="ev-msg">1か月の電気代が <b>'+(d>=0?"+":"−")+fmt(Math.abs(d))+'円（'+(pct>=0?"+":"−")+Math.abs(pct).toFixed(0)+'%）</b>。'+
+        '1年では <b>'+(d>=0?"+":"−")+fmt(Math.abs(d)*12)+'円</b>、日本中の家庭を合わせると年 <b>'+
+        Math.abs(d*12*HOUSEHOLD/1e12).toFixed(1)+'兆円</b>の差になります。<br>'+e.tip+'</p>';
+    }
+  } else {
+    const d = after.reserve - base.reserve;
+    const danger = after.reserve < 0;
+    h += '<div class="ev-cmp">'+
+      '<div class="ev-side"><span class="l">いつもの予備率</span><span class="v">'+(base.reserve>=0?"+":"")+base.reserve.toFixed(0)+'<small> %</small></span></div>'+
+      '<div class="ev-arrow">➜</div>'+
+      '<div class="ev-side" style="border:1px solid rgba(255,154,60,.5)"><span class="l">この出来事のあと</span>'+
+      '<span class="v" style="color:'+(danger?"#ff5c5c":"#5cf2a8")+'">'+(after.reserve>=0?"+":"")+after.reserve.toFixed(0)+'<small> %</small></span></div></div>';
+    h += '<p class="ev-msg">予備率が <b>'+d.toFixed(0)+'ポイント</b>変化して <b>'+after.reserve.toFixed(0)+'%</b>。'+
+      (danger
+        ? '<b style="color:#ff5c5c">電気が足りません。</b>計画停電（地域ごとに順番に電気を止めること）が必要になるかもしれません。'+
+          '足りない分は <b>'+fmt(after.gapKW/1e6)+'GW</b>＝100万kW級の発電所 <b>'+fmt(after.gapKW/1e6)+'基分</b>です。'
+        : 'この出来事が起きても、電気は足りそうです。')+
+      '<br>'+e.tip+'</p>';
+  }
+
+  h += '<p class="ev-msg" style="margin-top:10px;font-size:.76rem;color:var(--txt3)">'+
+    'あなたの構成の輸入依存度：海外からの燃料 <b>'+(100-base.dom).toFixed(0)+'%</b>'+
+    (base.mideast>0.5 ? ' ／ うち中東から <b>'+base.mideast.toFixed(1)+'%</b>' : '')+
+    (base.aus>0.5 ? ' ／ オーストラリアから <b>'+base.aus.toFixed(1)+'%</b>' : '')+'</p>';
+
+  h += '</div>';
+  $("evResult").innerHTML = h;
+}
+
+/* =========================================================
+   データ表
+   ========================================================= */
+function buildTable(){
+  let h = '<thead><tr><th>発電方法</th><th>バンドの役割</th><th>変換効率</th><th>発電コスト<br>(円/kWh)</th>'+
+          '<th>CO₂<br>(g/kWh)</th><th>設備利用率</th><th>燃料はどこから</th></tr></thead><tbody>';
+  SRC.forEach(s=>{
+    h += '<tr><td><b style="color:'+s.c+'">'+s.icon+' '+s.name+'</b></td>'+
+      '<td style="text-align:center">'+s.roleJa+'</td>'+
+      '<td>'+s.eff+'%</td>'+
+      '<td class="'+(s.lcoe<14?"v-good":"v-bad")+'">'+s.lcoe.toFixed(1)+'</td>'+
+      '<td class="'+(s.co2<100?"v-good":"v-bad")+'">'+(s.id==="biomass"?"0 ※":fmt(s.co2))+'</td>'+
+      '<td>'+(s.cf*100).toFixed(0)+'%</td>'+
+      '<td style="text-align:left;white-space:normal;font-size:.74rem;color:var(--txt2)">'+s.from+'</td></tr>';
+  });
+  h += '</tbody>';
+  $("dataTable").innerHTML = h;
+}
+
+/* =========================================================
+   出典
+   ========================================================= */
+function buildSources(){
+  $("srcBody").innerHTML =
+  '<ul>'+
+  '<li><b>電源構成の目標</b>：第7次エネルギー基本計画（2025年2月18日 閣議決定）― 2040年度は再エネ4〜5割、原子力2割、火力3〜4割。第6次計画の2030年度目標もプリセットに収録。'+
+  ' <a href="https://www.enecho.meti.go.jp/category/others/basic_plan/" target="_blank" rel="noopener">資源エネルギー庁</a></li>'+
+  '<li><b>発電コスト</b>：総合資源エネルギー調査会 発電コスト検証ワーキンググループ「発電コスト検証に関するとりまとめ」（2025年2月6日）の2040年試算をもとに、各電源の代表値を設定。'+
+  ' <a href="https://www.enecho.meti.go.jp/committee/council/basic_policy_subcommittee/mitoshi/cost_wg/" target="_blank" rel="noopener">検証WG</a></li>'+
+  '<li><b>CO₂排出量</b>：電力中央研究所によるライフサイクルCO₂評価（発電設備の製造・建設・燃料輸送まで含めた値）。授業スライドの表と同じ系統の数値です。</li>'+
+  '<li><b>発電電力量・電源構成の実績</b>：2023年度 9,854億kWh（資源エネルギー庁 電力調査統計）。</li>'+
+  '<li><b>エネルギー自給率</b>：2024年度 16.4%（速報値、原子力を準国産として算入）。このアプリの「電気の国産率」は<b>電気にかぎった別の指標</b>なので数字が違います。</li>'+
+  '<li><b>燃料の輸入先</b>：財務省貿易統計（2024年）― 原油は中東96%、石炭はオーストラリア72%、LNGはオーストラリア38%。</li>'+
+  '<li><b>風力発電</b>：2025年末で累積 6,434MW・2,866基（日本風力発電協会）。1基あたりは4,200kW級を想定。</li>'+
+  '<li><b>太陽光</b>：事業用は1kWあたり約15m²の土地が必要（環境省資料）。導入量は約79GW。</li>'+
+  '<li><b>電気代</b>：4人世帯の平均は月13,928円（2025年、総務省家計調査）。本アプリは使用量400kWh/月で計算し、今の電源構成を入れると約12,300円になるよう較正しています。</li>'+
+  '</ul>'+
+  '<p style="font-size:.78rem;color:var(--txt3);line-height:1.8;margin:0 0 16px">'+
+  '<b style="color:var(--cyan)">計算のしくみ（ざっくり）</b><br>'+
+  '① <b>電気代</b>＝〔各電源の発電コスト×割合の合計〕＋〔蓄電池の費用〕＋〔送配電・小売・再エネ賦課金・税＝17円/kWh〕。これに400kWhをかけています。<br>'+
+  '② <b>CO₂</b>＝各電源のライフサイクルCO₂×割合の合計。年間排出量は9,850億kWhをかけて計算。<br>'+
+  '③ <b>電気の国産率</b>＝燃料を輸入しない電源の割合（原子力は「準国産」として100%、バイオマスは燃料輸入が多いので40%として計上）。<br>'+
+  '④ <b>予備率</b>＝〔曇り・無風の夕方でも頼れる発電能力〕÷〔最大電力1.6億kW〕−1。太陽光と風力はこの条件で5%しか頼れないとしています。足りない分は蓄電池でうめ、その費用を①に足しています。<br>'+
+  '⑤ <b>出力抑制</b>＝太陽光＋風力が30%を超えると、晴れて風の強い日に電気が余って捨てることになります。その分だけ設備を多く建てる必要があるので、コストに上乗せしています。<br>'+
+  '<br>※ 学習用に大きく単純化しています。実際には地域ごとの送電線の制約、揚水発電、需要側の工夫（ディマンドリスポンス）、水素・アンモニア、CCSなども関わります。</p>';
+}
+
+/* =========================================================
+   初期化
+   ========================================================= */
+function init(){
+  buildPresets();
+  buildMixer();
+  buildEvents();
+  buildTable();
+  buildSources();
+  syncAll();
+  markPreset(0);
+  render();
+
+  $("btnNorm").addEventListener("click", ()=>{
+    const t = SRC.reduce((a,s)=>a+(mix[s.id]||0),0);
+    if(t<=0) return;
+    SRC.forEach(s=> mix[s.id] = Math.round((mix[s.id]||0)/t*1000)/10 );
+    const t2 = SRC.reduce((a,s)=>a+mix[s.id],0);
+    const big = SRC.slice().sort((a,b)=>mix[b.id]-mix[a.id])[0];
+    mix[big.id] = Math.round((mix[big.id] + (100-t2))*10)/10;
+    syncAll(); markPreset(null); render();
+  });
+  $("btnReset").addEventListener("click", ()=>{
+    SRC.forEach(s=> mix[s.id] = PRESETS[0].v[s.id]||0 );
+    activeEvent = null;
+    $("events").querySelectorAll(".ev").forEach(x=>x.classList.remove("on"));
+    $("evResult").innerHTML = "";
+    syncAll(); markPreset(0); render();
+  });
+}
+init();
+</script>
+</body>
+</html>
