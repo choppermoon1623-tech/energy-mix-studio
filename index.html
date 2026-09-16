@@ -520,6 +520,25 @@ footer{text-align:center;color:var(--txt3);font-size:.74rem;padding-top:30px;lin
   .ev-arrow{transform:rotate(90deg)}
   .rank-badge{width:60px;height:60px;font-size:1.7rem}
 }
+/* 初回改修：既存配色を保ち、読みやすさと操作の導線を改善 */
+:root{--txt3:#a7b5ca}
+html{scroll-behavior:smooth;scroll-padding-top:24px}
+.quick-nav{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:22px}
+.quick-nav a{text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
+.total-bar{position:sticky;bottom:12px;z-index:5;background:#182333;border:1px solid var(--line2);box-shadow:0 6px 24px #0008}
+.quick-results{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:16px}
+.quick-results span{font-size:.875rem;color:var(--txt2)}
+.quick-results b{display:block;color:var(--txt);font-size:1.2rem}
+.model-caption,.check-category{font-size:.875rem;color:var(--txt2);line-height:1.8}
+.check-category{color:var(--cyan);margin-bottom:6px}
+.lim.ok .lim-why{display:block}
+.panel-sub,.lim-why,.gauge-note,.role-power,.role-band{font-size:.9rem}
+.ai-label{position:absolute;top:8px;left:8px;right:8px;background:#09101de8;padding:4px 8px;border-radius:5px;font-size:.75rem;color:#fff;text-align:left}
+.rank-badge{font-size:1.25rem}
+button:disabled{opacity:.45;cursor:not-allowed}
+:focus-visible{outline:3px solid var(--cyan);outline-offset:4px}
+@media(max-width:620px){.quick-results{grid-template-columns:repeat(2,minmax(0,1fr))}.total-bar{position:static}.quick-nav a{flex:1 1 140px;justify-content:center}.lim-top{flex-wrap:wrap}.lim-nums{flex-wrap:wrap;gap:8px}.ai-label{font-size:.75rem}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
@@ -529,22 +548,23 @@ footer{text-align:center;color:var(--txt3);font-size:.74rem;padding-top:30px;lin
   <div class="logo-badge">⚡ ENERGY MIX STUDIO</div>
   <h1>あなたのバンドを組もう</h1>
   <p class="sub">電気をつくる方法（バンドメンバー）の割合を自分で決めると、<br>
-  <b>電気代・CO₂・電気の国産率・停電しにくさ</b>がその場で計算されます。</p>
+  <b>電気代・CO₂・海外に頼りにくい割合・電気の余裕</b>がその場で計算されます。</p>
+<nav class="quick-nav" aria-label="ページ内メニュー"><a class="btn" href="#mixPanel">まず組み合わせてみる</a><a class="btn ghost" href="#intro">バンドの説明を読む</a><a class="btn ghost" href="#galleryPanel">発電所図鑑へ</a></nav>
 </header>
 
 <!-- ========== 0. なぜバンド？ ========== -->
-<section class="panel">
+<section class="panel" id="intro">
   <h2 class="panel-h"><span class="num note"><svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path d="M6 12.2V3.6l7-1.4v7.2" fill="none" stroke="#1a1403" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="4" cy="12.4" r="2.3" fill="#1a1403"/><circle cx="11" cy="10.4" r="2.3" fill="#1a1403"/></svg></span>なぜ「バンド」にたとえるの？</h2>
   <p class="panel-sub">まずここを読むと、このあとの操作がぜんぶ腑に落ちます。</p>
 
   <div class="why">
     電気には、ほかのモノにはない大きな特徴があります。
-    <span class="big">電気は、ためておけない。</span>
-    いま発電した電気は、いま誰かが使っています。倉庫に積んでおくことができません。
-    だから発電は「録音」ではなく <b>生演奏</b> です。
+    <span class="big">電気は、使う量と届ける量を合わせる。</span>
+    蓄電池や揚水でエネルギーをためることはできます。ただし、ためられる量や時間には限りがあります。
+    電気を届けるしくみをバンドにたとえるなら、みんなで合わせる <b>生演奏</b> です。
     みんなが使う量（＝曲の音量）に合わせて、つくる量をその瞬間ごとにピッタリ合わせ続けなければいけません。
-    合わせられずに演奏が崩れると、曲が止まる ―― それが <b>停電</b> です。<br>
-    ひとつの楽器で最初から最後まで演奏しきるのは無理。だから<b>役割のちがうメンバーを集める</b>。
+    つくる量と使う量が大きくずれると、電気のリズム（周波数）が乱れ、<b>停電につながることがあります</b>。<br>
+    ひとつの電源だけに頼ると、その電源の弱点が全体に響きます。だから<b>役割のちがうメンバーを集める</b>。
     これが「エネルギーミックス」です。
   </div>
 
@@ -552,24 +572,24 @@ footer{text-align:center;color:var(--txt3);font-size:.74rem;padding-top:30px;lin
   <div class="roles" id="roles"></div>
 
   <h3 class="sub-h">1日の演奏を見てみよう</h3>
-  <p class="panel-sub" style="margin-bottom:8px">夏のある1日。白い線が「みんなが使う電気の量」＝曲の音量。その下を3つのパートで埋めていきます。</p>
+  <p class="panel-sub" style="margin-bottom:8px">夏の1日を単純化した説明用の図（実測値ではありません）。白い線が「みんなが使う電気の量」＝曲の音量。その下を3つのパートで埋めていきます。</p>
   <div class="daywrap"><svg id="dayChart" viewBox="0 0 490 236" role="img" aria-label="1日の電気の使われ方と、3つのパートの分担を示したグラフ"></svg></div>
   <p class="scrollhint">※ グラフが切れている場合は横にスクロールできます</p>
   <div class="note" style="border-left-color:var(--red);background:rgba(255,92,92,.06)">
     <b style="color:var(--red)">⚡ 山場は夕方（赤い点線）。</b>
     日が沈んで <b>ソロ（太陽光）の音がゼロ</b> になっても、みんなが使う量はほとんど減りません。
     夜ごはん、おふろ、エアコン、照明 ―― むしろ増えます。
-    このとき、消えたソロのぶんを <b>ドラム（火力）が一気に働いて埋めています</b>。
-    昼にほとんど休んでいたドラムが、夕方だけフル演奏する。これが毎日くり返されています。<br>
-    <b>だから「太陽光をたくさん増やせば火力はいらない」とはならない</b>のです。
-    夕方に叩いてくれるメンバーは、どうしても必要になります。
+    この図では、減った太陽光のぶんを <b>火力などの調整役が埋めています</b>。
+    実際の分担は季節・天候・地域で変わり、水力・揚水・蓄電池や、使う時間をずらす工夫も役立ちます。<br>
+    <b>太陽光を増やすときは、日が沈んだあとも電気が足りるか考える</b>必要があります。
+    どんな調整役を組み合わせるかが、考えどころです。
   </div>
 
   <h3 class="sub-h">ひとりぼっちのバンドはどうなる？</h3>
   <div class="checks" style="margin-top:6px">
-    <div class="chk warn"><span class="ci">🎤</span><span><b>ソロだけのバンド（太陽光・風力だけ）</b>…… 昼は元気いっぱい。でも日が沈んだ瞬間に無音になります。夜、誰も演奏していません。</span></div>
+    <div class="chk warn"><span class="ci">🎤</span><span><b>ソロだけのバンド（太陽光・風力だけ）</b>…… 太陽光は夜に発電できません。風力は夜も風があれば発電しますが、風が弱い時間もあります。電気をためる、ほかの地域から送る、別の発電方法を使うなどの工夫を組み合わせます。</span></div>
     <div class="chk warn"><span class="ci">🥁</span><span><b>ドラムだけのバンド（火力だけ）</b>…… 演奏はちゃんと成立します。でも燃料代が毎年何兆円も海外に出ていき、CO₂も出しつづけます。</span></div>
-    <div class="chk warn"><span class="ci">🎸</span><span><b>ベースだけのバンド（原子力・水力だけ）</b>…… 止まらないのは強い。でも音量を細かく変えられないので、みんなが一気に電気を使う夕方に足りなくなります。</span></div>
+    <div class="chk warn"><span class="ci">🎸</span><span><b>ベースを中心にしたバンド（原子力・地熱など）</b>…… 継続して発電するのが得意。でも点検や故障で止まることもあります。需要の変化に合わせる役や、停止したときの備えも必要です。</span></div>
     <div class="chk ok"><span class="ci">🎶</span><span><b>だから、混ぜる。</b>お互いの苦手なところを、ほかのメンバーが埋める。次の「ミキシング卓」で、あなたのバンドを組んでみよう。</span></div>
   </div>
 
@@ -585,22 +605,22 @@ footer{text-align:center;color:var(--txt3);font-size:.74rem;padding-top:30px;lin
 </section>
 
 <!-- ========== 1. ミキサー ========== -->
-<section class="panel">
+<section class="panel" id="mixPanel">
   <h2 class="panel-h"><span class="num">1</span>ミキシング卓 ― あなたのバンドを組もう</h2>
   <div class="steps">
     <span class="step on">STEP 1　自分の考えで組む</span>
-    <span class="step">STEP 2　実現できるか確かめて直す</span>
+    <span class="step">STEP 2　課題を確かめて考え直す</span>
     <span class="step">STEP 3　今の日本・国の目標とくらべる</span>
   </div>
-  <p class="panel-sub">まずは何も見ずに、あなたの考えで配分しよう。<b>すべて0%から</b>始まります。
+  <p class="panel-sub">まずは何も見ずに、あなたの考えで割合を決めよう。<b>すべて0%から</b>始まります。
   合計がちょうど<b>100%</b>になると、下に結果が出ます。数字を直接入力してもOK。</p>
 
   <div class="mixer" id="mixer"></div>
 
-  <div class="total-bar">
+  <div class="total-bar" aria-label="配分の合計と調整">
     <div><span class="total-num" id="totalNum">0.0</span><span style="font-size:.9rem;color:var(--txt3)">%</span></div>
     <div class="total-msg" id="totalMsg"></div>
-    <button class="btn ghost" id="btnNorm">100%にそろえる</button>
+    <button class="btn ghost" id="btnNorm" title="今の組み合わせのバランスを変えずに、合計を100%にします">バランスを保って100%に</button>
     <button class="btn ghost" id="btnReset">0にもどす</button>
   </div>
 
@@ -611,16 +631,16 @@ footer{text-align:center;color:var(--txt3);font-size:.74rem;padding-top:30px;lin
 <section class="panel lock" id="lock">
   <div class="lock-ic">🎚️</div>
   <h3>合計を100%にすると、ここに結果が出ます</h3>
-  <p>電気代・CO₂・必要な土地・停電しないか・実現できるか……<br>
-  あなたのバンドを、いろいろな角度から採点します。</p>
+  <p>電気代・CO₂・必要な土地・夕方に電気が足りるか……<br>
+  あなたのバンドの特徴を、いろいろな角度から比べます。</p>
 </section>
 
 <div id="results" hidden>
 
 <!-- ========== 2. 4つのものさし ========== -->
 <section class="panel">
-  <h2 class="panel-h"><span class="num">2</span>4つのものさしで採点</h2>
-  <p class="panel-sub">授業でやった「3つのものさし」＋「止まらずに電気が届くか」で評価します。</p>
+  <h2 class="panel-h"><span class="num">2</span>4つのものさしで比べる</h2>
+  <p class="panel-sub">電気代、CO₂、燃料を手に入れやすいか、夕方に電気が足りるか。4つのものさしで、あなたの案のよいところと心配なところを見つけよう。</p>
 
   <div class="result-top">
     <div class="donut-box">
@@ -640,32 +660,32 @@ footer{text-align:center;color:var(--txt3);font-size:.74rem;padding-top:30px;lin
 
   <div class="gauges" style="margin-top:20px">
     <div class="gauge" style="--g:var(--yellow)">
-      <div class="gauge-t">① 電気代<small>4人家族・1か月</small></div>
+      <div class="gauge-t">① 電気代<small>月400kWh使う家の目安</small></div>
       <svg viewBox="0 0 120 74" width="120" height="74"><g id="gA"></g></svg>
       <div class="gauge-v" id="vA">—<span class="gauge-u">円 / 月</span></div>
       <div class="gauge-note" id="nA"></div>
     </div>
     <div class="gauge" style="--g:var(--green)">
-      <div class="gauge-t">② CO₂排出量<small>電気1kWhあたり</small></div>
+      <div class="gauge-t">② CO₂の量<small>1kWhあたり・バイオマス分は含まない</small></div>
       <svg viewBox="0 0 120 74" width="120" height="74"><g id="gB"></g></svg>
       <div class="gauge-v" id="vB">—<span class="gauge-u">g-CO₂ / kWh</span></div>
       <div class="gauge-note" id="nB"></div>
     </div>
     <div class="gauge" style="--g:var(--cyan)">
-      <div class="gauge-t">③ 電気の国産率<small>輸入に頼らない割合</small></div>
+      <div class="gauge-t">③ 海外に頼りにくい割合<small>燃料をためておける原子力も含む</small></div>
       <svg viewBox="0 0 120 74" width="120" height="74"><g id="gC"></g></svg>
       <div class="gauge-v" id="vC">—<span class="gauge-u">%</span></div>
       <div class="gauge-note" id="nC"></div>
     </div>
     <div class="gauge" style="--g:var(--purple)">
-      <div class="gauge-t">④ 安定供給<small>ピーク時の予備率</small></div>
+      <div class="gauge-t">④ 電気は足りる？<small>日が沈み、風が弱い夕方で計算</small></div>
       <svg viewBox="0 0 120 74" width="120" height="74"><g id="gD"></g></svg>
       <div class="gauge-v" id="vD">—<span class="gauge-u">% 予備</span></div>
       <div class="gauge-note" id="nD"></div>
     </div>
   </div>
 
-  <div class="note" id="billBreak"></div>
+  <div class="note" id="billBreak"></div><p class="model-caption">CO₂はバイオマス分を含まない目安です。「海外に頼りにくい割合」には、燃料を長くためておける原子力も含めています。「電気の余裕」は、ある夕方の計算です。1日中の変化や事故までは調べていません。</p>
 </section>
 
 <!-- ========== 3. 実感 ========== -->
@@ -677,8 +697,8 @@ footer{text-align:center;color:var(--txt3);font-size:.74rem;padding-top:30px;lin
 
 <!-- ========== 4. 現実チェック ========== -->
 <section class="panel" id="checkPanel">
-  <h2 class="panel-h"><span class="num">4</span>現実チェック ― この案は本当に実現できる？</h2>
-  <p class="panel-sub">10の「限界」とくらべます。バーが<b>白い線（限界）</b>をこえると、その案は日本ではそのまま実現できません。</p>
+  <h2 class="panel-h"><span class="num">4</span>チェックしよう ― 心配な点をどう補う？</h2>
+  <p class="panel-sub">10のポイントで、あなたの案を見てみよう。白い線は、国の目標などをもとに決めた<b>目安</b>です。線を超えても「絶対にできない」という意味ではありません。赤＝よく考えたい、黄＝確かめたい、緑＝目安の中。</p>
   <div class="checks-head" id="checksHead"></div>
   <div class="lims" id="checks"></div>
 </section>
@@ -713,16 +733,16 @@ footer{text-align:center;color:var(--txt3);font-size:.74rem;padding-top:30px;lin
 
 <!-- ========== 6. 発電所図鑑 ========== -->
 <section class="panel">
-  <h2 class="panel-h"><span class="num">7</span>発電所図鑑 ― どんな形をしているの？</h2>
+  <h2 class="panel-h" id="galleryPanel"><span class="num">7</span>発電所図鑑 ― どんな形をしているの？</h2>
   <p class="panel-sub">同じ「発電所」でも見た目はまったく違います。遠くから見て何の発電所か当てられるようになろう。</p>
   <div class="gal-bar">
     <div class="seg" id="galleryAll" role="group" aria-label="すべてのカードの表示">
-      <button type="button" data-v="photo" class="on">📷 ぜんぶ写真</button><button type="button" data-v="svg">✏️ ぜんぶ図解</button>
+      <button type="button" data-v="photo" class="on">📷 ぜんぶAIイメージ</button><button type="button" data-v="svg">✏️ ぜんぶ図解</button>
     </div>
-    <span class="gal-hint">写真で「本物の雰囲気」、図解で「見るポイント」をつかもう。写真は押すと大きくなります。</span>
+    <span class="gal-hint">AIイメージで設備の雰囲気、図解で見るポイントをつかもう。画像は実在の発電所の写真ではありません。押すと拡大します。</span>
   </div>
   <div class="gallery" id="gallery"></div>
-  <p class="gal-credit">※ 写真は発電所の特徴をつかむためのイメージ画像（AIで作成）で、実在の発電所ではありません。看板の文字なども実物とは関係ありません。</p>
+  <p class="gal-credit">※ 画像は発電所の特徴をつかむためのイメージ画像（AIで作成）で、実在の発電所ではありません。看板の文字なども実物とは関係ありません。</p>
   <div class="note">
     <b>見分けかたのコツ：</b>まず<b>煙突</b>をさがす。煙突があれば燃やしている＝火力かバイオマス。
     そのうち<b>黒い山</b>があれば石炭、<b>丸屋根の大きなタンク</b>と細い煙突の組み合わせならLNG、<b>平たい円筒のタンク</b>がずらりと並んでいれば石油。
@@ -738,22 +758,22 @@ footer{text-align:center;color:var(--txt3);font-size:.74rem;padding-top:30px;lin
     </div>
     <ol class="hk-list" id="hkList"></ol>
   </div>
-  <p class="gal-credit">地図：国土数値情報をもとにした都道府県境界データ（dataofjapan/land）を簡略化。発電所の情報は北海道電力・各事業者の発表（2026年9月時点で確認）。</p>
+  <p class="gal-credit">地図：国土数値情報をもとにした都道府県境界データ（dataofjapan/land）を簡略化。発電所の情報は公開版の記載（2026年9月時点として掲載）を継承。運転状況・計画は各事業者の最新発表で確認してください。</p>
 </section>
 
 <!-- ========== 7. データ表 ========== -->
 <section class="panel">
   <h2 class="panel-h"><span class="num">8</span>メンバーの能力データ</h2>
-  <p class="panel-sub">計算に使っている数値。授業のスライドの表を、最新の試算でアップデートしたものです。</p>
+  <p class="panel-sub">計算に使う数値をまとめました。資料の年や調べ方は、すべて同じではありません。「変換効率」が高い順に、よい発電方法が決まるわけではありません。</p>
   <div class="tblwrap"><table id="dataTable"></table></div>
   <div class="note">
-    <b>読み方のヒント：</b>「変換効率」は燃料や自然の力のうち何%を電気にできるか。
-    効率が低くても<b>燃料代がタダ</b>（太陽光・風力・水力・地熱）なら、発電コストは安くなります。
+    <b>読み方のヒント：</b>※ バイオマスの変換効率は、元の数値の意味を確認中のため「—」にしています。CO₂は計算では0にしていますが、実際に出ないわけではありません。<br>「変換効率」は、もとのエネルギーのうち何%を電気に変えられるか。
+    効率が低くても<b>燃料代がタダ</b>（太陽光・風力・水力・地熱）でも、設備費・工事費・保守費などがかかります。
     効率だけ・値段だけで決められないのが、エネルギーの難しさです。
   </div>
 </section>
 
-<div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="写真の拡大表示">
+<div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="AIイメージの拡大表示">
   <figure>
     <button class="lb-close" id="lbClose" type="button" aria-label="閉じる">✕</button>
     <img id="lbImg" alt="">
@@ -767,8 +787,8 @@ footer{text-align:center;color:var(--txt3);font-size:.74rem;padding-top:30px;lin
 </details>
 
 <footer>
-  エネルギーミックス・スタジオ ｜ 中学校 理科・社会 授業用シミュレータ<br>
-  数値は公表資料にもとづく概算です。学習用に単純化しています。
+  エネルギーミックス・スタジオ ｜ 中学校 技術・理科・社会 授業用シミュレータ<br>
+  数字は、公開された資料をもとにした目安です。学習しやすいよう、しくみを簡単にしています。
 </footer>
 </div>
 <script>
@@ -796,19 +816,19 @@ const SRC = [
    from:"中東96%(UAE44%・サウジ40%)", mideast:.96, aus:0},
   {id:"nuclear",name:"原子力",     icon:"⚛️", role:"base", roleJa:"ベース",  c:"#b98cff",
    eff:33, lcoe:12.5, fuelS:.12, co2:19,  cf:.70, firm:.92, dom:1,
-   from:"ウランは輸入だが数年分を備蓄でき「準国産」扱い", mideast:0, aus:0},
-  {id:"hydro",  name:"水力",       icon:"💧", role:"base", roleJa:"ベース",  c:"#4fd8ff",
+   from:"ウランは輸入。ただし、数年分をためておけるので「海外に頼りにくい」側に数えます", mideast:0, aus:0},
+  {id:"hydro",  name:"水力",       icon:"💧", role:"base", roleJa:"ベース・調整",  c:"#4fd8ff",
    eff:80, lcoe:11.0, fuelS:0,   co2:11,  cf:.45, firm:.80, dom:1,
-   from:"国産（燃料いらず）", mideast:0, aus:0},
+   from:"国内の自然の力（燃料いらず）", mideast:0, aus:0},
   {id:"geo",    name:"地熱",       icon:"♨️", role:"base", roleJa:"ベース",  c:"#5cf2a8",
    eff:8,  lcoe:16.0, fuelS:0,   co2:13,  cf:.70, firm:.90, dom:1,
-   from:"国産（燃料いらず）", mideast:0, aus:0},
+   from:"国内の自然の力（燃料いらず）", mideast:0, aus:0},
   {id:"wind",   name:"風力",       icon:"🌀", role:"solo", roleJa:"ソロ",    c:"#4ce0b0",
    eff:25, lcoe:12.0, fuelS:0,   co2:26,  cf:.25, firm:.05, dom:1,
-   from:"国産（燃料いらず）", mideast:0, aus:0},
+   from:"国内の自然の力（燃料いらず）", mideast:0, aus:0},
   {id:"solar",  name:"太陽光",     icon:"☀️", role:"solo", roleJa:"ソロ",    c:"#ffd84f",
-   eff:10, lcoe:8.0,  fuelS:0,   co2:38,  cf:.15, firm:.05, dom:1,
-   from:"国産（燃料いらず）", mideast:0, aus:0},
+   eff:10, lcoe:8.0,  fuelS:0,   co2:38,  cf:.15, firm:0, dom:1,
+   from:"国内の自然の力（燃料いらず）", mideast:0, aus:0},
   {id:"biomass",name:"バイオマス", icon:"🌲", role:"drum", roleJa:"ドラム",  c:"#9ecb6b",
    eff:1,  lcoe:25.6, fuelS:.47, co2:0,   cf:.70, firm:.90, dom:.4,
    from:"木質ペレットの多くは北米・東南アジアから輸入", mideast:0, aus:0}
@@ -903,7 +923,7 @@ function calc(rawMix, opt){
   let co2 = 0; SRC.forEach(s=> co2 += share[s.id]/100*s.co2 );
   const co2Oku = co2*E_TOTAL/1e6/1e8;  // 億トン/年
 
-  // 8) 電気の国産率
+  // 8) 海外に頼りにくい割合
   let dom = 0; SRC.forEach(s=> dom += share[s.id]*s.dom );
 
   // 9) 中東・豪州への依存度
@@ -979,8 +999,8 @@ function buildMixer(){
       '<div class="ch-name"><span class="ico">'+s.icon+'</span>'+
         '<span class="nm">'+s.name+'</span>'+
         '<span class="role '+s.role+'">'+s.roleJa+'</span></div>'+
-      '<input type="range" min="0" max="100" step="0.5" value="'+(mix[s.id]||0)+'" data-id="'+s.id+'" aria-label="'+s.name+'の割合">'+
-      '<div class="ch-val"><input type="number" min="0" max="100" step="0.5" value="'+(mix[s.id]||0)+'" data-id="'+s.id+'" aria-label="'+s.name+'の割合(数値)"><span class="pct">%</span></div>'+
+      '<input type="range" min="0" max="100" step="0.1" value="'+(mix[s.id]||0)+'" data-id="'+s.id+'" aria-label="'+s.name+'の割合">'+
+      '<div class="ch-val"><input type="number" min="0" max="100" step="0.1" value="'+(mix[s.id]||0)+'" data-id="'+s.id+'" aria-label="'+s.name+'の割合(数値)"><span class="pct">%</span></div>'+
     '</div>').join("");
 
   $("mixer").querySelectorAll("input").forEach(el=>{
@@ -988,7 +1008,9 @@ function buildMixer(){
       const id = e.target.dataset.id;
       let v = parseFloat(e.target.value);
       if(isNaN(v)) v = 0;
+      const entered = v;
       v = clampNum(v);
+      if (entered !== v) e.target.value = v;
       mix[id] = v;
       syncChannel(id);
       render();
@@ -1038,12 +1060,13 @@ function render(){
   /* --- 合計バー --- */
   const tot = totalOf(), full = isFull();
   const tn = $("totalNum");
+  $("btnNorm").disabled = tot <= 0;
   tn.textContent = tot.toFixed(1);
   tn.className = "total-num " + (full ? "ok" : "ng");
   $("totalMsg").textContent = full
     ? "合計100%。バンド編成できました。下の結果を見てみよう。"
-    : (tot===0 ? "フェーダーを動かして、電気をつくる方法を配分しよう。"
-       : (tot<100 ? "あと "+(100-tot).toFixed(1)+"% 配分しよう。"
+    : (tot===0 ? "スライダーを動かして、それぞれの発電方法の割合を決めよう。"
+       : (tot<100 ? "あと "+(100-tot).toFixed(1)+"% を振り分けよう。"
                   : (tot-100).toFixed(1)+"% 多すぎます。どこかを減らそう。"));
 
   /* --- 100%になるまで結果は出さない --- */
@@ -1053,7 +1076,7 @@ function render(){
   if(!full){
     steps.forEach((el,i)=>{ el.classList.toggle("on", i===0); el.classList.remove("done"); });
     $("verdict").className = "verdict";
-    $("verdict").innerHTML = '<div class="vd-h">🎚️ 合計100%にすると、この案が実現できるかをここで判定します</div>';
+    $("verdict").innerHTML = '<div class="vd-h">🎚️ 合計100%にすると、4つのものさしと考えたいことがここに出ます</div>';
     return;
   }
 
@@ -1067,54 +1090,40 @@ function render(){
   /* --- ①電気代 --- */
   drawGauge("gA", (r.bill-8000)/18000, r.bill<14000?"#5cf2a8":(r.bill<19000?"#ffd84f":"#ff6b6b"));
   $("vA").innerHTML = fmt(r.bill)+'<span class="gauge-u">円 / 月</span>';
-  const dBill = r.bill-12312;
+  const dBill = r.bill-baseline().now.bill;
   const dCol = dBill>300 ? "#ff9a3c" : (dBill<-300 ? "#5cf2a8" : "#9fb0c7");
-  $("nA").innerHTML = '今の日本＝約12,300円<br><b style="color:'+dCol+'">'+
+  $("nA").innerHTML = '2023年度の組み合わせなら：'+fmt(baseline().now.bill)+'円<br><b style="color:'+dCol+'">'+
     (dBill>0?"+":"")+fmt(dBill)+'円</b> / 月';
 
   /* --- ②CO2 --- */
   drawGauge("gB", r.co2/950, r.co2<200?"#5cf2a8":(r.co2<500?"#ffd84f":"#ff6b6b"));
   $("vB").innerHTML = fmt(r.co2)+'<span class="gauge-u">g-CO₂ / kWh</span>';
-  const cut = (1-r.co2Oku/CO2_2013)*100;
-  const cutCol = cut>0 ? "#5cf2a8" : "#ff6b6b";
-  $("nB").innerHTML = '日本全体で年 <b>'+r.co2Oku.toFixed(2)+'億トン</b><br>2013年度比 <b style="color:'+cutCol+'">'+
-    (cut>=0?"−":"+")+Math.abs(cut).toFixed(0)+'%</b>';
+  $("nB").innerHTML = '1年につくる電気の量をそろえると：<b>'+r.co2Oku.toFixed(2)+'億トン</b><br>※バイオマスから出る分は含みません';
 
   /* --- ③国産率 --- */
   drawGauge("gC", r.dom/100, r.dom>60?"#5cf2a8":(r.dom>30?"#ffd84f":"#ff6b6b"));
   $("vC").innerHTML = r.dom.toFixed(1)+'<span class="gauge-u">%</span>';
-  $("nC").innerHTML = '輸入に頼る割合 <b>'+(100-r.dom).toFixed(0)+'%</b><br>燃料代 年 <b>'+r.fuelCho.toFixed(1)+'兆円</b>が海外へ';
+  $("nC").innerHTML = '海外の燃料に頼る割合（原子力を除く） <b>'+(100-r.dom).toFixed(0)+'%</b><br>燃料代 年 <b>'+r.fuelCho.toFixed(1)+'兆円</b>が海外へ';
 
   /* --- ④安定供給 --- */
   drawGauge("gD", (r.reserve+60)/90, r.reserve>3?"#5cf2a8":(r.reserve>-15?"#ffd84f":"#ff6b6b"));
-  $("vD").innerHTML = (r.reserve>=0?"+":"")+r.reserve.toFixed(0)+'<span class="gauge-u">% 予備</span>';
+  $("vD").innerHTML = (r.reserve>=0?"+":"")+r.reserve.toFixed(1)+'<span class="gauge-u">% 予備</span>';
   $("nD").innerHTML = r.reserve>=3
-    ? '曇り・無風の夕方でも<br><b style="color:#5cf2a8">そのまま電気が足りる</b>'
-    : (r.reserve>=-10
-       ? '夕方は少し足りない<br><b style="color:#ffd84f">蓄電池でおぎなう</b>'
-       : (r.reserve>=-35
-          ? '夕方に大きく足りない<br><b style="color:#ff9a3c">巨大な蓄電池が必要</b>'
-          : '夕方に電気がない<br><b style="color:#ff6b6b">蓄電池でも埋めきれない</b>'));
-
-  /* --- 総合評価 --- */
-  const rk = r.score>=85?["S","#5cf2a8","文句なしの名バンド","4つのものさしすべてで高得点。ただし本当に実現できるか、下の「現実チェック」も見てみよう。"]
-           : r.score>=72?["A","#4fd8ff","かなり良いバランス","弱点をおぎない合えています。もう一歩、苦手なものさしを伸ばせるかな？"]
-           : r.score>=58?["B","#ffd84f","まずまずのバンド","どこかのものさしが足を引っぱっています。どれを直す？"]
-           : r.score>=44?["C","#ff9a3c","かたよりが大きい","得意な音は出るけれど、曲としては危ういバンドです。"]
-           :             ["D","#ff5c5c","このままでは演奏できない","電気代・CO₂・停電のどれかが危険な水準です。"];
-  $("rankBadge").textContent = rk[0];
-  $("rankBadge").style.setProperty("--rc", rk[1]);
-  $("rankTitle").textContent = rk[2];
-  $("rankMsg").innerHTML = rk[3]+' <span style="color:var(--txt3)">（総合 '+r.score.toFixed(0)+
-    '点 ／ 電気代'+r.sBill.toFixed(0)+'・CO₂'+r.sCO2.toFixed(0)+'・国産率'+r.sDom.toFixed(0)+'・安定'+r.sStab.toFixed(0)+'）</span>';
+    ? 'この計算では電気が足ります<br>停電が起きないという意味ではありません'
+    : r.reserve>=0 ? 'この計算では電気が足ります<br>ただし、余裕は少なめです'
+    : 'この計算では電気が足りません<br>ためる・発電を増やす・使う量を減らす工夫を';
+  $("rankBadge").textContent = '比較';
+  $("rankBadge").style.setProperty('--rc', '#4fd8ff');
+  $("rankTitle").textContent = 'あなたは、何を大切にした？';
+  $("rankMsg").textContent = '電気代を安くする？ CO₂を減らす？ あなたが大切にしたことと、心配な点をどう補うかを説明してみよう。';
 
   /* --- 電気代の内訳 --- */
-  $("billBreak").innerHTML = '<b>電気代の内訳（1kWhあたり）：</b> 発電そのもの <b>'+r.gen.toFixed(1)+'円</b>'+
+  $("billBreak").innerHTML = '<b>電気代の目安（1kWhあたり）：</b> 発電そのもの <b>'+r.gen.toFixed(1)+'円</b>'+
     (r.batYen>0.05 ? ' ＋ 蓄電池など <b>'+r.batYen.toFixed(1)+'円</b>' : '')+
     ' ＋ 送電線・小売・再エネ賦課金・税 <b>'+OTHER_YEN.toFixed(0)+'円</b> ＝ <b>'+r.unit.toFixed(1)+'円/kWh</b>。'+
-    'これに1か月の使用量400kWh（4人家族）をかけています。'+
-    (r.curtail>0.01 ? '<br>※変動する再エネが多いため、つくった電気の <b>'+(r.curtail*100).toFixed(0)+
-      '%</b> は使いきれず捨てることになります（その分、設備を多めに建てる必要があります）。' : '');
+    'これに月400kWhをかけています。実際の請求額や将来の料金予測ではありません。'+
+    (r.curtail>0.01 ? '<br>※変動する再エネが多いため、この教材では発電可能な電気の <b>'+(r.curtail*100).toFixed(0)+
+      '%</b> は、余るため発電をおさえる計算です。これを「出力抑制」といいます。実際の割合は、場所や送電線、蓄電池などで変わります。' : '');
 
   renderFeel(r);
   const J = judge(r);
@@ -1126,13 +1135,7 @@ function render(){
     el.classList.toggle("on", i===(badCount>0?1:2));
     el.classList.toggle("done", i<(badCount>0?1:2));
   });
-  if(badCount>0){
-    $("rankBadge").style.setProperty("--rc", "#ff5c5c");
-    $("rankMsg").innerHTML = '<b style="color:#ff5c5c">点数は出ましたが、現実チェックで重大な問題が'+badCount+
-      '件あります。</b>このままでは日本で実現できない構成です。「4. 現実チェック」を見て直そう。'+
-      ' <span style="color:var(--txt3)">（机上の総合 '+r.score.toFixed(0)+'点）</span>';
-    $("rankTitle").textContent = "紙の上では good、でも実現できない";
-  }
+
   if(activeEvent) runEvent(activeEvent);
 }
 
@@ -1167,8 +1170,8 @@ function renderFeel(r){
       turbines/NOW_TURBINES*20);
 
   const nukeMsg = nukes>NOW_NUKE
-      ? "<b style=\"color:#ff5c5c\">今ある原発を全部動かしても足りません</b>"
-      : "今ある原子炉の数でまかなえる範囲です";
+      ? "<b style=\"color:#ff5c5c\">100万kW級33基と置いた比較の目安を超えます</b>"
+      : "100万kW級33基と置いた比較の目安の範囲内です。実際の出力・運転状況は別途確認が必要です";
   h += card("⚛️","原子力発電所（100万kW級）", nukes.toFixed(1), " 基",
       "日本にある原子炉は <b>"+NOW_NUKE+"基</b>（再稼働したのは15基、2026年4月時点）<br>"+nukeMsg,
       nukes/NOW_NUKE*100);
@@ -1178,15 +1181,15 @@ function renderFeel(r){
       "（今の日本は約6.7兆円。国民1人あたり年 <b>"+fmt(r.fuelCho*1e12/1.2e8)+"円</b>）");
 
   const batMsg = batGWh<=0.001
-      ? "今のところ必要ありません。火力や原子力・水力が調整役をしています。"
+      ? "この夕方の計算では、電気は足りています。ただし、使う量の変化や故障に備える必要はあります。"
       : "家庭用蓄電池（10kWh）<b>"+dai(r.batKWh/10)+"分</b><br>"+
-        "設備の値段は <b>"+batCho.toFixed(1)+"兆円</b>（"+r.batHours.toFixed(0)+"時間分をためる想定）";
-  h += card("🔋","うめ合わせに必要な蓄電池", batGWh<1?batGWh.toFixed(2):fmt(batGWh), " GWh", batMsg,
+        "設備の値段は <b>"+batCho.toFixed(1)+"兆円</b>（"+r.batHours.toFixed(0)+"時間分をためる計算）";
+  h += card("🔋","足りない分を電池でためるなら", batGWh<1?batGWh.toFixed(2):fmt(batGWh), " GWh", batMsg,
       batGWh/500*100);
 
   h += card("🌲","1年に出るCO₂", r.co2Oku.toFixed(2), " 億トン",
       "日本の森林が1年に吸えるCO₂の <b>"+forestX.toFixed(1)+"倍</b><br>"+
-      "（森林の吸収量は年 約0.47億トン。出した分を森だけで吸うのは無理）",
+      "（森林の吸収量は年 約0.47億トンとして量を比べています。バイオマスから出る分は含みません）",
       Math.min(100, forestX/12*100));
 
   $("feel").innerHTML = h;
@@ -1202,149 +1205,82 @@ function baseline(){
 const capAt = (id, pct)=> E_TOTAL*pct/100/(8760*SRC[SI[id]].cf);
 
 function judge(r){
-  const B = baseline(), s = r.share, L = [];
-  const add = (o)=> L.push(o);
-  const lv = (bad, warn)=> bad ? "bad" : (warn ? "warn" : "ok");
-
-  /* 1 土地 */
-  const solKm2 = r.capKW.solar*M2_PER_KW/1e6;
-  const solLim = capAt("solar",29)*M2_PER_KW/1e6;
-  add({k:"land", ic:"☀️", nm:"太陽光を置く土地", v:solKm2, lim:solLim, higher:false,
-    lv:lv(solKm2>solLim*1.03, solKm2>solLim*0.8),
-    tag:{bad:"土地が足りない", warn:"土地がギリギリ", ok:"土地はOK"},
-    now:"必要 <b>登別市 "+(solKm2/NOBORIBETSU_KM2).toFixed(1)+"個分</b>（北海道の"+(solKm2/HOKKAIDO_KM2*100).toFixed(1)+"%）",
-    limT:"限界 登別市 約"+Math.round(solLim/NOBORIBETSU_KM2)+"個分",
-    why:"日本は国土の約7割が山で、パネルを置ける平地が少ない。国の2040年目標でも太陽光は最大29%。それ以上は山を削ったり農地をつぶしたりすることになり、土砂災害や地域の反対が起きる。"});
-
-  /* 2 風車 */
-  const tb = r.capKW.wind/KW_PER_TURBINE, tbLim = capAt("wind",8)/KW_PER_TURBINE;
-  add({k:"wind", ic:"🌀", nm:"風車を建てる場所", v:tb, lim:tbLim, higher:false,
-    lv:lv(tb>tbLim*1.5, tb>tbLim*1.03),
-    tag:{bad:"風車を建てる場所がない", warn:"風車の建設が間に合わない", ok:"風車はOK"},
-    now:"必要 <b>"+fmt(tb)+"基</b>（今は"+fmt(NOW_TURBINES)+"基）",
-    limT:"限界 約"+fmt(tbLim)+"基",
-    why:"風が強くて、家から離れていて、送電線が近い場所は限られる。海の上に建てる洋上風力は、計画から運転まで約10年。国の2040年目標は風力4〜8%。"});
-
-  /* 3 ダム */
-  add({k:"hydro", ic:"💧", nm:"ダムをつくる川", v:s.hydro, lim:11, higher:false,
-    lv:lv(s.hydro>11.5, s.hydro>10.5),
-    tag:{bad:"ダムをつくる川がない", warn:"ダムがギリギリ", ok:"水力はOK"},
-    now:"水力 <b>"+s.hydro.toFixed(1)+"%</b>",
-    limT:"限界 11%",
-    why:"大きなダムを建てられる川は、ほとんど使いきっている。新しくダムをつくると村が沈むこともある。国の目標でも水力は2030年度に11%、2040年度に8〜10%。"});
-
-  /* 4 地熱 */
-  add({k:"geo", ic:"♨️", nm:"地熱を掘る場所", v:s.geo, lim:2, higher:false,
-    lv:lv(s.geo>2.2, s.geo>1.8),
-    tag:{bad:"地熱を掘る場所が足りない", warn:"地熱がギリギリ", ok:"地熱はOK"},
-    now:"地熱 <b>"+s.geo.toFixed(1)+"%</b>",
-    limT:"限界 2%",
-    why:"日本の地熱資源は世界3位。でも有望な場所の多くは国立公園の中や温泉地で、開発には地元との話し合いと調査で10年以上かかる。国の2040年目標は1〜2%。"});
-
-  /* 5 バイオマス燃料 */
-  add({k:"bio", ic:"🌲", nm:"バイオマスの燃料", v:s.biomass, lim:6, higher:false,
-    lv:lv(s.biomass>12, s.biomass>6.5),
-    tag:{bad:"バイオマスの燃料が足りない", warn:"バイオマス燃料は輸入たより", ok:"燃料はOK"},
-    now:"バイオマス <b>"+s.biomass.toFixed(1)+"%</b>",
-    limT:"限界 6%",
-    why:"国内の木だけでは足りず、燃料の多くは東南アジアや北米から船で運んでいる（室蘭の発電所もヤシ殻を輸入）。増やすほど「国産エネルギー」ではなくなる。"});
-
-  /* 6 原子力 */
-  const nk = r.capKW.nuclear/KW_PER_UNIT;
-  add({k:"nuke", ic:"⚛️", nm:"原子力発電所の数", v:s.nuclear, lim:23.5, higher:false,
-    lv:lv(s.nuclear>23.5, nk>15.5),
-    tag:{bad:"原発の数が足りない", warn:"原発の再稼働しだい", ok:"原発はOK"},
-    now:"原子力 <b>"+s.nuclear.toFixed(1)+"%</b>（原子炉 約"+nk.toFixed(0)+"基分。動いているのは15基）",
-    limT:"限界 約23%（今ある33基を全部使う）",
-    why:"日本にある原子炉は33基で、再稼働できたのは15基（2026年4月）。33基すべてを動かし、止まる期間を短くしても、つくれるのは電気の2割ちょっと。それ以上は新しくつくるしかないが、場所選び・審査・建設で10年以上かかり、地元の同意も必要。"+
-        (nk>15.5 && s.nuclear<=23.5 ? "この案は、今止まっている原発の再稼働がもっと進むことが前提になる。" : "")});
-
-  /* 7 電気代 */
-  const billLim = B.now.bill*1.3;
-  add({k:"bill", ic:"💸", nm:"電気代", v:r.bill, lim:billLim, higher:false,
-    lv:lv(r.bill>billLim, r.bill>B.now.bill*1.1),
-    tag:{bad:"電気代が爆上がり", warn:"電気代が上がる", ok:"電気代はOK"},
-    now:"月 <b>"+fmt(r.bill)+"円</b>（今の<b>"+(r.bill/B.now.bill).toFixed(2)+"倍</b>）",
-    limT:"限界 今の1.3倍（約"+fmt(billLim)+"円）",
-    why:"家の電気代だけでなく、工場やお店の電気代も上がる。ものの値段が上がり、会社が電気の安い外国へ移ってしまうおそれもある。"+
-        (r.batYen>1 ? "この案では、夕方の電気をためる蓄電池の費用だけで1kWhあたり"+r.batYen.toFixed(1)+"円も上乗せされている。" : "")});
-
-  /* 8 停電 */
-  const firm = r.firmKW/r.peak*100;
-  add({k:"power", ic:"⚡", nm:"曇り・無風の夕方の電気", v:firm, lim:100, higher:true,
-    lv:lv(r.reserve<-35, r.reserve<3),
-    tag:{bad:"夕方に停電する", warn: r.reserve<-5 ? "巨大な蓄電池が必要" : "予備がギリギリ", ok:"停電しない"},
-    now:"つくれる量 <b>"+firm.toFixed(0)+"%</b>（必要な量を100%として）",
-    limT:"必要 100%以上",
-    why:"太陽光は夜、風力は風がないと発電できない。足りない分は蓄電池でためるしかないが、"+
-        (r.batKWh>0 ? "この案では家庭用蓄電池"+dai(r.batKWh/10)+"分（約"+(r.batKWh*BAT_YEN_KWH/1e12).toFixed(0)+"兆円）が必要。" : "")+
-        (r.reserve<-35 ? "これは世界中の電池工場が何年もかけてつくる量で、現実的ではない。" : "")});
-
-  /* 9 CO2 */
-  add({k:"co2", ic:"🌡️", nm:"CO₂の量", v:r.co2, lim:B.now.co2, higher:false,
-    lv:lv(r.co2>B.now.co2+5, r.co2>B.t2030.co2+5),
-    tag:{bad:"CO₂が今より増える", warn:"CO₂の減らし方が足りない", ok:"CO₂はOK"},
-    now:"<b>"+fmt(r.co2)+"g</b>／kWh（2030年目標の案は約"+fmt(B.t2030.co2)+"g）",
-    limT:"限界 今の日本（約"+fmt(B.now.co2)+"g）",
-    why:"日本は「2050年にCO₂の排出を実質ゼロにする」と世界に約束している。今より増える案や、2030年の目標に届かない案は、この約束を守れない。"});
-
-  /* 10 輸入 */
-  const imp = 100-r.dom;
-  add({k:"import", ic:"🌏", nm:"輸入へのたより方", v:imp, lim:80, higher:false,
-    lv:lv(imp>80, imp>60 || s.oil>8),
-    tag:{bad:"輸入が止まると電気も止まる", warn: s.oil>8 ? "中東の事件に弱い" : "輸入たより", ok:"輸入はOK"},
-    now:"燃料を輸入にたよる割合 <b>"+imp.toFixed(0)+"%</b>"+(s.oil>0.5?"（石油"+s.oil.toFixed(0)+"%は96%が中東産）":""),
-    limT:"限界 80%",
-    why:"石油・石炭・LNGはほぼ全部が輸入。戦争や災害で船が止まったり、値段が何倍にもなったりすると、電気が足りなくなったり電気代が急に上がったりする（「6. もしも」で試せる）。"});
-
-  const order = {bad:0, warn:1, ok:2};
-  return L.sort((a,b)=> order[a.lv]-order[b.lv]);
+  const B=baseline(), q=r.share, L=[];
+  const level=(focus,check)=>focus?'bad':check?'warn':'ok';
+  const add=(k,ic,nm,category,v,lim,lv,tag,now,limT,why,higher=false)=>
+    L.push({k,ic,nm,category,v,lim,lv,tag,now,limT,why,higher});
+  const area=r.capKW.solar*M2_PER_KW/1e6, areaRef=capAt('solar',29)*M2_PER_KW/1e6;
+  add('land','☀️','太陽光を置く場所','発電所と場所',area,areaRef,level(area>areaRef*1.03,area>areaRef*.8),
+    {bad:'パネルを置く場所を考えよう',warn:'置ける場所を確かめよう',ok:'目安の中におさまる'},
+    '必要な広さの目安 <b>'+fmt(area)+'km²</b>','目安：太陽光を29%にしたときの広さ',
+    '国が考える2040年度の案をもとに、太陽光29%を目安にしています。すべて地面にパネルを置く計算なので、屋根を使えば必要な土地は変わります。この線を超えても「もう置けない」とは限りません。');
+  const wind=r.capKW.wind/KW_PER_TURBINE, windRef=capAt('wind',8)/KW_PER_TURBINE;
+  add('wind','🌀','必要な風車の数','発電所と場所',wind,windRef,level(wind>windRef*1.5,wind>windRef*1.03),
+    {bad:'風車を増やす方法を考えよう',warn:'風車をどう建てるか確かめよう',ok:'目安の中におさまる'},
+    '4,200kW級 <b>'+fmt(wind)+'基分</b>','目安：風力を8%にしたときの台数',
+    '国が考える2040年度の案では、風力は4〜8%です。ここでは8%を目安にしています。風の強い場所、電気を運ぶ送電線、自然への影響、完成までの時間も考えます。8%を超えたら建てられない、という意味ではありません。');
+  add('hydro','💧','水力の割合','発電所と場所',q.hydro,11,level(q.hydro>11.5,q.hydro>10.5),
+    {bad:'川の水や発電所を調べよう',warn:'増やせるか確かめよう',ok:'目安の中におさまる'},
+    '水力 <b>'+q.hydro.toFixed(1)+'%</b>','目安：11%（2030年度の目標のいちばん大きい割合）',
+    '目安を超えたら、川の水の量や高さの差、自然への影響を調べよう。今ある発電所を改良する方法もあります。揚水は、電気を使って水をくみ上げ、あとで発電するしくみです。同じ電気を二重に数えないよう、この割合に足していません。');
+  add('geo','♨️','地熱の割合','発電所と場所',q.geo,2,level(q.geo>2.2,q.geo>1.8),
+    {bad:'地熱を増やす方法を考えよう',warn:'増やせるか確かめよう',ok:'目安の中におさまる'},
+    '地熱 <b>'+q.geo.toFixed(1)+'%</b>','目安：2%（2040年度の案のいちばん大きい割合）',
+    '地下の熱を使える量が2%まで、という意味ではありません。井戸を掘って調べ、温泉や自然への影響を確かめる必要があります。地域の人との話し合いや、完成までの時間も大切です。');
+  add('bio','🌲','バイオマス燃料','燃料とお金',q.biomass,6,level(q.biomass>12,q.biomass>6.5),
+    {bad:'燃料を集める方法を考えよう',warn:'燃料をどこから買うか確かめよう',ok:'目安の中におさまる'},
+    'バイオマス <b>'+q.biomass.toFixed(1)+'%</b>','目安：6%（このアプリで決めた目安）',
+    '木などの燃料を、どこから、どれくらい集められるか考えよう。森林を守りながら使い続けられるかも大切です。このアプリでは燃料の40%を国産として計算しています。バイオマスから出るCO₂はまだ数えていないので、表示は実際より少なくなります。');
+  const nk=r.capKW.nuclear/KW_PER_UNIT, nr=NOW_NUKE*KW_PER_UNIT*8760*SRC[SI.nuclear].cf/E_TOTAL*100;
+  add('nuke','⚛️','必要な原子力発電所','発電所と場所',q.nuclear,nr,level(nk>NOW_NUKE,nk>15.5),
+    {bad:'必要な発電所をどうそろえる？',warn:'発電所を動かせるか確かめよう',ok:'目安の中におさまる'},
+    '100万kW級 <b>'+nk.toFixed(1)+'基分</b>','目安：100万kW級33基・利用率70%',
+    '大きさをそろえた発電所が何基必要かを計算しています。実際の発電所は大きさが違います。安全対策や点検、止まっている発電所を動かす条件、地域の人との話し合い、放射性廃棄物の扱いも考える必要があります。');
+  add('bill','💸','電気代の目安','燃料とお金',r.bill,B.now.bill*1.3,level(r.bill>B.now.bill*1.3,r.bill>B.now.bill*1.1),
+    {bad:'電気代が高くなる点を考えよう',warn:'今の組み合わせより高め',ok:'目安の中におさまる'},
+    '月 <b>'+fmt(r.bill)+'円</b>（基準の'+(r.bill/B.now.bill).toFixed(2)+'倍）','目安：2023年度の組み合わせで計算した電気代×1.3',
+    '「今の1.3倍」を、このアプリの目安にしています。どこまで払えるかに、ひとつの正解はありません。電気を使う量は、どの案も月400kWhでそろえて計算しています。');
+  add('power','⚡','夕方につくれる電気','電気が足りるか',r.firmKW/r.peak*100,100,level(r.reserve<-35,r.reserve<3),
+    {bad:'足りない電気をどう補う？',warn:r.reserve<0?'足りない電気を補う方法を確認':'電気の余裕が小さい',ok:'この計算では電気が足りる'},
+    'つくれる電気 <b>'+fmt(r.firmKW/r.peak*100)+'%</b>（使う電気を100%として）','必要な電気：100%',
+    '日が沈み、風も弱い夕方を考えます。太陽光は発電せず、風力は最大の力の5%だけ発電する計算です。足りないときは、電気をためる、ほかの地域から送る、別の発電所を使う、使う量を減らすなどの方法があります。ためた電気でどこまで補えるかは、別に調べる必要があります。',true);
+  add('co2','🌡️','CO₂の目安','環境への影響',r.co2,B.now.co2,level(r.co2>B.now.co2+5,r.co2>B.t2030.co2+5),
+    {bad:'2023年度の組み合わせより多い',warn:'2030年度の案より多い',ok:'2030年度の案と同じか少なめ'},
+    '<b>'+fmt(r.co2)+'g/kWh</b>','比較：2023年度の組み合わせで'+fmt(B.now.co2)+'g/kWh',
+    '発電方法ごとに決めた数値を使い、組み合わせによる違いを比べています。バイオマスから出るCO₂は含んでいません。この数字だけで、国全体のCO₂を減らす目標を達成できるかは決められません。');
+  const imp=100-r.dom;
+  add('import','🌏','海外の燃料への頼り方','燃料とお金',imp,80,level(imp>80,imp>60||q.oil>8),
+    {bad:'海外から燃料が届かなくなったら？',warn:'買う国や燃料のたくわえを確認',ok:'目安の中におさまる'},
+    '海外の燃料に頼る割合（原子力を除く） <b>'+fmt(imp)+'%</b>','目安：80%（このアプリで決めた目安）',
+    '80%は「これ以上は無理」という線ではありません。海外から燃料が届かなくなったら、どうするか考えよう。買う国を分ける、燃料をためておく、別の方法で発電するなどの備えができます。原子力も燃料は輸入ですが、数年分をためておけるため、この割合からは外しています。');
+  return L;
 }
 
 function renderChecks(J){
-  const nb = J.filter(x=>x.lv==="bad").length, nw = J.filter(x=>x.lv==="warn").length;
-  $("checksHead").innerHTML = nb
-    ? '<div class="chk bad"><span class="ci">✕</span><span><b>この案は、このままでは実現できません。</b>重大な問題が'+nb+'つ'+(nw?'、注意が'+nw+'つ':'')+'あります。'+
-      '赤いカードの理由を読んで、フェーダーを直してみよう。</span></div>'
-    : (nw
-      ? '<div class="chk warn"><span class="ci">△</span><span><b>実現できそう。ただし注意が'+nw+'つあります。</b>国の目標の案にも注意は出ます。'+
-        '<b>全部を満たす完璧な答えはありません。</b>どれをがまんするかを決めることが、エネルギーを考えるということです。</span></div>'
-      : '<div class="chk ok"><span class="ci">✓</span><span><b>10の限界をすべてクリア！</b>現実に作れそうで、バランスのとれた案です。</span></div>');
-
-  $("checks").innerHTML = J.map(x=>{
-    const fill = Math.min(100, x.v/(x.lim*2)*100);
-    const over = x.higher ? x.v < x.lim : x.v > x.lim;
+  const n=J.filter(x=>x.lv!=='ok').length;
+  $("checksHead").innerHTML='<div class="chk"><span>確かめたいことは <b>'+n+'件</b>。できる・できないや、よい・悪いを決める点数ではありません。心配な点をどう補うか考えよう。</span></div>';
+  $("checks").innerHTML=J.map(x=>{
+    const fill=Math.min(100,x.v/(x.lim*2)*100);
+    const over=x.higher?x.v<x.lim:x.v>x.lim;
     return '<div class="lim '+x.lv+'" id="lim-'+x.k+'">'+
-      '<div class="lim-top"><span class="ic">'+x.ic+'</span><span class="nm">'+x.nm+'</span>'+
-        '<span class="lim-tag">'+(x.lv==="bad"?"✕ ":x.lv==="warn"?"△ ":"✓ ")+x.tag[x.lv]+'</span></div>'+
-      '<div class="lim-bar'+(over?' over':'')+'"><i style="width:'+fill.toFixed(1)+'%"></i><b data-l="'+(x.higher?"必要":"限界")+'"></b></div>'+
-      '<div class="lim-nums"><span>'+x.now+'</span><span>'+x.limT+'</span></div>'+
-      '<p class="lim-why">'+x.why+'</p>'+
-    '</div>';
-  }).join("");
+      '<div class="check-category">'+x.category+'</div><div class="lim-top"><span class="ic">'+x.ic+'</span><span class="nm">'+x.nm+'</span><span class="lim-tag">'+(x.lv==='ok'?'✓ ':'△ ')+x.tag[x.lv]+'</span></div>'+
+      '<div class="lim-bar'+(over?' over':'')+'"><i style="width:'+fill.toFixed(1)+'%"></i><b data-l="'+(x.higher?'需要':'目安')+'"></b></div>'+
+      '<div class="lim-nums"><span>'+x.now+'</span><span>'+x.limT+'</span></div><p class="lim-why">'+x.why+'</p></div>';
+  }).join('');
 }
 
 /* ---------- 卓のすぐ下に出す判定 ---------- */
-function renderVerdict(J, r){
-  const bad = J.filter(x=>x.lv==="bad"), warn = J.filter(x=>x.lv==="warn");
-  const v = $("verdict");
-  v.className = "verdict " + (bad.length ? "bad" : warn.length ? "warn" : "ok");
-  const chip = (x)=> '<button type="button" class="chip '+x.lv+'" data-k="'+x.k+'">'+x.ic+' '+x.tag[x.lv]+'</button>';
-  v.innerHTML =
-    '<div class="vd-h">'+(bad.length
-      ? '✕ この案は、このままでは実現できません <small>理由'+bad.length+'つ'+(warn.length?'・注意'+warn.length+'つ':'')+'</small>'
-      : warn.length ? '△ 実現できそう。でも注意があります <small>注意'+warn.length+'つ</small>'
-                    : '✓ 10の限界をすべてクリア！')+
-    '<small>電気代 月'+fmt(r.bill)+'円（今の'+(r.bill/baseline().now.bill).toFixed(2)+'倍）・CO₂ '+fmt(r.co2)+'g</small></div>'+
-    '<div class="chips">'+bad.map(chip).join("")+warn.map(chip).join("")+
-      (!bad.length && !warn.length ? '<span class="chip ok">✓ 土地・停電・電気代・CO₂ すべてOK</span>' : '')+'</div>';
-  v.querySelectorAll(".chip[data-k]").forEach(c=> c.addEventListener("click", ()=>{
-    const el = $("lim-"+c.dataset.k);
-    if(el){ el.scrollIntoView({behavior:"smooth", block:"center"}); el.animate([{outline:"2px solid #fff"},{outline:"2px solid transparent"}],{duration:1200}); }
-  }));
+function renderVerdict(J,r){
+  const issues=J.filter(x=>x.lv!=='ok');
+  const v=$("verdict"); v.className='verdict '+(issues.length?'warn':'ok');
+  v.innerHTML='<div class="vd-h">組み合わせができました。'+(issues.length?'確かめたいことが'+issues.length+'件あります':'どの項目も目安の中におさまっています')+'</div>'+
+    '<div class="quick-results"><span>電気代の目安 <b>'+fmt(r.bill)+'円/月</b></span><span>CO₂の目安 <b>'+fmt(r.co2)+'g/kWh</b></span><span>海外に頼りにくい割合 <b>'+fmt(r.dom)+'%</b></span><span>夕方の電気の余裕 <b>'+(r.reserve>=0?'+':'')+fmt(r.reserve,1)+'%</b></span></div>'+
+    '<p class="model-caption">どの案も電気を使う量は月400kWh。CO₂はバイオマス分を含みません。夕方の電気は、蓄電池を使わずに足りるかを見ています。</p>'+
+    '<div class="chips">'+issues.map(x=>'<button type="button" class="chip '+x.lv+'" data-k="'+x.k+'">'+x.ic+' '+x.tag[x.lv]+'</button>').join('')+'</div>';
+  v.querySelectorAll('[data-k]').forEach(c=>c.addEventListener('click',()=>$("lim-"+c.dataset.k).scrollIntoView({behavior:'smooth',block:'center'})));
 }
 
-/* ---------- くらべる ---------- */
+
 function mixBar(share){
   return '<div class="mixbar">'+SRC.map(s=> share[s.id]>0.05
     ? '<i style="width:'+share[s.id]+'%;background:'+s.c+'" title="'+s.name+' '+share[s.id].toFixed(1)+'%"></i>' : '').join("")+'</div>';
@@ -1368,12 +1304,12 @@ function renderCompare(r, J){
   h += '<tr><td>再エネの割合</td>'+cols.map(c=>td(c, re(c.r).toFixed(0)+'%')).join("")+'</tr>';
   h += '<tr><td>電気代（月）</td>'+cols.map(c=>td(c, '<span class="'+cls(c.r.bill, B.now.bill*1.02, B.now.bill*1.3, true)+'">'+fmt(c.r.bill)+'円</span>')).join("")+'</tr>';
   h += '<tr><td>CO₂（g/kWh）</td>'+cols.map(c=>td(c, '<span class="'+cls(c.r.co2, B.t2030.co2+5, B.now.co2+5, true)+'">'+fmt(c.r.co2)+'</span>')).join("")+'</tr>';
-  h += '<tr><td>電気の国産率</td>'+cols.map(c=>td(c, '<span class="'+cls(c.r.dom, 40, 20, false)+'">'+c.r.dom.toFixed(0)+'%</span>')).join("")+'</tr>';
-  h += '<tr><td>夕方の予備率</td>'+cols.map(c=>td(c, '<span class="'+cls(c.r.reserve, 3, -35, false)+'">'+(c.r.reserve>=0?"+":"")+c.r.reserve.toFixed(0)+'%</span>')).join("")+'</tr>';
-  h += '<tr><td>実現できる？</td>'+cols.map(c=>{
+  h += '<tr><td>海外に頼りにくい割合</td>'+cols.map(c=>td(c, '<span class="'+cls(c.r.dom, 40, 20, false)+'">'+c.r.dom.toFixed(0)+'%</span>')).join("")+'</tr>';
+  h += '<tr><td>夕方の電気の余裕</td>'+cols.map(c=>td(c, '<span class="'+cls(c.r.reserve, 3, -35, false)+'">'+(c.r.reserve>=0?"+":"")+c.r.reserve.toFixed(1)+'%</span>')).join("")+'</tr>';
+  h += '<tr><td>考えたいこと</td>'+cols.map(c=>{
     const b = c.J.filter(x=>x.lv==="bad"), w = c.J.filter(x=>x.lv==="warn");
-    const head = b.length ? '<span class="badv">✕ 理由'+b.length+'つ</span>' : w.length ? '<span class="mid">△ 注意'+w.length+'つ</span>' : '<span class="good">✓ クリア</span>';
-    return td(c, head+'<div class="cmp-probs">'+b.map(x=>'<span class="badv">✕ '+x.tag.bad+'</span>').join("")+
+    const head = b.length ? '<span class="badv">△ よく考えたい点'+b.length+'つ</span>' : w.length ? '<span class="mid">△ 注意'+w.length+'つ</span>' : '<span class="good">✓ 目安の範囲内</span>';
+    return td(c, head+'<div class="cmp-probs">'+b.map(x=>'<span class="badv">△ '+x.tag.bad+'</span>').join("")+
       w.map(x=>'<span class="mid">△ '+x.tag.warn+'</span>').join("")+'</div>');
   }).join("")+'</tr>';
   h += '<tr><td></td>'+cols.map((c,i)=>td(c, c.me ? '' : '<button class="btn ghost load" data-c="'+i+'">卓に読み込む</button>')).join("")+'</tr>';
@@ -1383,10 +1319,7 @@ function renderCompare(r, J){
     const c = cols[+b.dataset.c]; loadMix(c.v, c.lbl);
   }));
 
-  const n30 = cols[cols.length-2].J.filter(x=>x.lv!=="ok").length;
-  $("cmpNote").innerHTML = '<b>国の目標にも「△ 注意」が出ていることに注目。</b>'+
-    '国の案も、原発の再稼働が進むこと・太陽光や風力を置く場所を見つけること・蓄電池を増やすことが前提になっている、簡単ではない目標です（2030年度の目標には注意が'+n30+'つ）。'+
-    'あなたの案と国の案、どこが同じで、どこが違う？ その違いはなぜ？';
+  $("cmpNote").innerHTML='国の目標には「何%から何%」という幅があります。ここでは、その中からひとつの組み合わせを選んで比べています。将来の電気代や停電を言い当てる表ではありません。<b>あなたの案は、どんなことを大切にしましたか？</b>';
 
   $("savedMsg").textContent = saved ? "記録した案：" + saved.t : "まだ記録していません";
 }
@@ -1396,7 +1329,7 @@ function renderCompare(r, J){
    ========================================================= */
 const EVENTS = [
   {id:"mideast", ic:"🔥", t:"中東で紛争が起きた", metric:"bill",
-   d:"日本が輸入する石油の96%は中東から。タンカーの通り道がふさがれ、石油は3倍、LNGも1.4倍に。",
+   d:"もし石油の値段が3倍、LNGが1.4倍になったら？ この条件で電気代を比べます。",
    opt:{fuelMult:{oil:3.0, lng:1.4}},
    tip:"石油火力を減らしておくほど、この打撃は小さくなります。"},
 
@@ -1406,22 +1339,22 @@ const EVENTS = [
    tip:"「中東さえ避ければ安心」ではありません。石炭もLNGも1つの国に頼りすぎです。"},
 
   {id:"lngwar", ic:"⚓", t:"世界のLNG争奪戦", metric:"bill",
-   d:"ヨーロッパが天然ガスを買い集め、LNGの値段が3倍に。2022年に実際に起きたことです。",
+   d:"もしLNGの値段が3倍になったら？ 過去の値上がりをヒントにした例で、そのときと全く同じ計算ではありません。",
    opt:{fuelMult:{lng:3.0}},
    tip:"2022〜2023年、日本の電気代が一気に上がったのはこれが大きな原因でした。"},
 
   {id:"yen", ic:"💱", t:"1ドル200円の急な円安", metric:"bill",
    d:"燃料はドルで買います。円が安くなると、同じ量を買うのに多くの円が必要になります。",
    opt:{fuelMult:{coal:1.35, lng:1.35, oil:1.35, nuclear:1.35, biomass:1.35}},
-   tip:"燃料のいらない電源（水力・地熱・風力・太陽光）は円安の影響を受けません。"},
+   tip:"ここでは燃料の値段だけを変えて計算しています。燃料がいらない発電でも、海外から機械を買うお金などは増えることがあります。"},
 
   {id:"heat", ic:"🌡️", t:"記録的な猛暑", metric:"reserve",
-   d:"エアコンで電気の使用量が12%増加。いちばん危ないのは、太陽が沈んだ直後の夕方7時。",
+   d:"日が沈んだあと、使う電気が12%増えたら？ 電気が足りるか比べてみよう。",
    opt:{peakMult:1.12},
    tip:"猛暑の昼は太陽光が大活躍。でも夕方、太陽光がゼロになってもエアコンは止まりません。"},
 
   {id:"quake", ic:"🌏", t:"大地震で原子力発電所が全部止まった", metric:"bill",
-   d:"安全確認のため全基が停止。その分をLNG火力でおぎないます。2011年に実際に起きたことです。",
+   d:"原子力でつくっていた電気を、全部LNGでつくると電気代はどうなる？ 実際には、使える火力発電所や燃料が足りるかも確かめる必要があります。",
    mixFn:(m)=>{ const n=Object.assign({},m); n.lng=(n.lng||0)+(n.nuclear||0); n.nuclear=0; return n; },
    tip:"1つの電源に頼りすぎると、それが止まったときに代わりがききません。これが「ミックス」が必要な理由です。北海道でも2018年の胆振東部地震で、道内最大の苫東厚真発電所が止まったことをきっかけに、北海道全体が停電（ブラックアウト）しました。"}
 ];
@@ -1455,9 +1388,9 @@ function runEvent(id){
       '<div class="ev-side" style="border:1px solid rgba(255,154,60,.5)"><span class="l">この出来事のあと</span>'+
       '<span class="v" style="color:'+(d>200?"#ff9a3c":"#5cf2a8")+'">'+fmt(after.bill)+'<small> 円/月</small></span></div></div>';
     if(Math.abs(d)<60){
-      h += '<p class="ev-msg"><b style="color:#5cf2a8">ほとんど影響を受けませんでした。</b>'+
+      h += '<p class="ev-msg"><b style="color:#5cf2a8">この計算では、電気代はあまり変わりませんでした。</b>'+
         'この出来事で値上がりする燃料を、あなたのバンドはあまり使っていないからです。'+
-        'エネルギーの「安全保障」とは、こういう状態をつくることです。<br>'+e.tip+'</p>';
+        '安全保障を考えるには、燃料の備蓄や調達先の分散も確認します。<br>'+e.tip+'</p>';
     } else {
       h += '<p class="ev-msg">1か月の電気代が <b>'+(d>=0?"+":"−")+fmt(Math.abs(d))+'円（'+(pct>=0?"+":"−")+Math.abs(pct).toFixed(0)+'%）</b>。'+
         '1年では <b>'+(d>=0?"+":"−")+fmt(Math.abs(d)*12)+'円</b>、日本中の家庭を合わせると年 <b>'+
@@ -1467,20 +1400,20 @@ function runEvent(id){
     const d = after.reserve - base.reserve;
     const danger = after.reserve < 0;
     h += '<div class="ev-cmp">'+
-      '<div class="ev-side"><span class="l">いつもの予備率</span><span class="v">'+(base.reserve>=0?"+":"")+base.reserve.toFixed(0)+'<small> %</small></span></div>'+
+      '<div class="ev-side"><span class="l">いつもの電気の余裕</span><span class="v">'+(base.reserve>=0?"+":"")+base.reserve.toFixed(1)+'<small> %</small></span></div>'+
       '<div class="ev-arrow">➜</div>'+
       '<div class="ev-side" style="border:1px solid rgba(255,154,60,.5)"><span class="l">この出来事のあと</span>'+
-      '<span class="v" style="color:'+(danger?"#ff5c5c":"#5cf2a8")+'">'+(after.reserve>=0?"+":"")+after.reserve.toFixed(0)+'<small> %</small></span></div></div>';
-    h += '<p class="ev-msg">予備率が <b>'+d.toFixed(0)+'ポイント</b>変化して <b>'+after.reserve.toFixed(0)+'%</b>。'+
+      '<span class="v" style="color:'+(danger?"#ff5c5c":"#5cf2a8")+'">'+(after.reserve>=0?"+":"")+after.reserve.toFixed(1)+'<small> %</small></span></div></div>';
+    h += '<p class="ev-msg">電気の余裕が <b>'+d.toFixed(0)+'ポイント</b>変化して <b>'+after.reserve.toFixed(1)+'%</b>。'+
       (danger
-        ? '<b style="color:#ff5c5c">電気が足りません。</b>計画停電（地域ごとに順番に電気を止めること）が必要になるかもしれません。'+
+        ? '<b style="color:#ff5c5c">この計算では電気が足りません。</b>ためた電気を使う、発電を増やす、ほかの地域から送る、使う量を減らすなどの工夫を考えよう。'+
           '足りない分は <b>'+fmt(after.gapKW/1e6)+'GW</b>＝100万kW級の発電所 <b>'+fmt(after.gapKW/1e6)+'基分</b>です。'
         : 'この出来事が起きても、電気は足りそうです。')+
       '<br>'+e.tip+'</p>';
   }
 
   h += '<p class="ev-msg" style="margin-top:10px;font-size:.76rem;color:var(--txt3)">'+
-    'あなたの構成の輸入依存度：海外からの燃料 <b>'+(100-base.dom).toFixed(0)+'%</b>'+
+    '海外の燃料に頼る割合（原子力を除く）： <b>'+(100-base.dom).toFixed(0)+'%</b>'+
     (base.mideast>0.5 ? ' ／ うち中東から <b>'+base.mideast.toFixed(1)+'%</b>' : '')+
     (base.aus>0.5 ? ' ／ オーストラリアから <b>'+base.aus.toFixed(1)+'%</b>' : '')+'</p>';
 
@@ -1540,17 +1473,17 @@ const INST = {
 };
 
 const ROLES = [
-  {k:"base", inst:"ベース", col:"#4fd8ff", who:"水力・原子力・地熱",
-   band:"曲の最初から最後まで、同じ音をずっと刻みつづける。目立たないけれど、これが無いと曲がスカスカになる。急に速くしたり止めたりするのは苦手。",
-   power:"24時間ずっと一定に発電しつづける電源。出力を細かく上げ下げするのは苦手だが、燃料代が安く、休まない。",
+  {k:"base", inst:"ベース", col:"#4fd8ff", who:"原子力・地熱・流れ込み式水力など",
+   band:"低い音で音楽の土台を支える役。電気でも、長い時間、発電を続けて全体を支える役があります。",
+   power:"原子力・地熱・川の流れをそのまま使う水力などは、長い時間、発電を続けるのが得意です。ただし、点検や故障で止まることもあります。水力の役割は種類によって違います。",
    word:"ベースロード電源"},
-  {k:"drum", inst:"ドラム", col:"#ff9a3c", who:"火力（石炭・LNG・石油）・バイオマス",
+  {k:"drum", inst:"ドラム", col:"#ff9a3c", who:"火力・貯水池式水力・揚水など",
    band:"みんなの演奏を聞きながら、速くしたり遅くしたり、強くしたり弱くしたり。ドラムが抜けると、曲はバラバラになって止まってしまう。",
-   power:"電気の使われ方に合わせて、発電量をすばやく増やしたり減らしたりできる電源。いま日本ではこの役をほぼ火力がやっている。",
+   power:"電気を使う量に合わせて、届ける量を増やしたり減らしたりする役。火力のほか、水をためるタイプの水力、揚水、蓄電池も役立ちます。調整できる速さは発電所によって違います。",
    word:"調整力（ちょうせいりょく）"},
   {k:"solo", inst:"ソロ", col:"#ffd84f", who:"太陽光・風力",
-   band:"決まったときは会場がいちばん沸く、花形。でも気分が乗らない日はまったく鳴らない。ソロだけでは曲にならない。",
-   power:"燃料がタダでCO₂も出さない優等生。でも発電できるかどうかは天気しだいで、こちらから量を決められない。",
+   band:"目立つメロディーで音楽を盛り上げる役。このたとえでは、天気によって音の大きさが変わるメンバーとして考えます。",
+   power:"発電時に燃料を燃やさず、設備の製造などを含めたCO₂も比較的少ない電源。太陽光は日射、風力は風によって発電量が変わります。",
    word:"変動性再生可能エネルギー"}
 ];
 
@@ -1612,7 +1545,7 @@ function buildBand(){
   g += '<path d="'+line(DEMAND)+'" fill="none" stroke="#fff" stroke-width="2.6" stroke-linejoin="round"/>';
 
   /* ラベル */
-  g += '<text x="'+px(3).toFixed(1)+'" y="'+py(16).toFixed(1)+'" fill="#4fd8ff" font-size="12" font-weight="700">ベース（水力・原子力・地熱）</text>';
+  g += '<text x="'+px(3).toFixed(1)+'" y="'+py(16).toFixed(1)+'" fill="#4fd8ff" font-size="12" font-weight="700">ベース（原子力・地熱など）</text>';
   g += '<text x="'+px(10).toFixed(1)+'" y="'+py(58).toFixed(1)+'" fill="#ffd84f" font-size="12" font-weight="700">ソロ（太陽光）</text>';
   g += '<text x="'+px(1.1).toFixed(1)+'" y="'+py(49).toFixed(1)+'" fill="#ff9a3c" font-size="12" font-weight="700">ドラム（火力）</text>';
   g += '<text x="'+px(12.6).toFixed(1)+'" y="'+(py(100)-9).toFixed(1)+'" fill="#fff" font-size="11.5" font-weight="700">みんなが使う電気の量＝曲の音量</text>';
@@ -2052,15 +1985,15 @@ function buildHkMap(){
 const PLANT_INFO = {
   coal:    {look:"黒い石炭の山とベルトコンベア、高い煙突", pt:"燃料の石炭を船で運び、広い貯炭場に積む。煙突がいちばん高い。", where:"海沿い（船で燃料を運ぶため）"},
   lng:     {look:"丸屋根の大きな白い円筒タンクと、細い煙突が数本", pt:"−162℃に冷やして液体にした天然ガスを、分厚い断熱の大きなタンクにためる。港には球形タンクを積んだLNG船が着く。", where:"海沿い（LNG船が着く港のそば）",
-            note:"写真にはまん丸な球形タンクも写っていますが、日本のLNG基地のタンクは丸屋根の円筒形が主流です。町で見かける球形のタンクは、多くが都市ガスをためる「ガスホルダー」です。"},
+            note:"AIイメージにはまん丸な球形タンクも写っていますが、日本のLNG基地のタンクは丸屋根の円筒形が主流です。町で見かける球形のタンクは、多くが都市ガスをためる「ガスホルダー」です。"},
   oil:     {look:"平たい円筒のタンクがずらり", pt:"石油はふつうの液体なので、ふた付きの平たい円柱のタンクにためる。", where:"海沿い（製油所のそば）"},
   nuclear: {look:"丸いドームか四角い建屋。煙突から煙が出ない", pt:"原子炉を分厚いコンクリートで包む。燃やしていないので煙は出ない。海水で冷やす。", where:"海沿い（大量の冷却水が必要）",
-            note:"写真の右にある、湯気を出す大きな塔は「冷却塔」。海外の内陸の原発にはありますが、日本の原発は海水で冷やすので冷却塔はありません。出ているのは煙ではなく水蒸気です。"},
-  hydro:   {look:"ダムと、山を下る太い鉄の管", pt:"高い所にためた水を落として水車を回す。管が太く長いほど大きな力になる。", where:"山あいの川（落差のある場所）"},
+            note:"AIイメージの右にある、湯気を出す大きな塔は「冷却塔」。海外の内陸の原発にはありますが、日本の原発は海水で冷やすので冷却塔はありません。出ているのは煙ではなく水蒸気です。"},
+  hydro:   {look:"ダムと、山を下る太い鉄の管", pt:"高い所にためた水を落として水車を回す。発電できる力は、水量と高さの差で決まる。", where:"山あいの川（落差のある場所）"},
   geo:     {look:"くねくねした銀色の配管と、白い湯気", pt:"地下の熱で沸いた蒸気を井戸から取り出す。配管が曲がっているのは、熱で伸び縮みするため。", where:"火山の近くで、地下に熱い蒸気がある場所"},
   wind:    {look:"3枚の羽根。海の上にも建つ", pt:"羽根が長いほどたくさん発電できる。最近のものは羽根の先まで100mを超える。", where:"風の強い海岸・尾根・洋上"},
   solar:   {look:"南に向けて傾けたパネルの列", pt:"傾けるのは太陽に正面を向けるため。列と列の間をあけるのは、影をつくらないため。", where:"日当たりのよい平地・屋根"},
-  biomass: {look:"木のチップの山とサイロ、白い水蒸気", pt:"木くずやペレットを燃やす。仕組みは火力と同じだが、燃料が木なのでCO₂は差し引きゼロと数える。", where:"森林の近く・港のそば"}
+  biomass: {look:"木のチップの山とサイロ、白い水蒸気", pt:"木くずやペレットを燃やす。仕組みは火力と同じだが、燃焼時にはCO₂が出る。森林の再生、加工・輸送まで含めた評価が必要で、必ずゼロになるわけではない。", where:"森林の近く・港のそば"}
 };
 
 function buildGallery(){
@@ -2068,13 +2001,13 @@ function buildGallery(){
     const i = PLANT_INFO[s.id];
     return '<figure class="pl" data-view="photo" style="--k:'+s.c+'">'+
       '<div class="pl-media">'+
-        '<button class="pl-photo" type="button" data-id="'+s.id+'" aria-label="'+s.name+'の写真を大きく見る">'+
+        '<button class="pl-photo" type="button" data-id="'+s.id+'" aria-label="'+s.name+'のAIイメージを大きく見る">'+
           '<img src="img/'+s.id+'.jpg" srcset="img/'+s.id+'.jpg 640w, img/'+s.id+'@2x.jpg 1200w" sizes="(max-width:620px) 100vw, 380px"'+
-          ' width="640" height="357" loading="lazy" alt="'+s.name+'の発電所の写真（イメージ）">'+
-          '<span class="zoom">🔍 拡大</span></button>'+
+          ' width="640" height="357" loading="lazy" alt="'+s.name+'の発電所のAI生成イメージ（実在の施設ではありません）">'+
+          '<span class="ai-label">AIイメージ・実在の施設ではありません</span><span class="zoom">🔍 拡大</span></button>'+
         '<svg class="pl-svg" viewBox="0 0 240 150" preserveAspectRatio="xMidYMid meet" role="img" aria-label="'+s.name+'の発電所の図解">'+PLANT_SVG[s.id]+'</svg>'+
         '<div class="pl-tabs" role="group" aria-label="表示の切り替え">'+
-          '<button type="button" data-v="photo" class="on">写真</button><button type="button" data-v="svg">図解</button>'+
+          '<button type="button" data-v="photo" class="on">AIイメージ</button><button type="button" data-v="svg">図解</button>'+
         '</div>'+
       '</div>'+
       '<figcaption>'+
@@ -2106,7 +2039,7 @@ function buildGallery(){
   const openLb = (id)=>{
     const src = SRC[SI[id]];
     $("lbImg").src = "img/"+id+"@2x.jpg";
-    $("lbImg").alt = src.name+"の発電所の写真（イメージ）";
+    $("lbImg").alt = src.name+"の発電所のAI生成イメージ（実在の施設ではありません）";
     $("lbCap").innerHTML = '<b style="color:'+src.c+'">'+src.icon+' '+src.name+'</b>　'+PLANT_INFO[id].look+
       (PLANT_INFO[id].note ? '<br><span style="color:#ffd9b0;font-size:.8rem">📷 '+PLANT_INFO[id].note+'</span>' : '');
     lb.hidden = false;
@@ -2122,12 +2055,12 @@ function buildGallery(){
    データ表
    ========================================================= */
 function buildTable(){
-  let h = '<thead><tr><th>発電方法</th><th>バンドの役割</th><th>変換効率</th><th>発電コスト<br>(円/kWh)</th>'+
-          '<th>CO₂<br>(g/kWh)</th><th>設備利用率</th><th>燃料はどこから</th></tr></thead><tbody>';
+  let h = '<thead><tr><th>発電方法</th><th>バンドの役割</th><th>変換効率<br>（電気に変えられる割合）</th><th>発電にかかるお金<br>(円/kWh)</th>'+
+          '<th>CO₂<br>(g/kWh)</th><th>設備利用率<br>（最大出力で1年動いた場合に対する割合）</th><th>燃料はどこから</th></tr></thead><tbody>';
   SRC.forEach(s=>{
     h += '<tr><td><b style="color:'+s.c+'">'+s.icon+' '+s.name+'</b></td>'+
       '<td style="text-align:center">'+s.roleJa+'</td>'+
-      '<td>'+s.eff+'%</td>'+
+      '<td>'+(s.id==='biomass'?'— ※':s.eff+'%')+'</td>'+
       '<td class="'+(s.lcoe<14?"v-good":"v-bad")+'">'+s.lcoe.toFixed(1)+'</td>'+
       '<td class="'+(s.co2<100?"v-good":"v-bad")+'">'+(s.id==="biomass"?"0 ※":fmt(s.co2))+'</td>'+
       '<td>'+(s.cf*100).toFixed(0)+'%</td>'+
@@ -2143,25 +2076,26 @@ function buildTable(){
 function buildSources(){
   $("srcBody").innerHTML =
   '<ul>'+
+  '<li><b>説明の補足</b>：<a href="https://www.enecho.meti.go.jp/category/saving_and_new/saiene/renewable/wind/index.html" target="_blank" rel="noopener">風力は夜間も発電できる</a>／<a href="https://www.enecho.meti.go.jp/about/special/johoteikyo/yousuihatuden.html" target="_blank" rel="noopener">揚水の蓄電・調整の役割</a>（資源エネルギー庁）。</li>'+
   '<li><b>電源構成の目標</b>：第7次エネルギー基本計画（2025年2月18日 閣議決定）― 2040年度は再エネ4〜5割、原子力2割、火力3〜4割。第6次計画の2030年度目標もプリセットに収録。'+
   ' <a href="https://www.enecho.meti.go.jp/category/others/basic_plan/" target="_blank" rel="noopener">資源エネルギー庁</a></li>'+
   '<li><b>発電コスト</b>：総合資源エネルギー調査会 発電コスト検証ワーキンググループ「発電コスト検証に関するとりまとめ」（2025年2月6日）の2040年試算をもとに、各電源の代表値を設定。'+
   ' <a href="https://www.enecho.meti.go.jp/committee/council/basic_policy_subcommittee/mitoshi/cost_wg/" target="_blank" rel="noopener">検証WG</a></li>'+
-  '<li><b>CO₂排出量</b>：電力中央研究所によるライフサイクルCO₂評価（発電設備の製造・建設・燃料輸送まで含めた値）。授業スライドの表と同じ系統の数値です。</li>'+
+  '<li><b>CO₂の量</b>：元のアプリの数値を使っています。元の説明では、電力中央研究所の資料をもとに、発電所をつくるときや燃料を運ぶときのCO₂も数えています。ただし、バイオマス分は0にしているので、同じ条件で比べきれていません。</li>'+
   '<li><b>発電電力量・電源構成の実績</b>：2023年度 9,854億kWh（資源エネルギー庁 電力調査統計）。</li>'+
-  '<li><b>エネルギー自給率</b>：2024年度 16.4%（速報値、原子力を準国産として算入）。このアプリの「電気の国産率」は<b>電気にかぎった別の指標</b>なので数字が違います。</li>'+
+  '<li><b>エネルギー自給率</b>：2024年度 16.4%（速報値、原子力を準国産として算入）。このアプリの「海外に頼りにくい割合」は<b>電気だけを比べる別のものさし</b>なので数字が違います。</li>'+
   '<li><b>燃料の輸入先</b>：財務省貿易統計（2024年）― 原油は中東96%、石炭はオーストラリア72%、LNGはオーストラリア38%。</li>'+
   '<li><b>風力発電</b>：2025年末で累積 6,434MW・2,866基（日本風力発電協会）。1基あたりは4,200kW級を想定。</li>'+
   '<li><b>太陽光</b>：事業用は1kWあたり約15m²の土地が必要（環境省資料）。導入量は約79GW。</li>'+
-  '<li><b>電気代</b>：4人世帯の平均は月13,928円（2025年、総務省家計調査）。本アプリは使用量400kWh/月で計算し、今の電源構成を入れると約12,300円になるよう較正しています。</li>'+
+  '<li><b>電気代</b>：4人世帯の平均は月13,928円（2025年、総務省家計調査）。本アプリは使用量400kWh/月で計算し、今の電源構成を入れると約12,300円になるよう調整しています。</li>'+
   '</ul>'+
   '<p style="font-size:.78rem;color:var(--txt3);line-height:1.8;margin:0 0 16px">'+
   '<b style="color:var(--cyan)">計算のしくみ（ざっくり）</b><br>'+
   '① <b>電気代</b>＝〔各電源の発電コスト×割合の合計〕＋〔蓄電池の費用〕＋〔送配電・小売・再エネ賦課金・税＝17円/kWh〕。これに400kWhをかけています。<br>'+
-  '② <b>CO₂</b>＝各電源のライフサイクルCO₂×割合の合計。年間排出量は9,850億kWhをかけて計算。<br>'+
-  '③ <b>電気の国産率</b>＝燃料を輸入しない電源の割合（原子力は「準国産」として100%、バイオマスは燃料輸入が多いので40%として計上）。<br>'+
-  '④ <b>予備率</b>＝〔曇り・無風の夕方でも頼れる発電能力〕÷〔最大電力1.6億kW〕−1。太陽光と風力はこの条件で5%しか頼れないとしています。足りない分は蓄電池でうめ、その費用を①に足しています。<br>'+
-  '⑤ <b>出力抑制</b>＝太陽光＋風力が30%を超えると、晴れて風の強い日に電気が余って捨てることになります。その分だけ設備を多く建てる必要があるので、コストに上乗せしています。<br>'+
+  '② <b>CO₂</b>＝発電方法ごとのCO₂の数値×その割合を足したもの。バイオマスから出る分は、燃料を運ぶときも含めてまだ数えていません。年間排出量は9,850億kWhをかけて計算。<br>'+
+  '③ <b>海外に頼りにくい割合</b>＝国内の自然の力などでつくる電気の割合。燃料を長くためておける原子力も全部こちらに数えます（「準国産」という扱い）。バイオマスは40%を国内の燃料として数えます。<br>'+
+  '④ <b>電気の余裕（予備率）</b>＝〔つくれる電気÷使う電気−1〕×100%。プラスなら余裕があり、マイナスなら足りません。日が沈んで風が弱い夕方として、使う電気を1.6億kW、太陽光の発電を0、風力を最大の5%で計算しています。足りない分を電池で補うお金は①に足しています。ただし、充電する電気を用意できるか、ためるときにどれだけ失われるかまでは調べていません。<br>'+
+  '⑤ <b>発電をおさえること（出力抑制）</b>：電気が余るときは、発電をおさえる場合があります。このアプリでは太陽光＋風力が30%を超えると、おさえる割合を増やす計算です。実際には場所、送電線、使う電気の量、蓄電池などで変わります。おさえた分を補うための設備のお金も足しています。<br>'+
   '<br>※ 学習用に大きく単純化しています。実際には地域ごとの送電線の制約、揚水発電、需要側の工夫（ディマンドリスポンス）、水素・アンモニア、CCSなども関わります。</p>';
 }
 
@@ -2189,7 +2123,7 @@ function init(){
     syncAll(); render();
   });
   $("btnReset").addEventListener("click", ()=>{
-    if(totalOf()>0 && !confirm("すべてのフェーダーを0にもどします。よろしいですか？")) return;
+    if(totalOf()>0 && !confirm("すべてのスライダーを0にもどします。よろしいですか？")) return;
     SRC.forEach(s=> mix[s.id] = 0 );
     activeEvent = null;
     $("events").querySelectorAll(".ev").forEach(x=>x.classList.remove("on"));
