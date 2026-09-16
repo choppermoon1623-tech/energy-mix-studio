@@ -533,11 +533,11 @@ html{scroll-behavior:smooth;scroll-padding-top:24px}
 .check-category{color:var(--cyan);margin-bottom:6px}
 .lim.ok .lim-why{display:block}
 .panel-sub,.lim-why,.gauge-note,.role-power,.role-band{font-size:.9rem}
-.ai-label{position:absolute;top:8px;left:8px;right:8px;background:#09101de8;padding:4px 8px;border-radius:5px;font-size:.75rem;color:#fff;text-align:left}
+.ai-label{position:absolute;left:8px;bottom:8px;max-width:calc(100% - 96px);background:rgba(0,0,0,.62);padding:2px 8px;border-radius:6px;font-size:.66rem;line-height:1.5;color:#fff;text-align:left}
 .rank-badge{font-size:1.25rem}
 button:disabled{opacity:.45;cursor:not-allowed}
 :focus-visible{outline:3px solid var(--cyan);outline-offset:4px}
-@media(max-width:620px){.quick-results{grid-template-columns:repeat(2,minmax(0,1fr))}.total-bar{position:static}.quick-nav a{flex:1 1 140px;justify-content:center}.lim-top{flex-wrap:wrap}.lim-nums{flex-wrap:wrap;gap:8px}.ai-label{font-size:.75rem}}
+@media(max-width:620px){.quick-results{grid-template-columns:repeat(2,minmax(0,1fr))}.total-bar{position:static}.quick-nav a{flex:1 1 140px;justify-content:center}.lim-top{flex-wrap:wrap}.lim-nums{flex-wrap:wrap;gap:8px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -758,7 +758,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
     </div>
     <ol class="hk-list" id="hkList"></ol>
   </div>
-  <p class="gal-credit">地図：国土数値情報をもとにした都道府県境界データ（dataofjapan/land）を簡略化。発電所の情報は公開版の記載（2026年9月時点として掲載）を継承。運転状況・計画は各事業者の最新発表で確認してください。</p>
+  <p class="gal-credit">地図：国土数値情報をもとにした都道府県境界データ（dataofjapan/land）を簡略化。発電所の情報は北海道電力・各事業者の発表（2026年9月時点で確認）。運転状況や計画は変わることがあります。</p>
 </section>
 
 <!-- ========== 7. データ表 ========== -->
@@ -767,7 +767,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
   <p class="panel-sub">計算に使う数値をまとめました。資料の年や調べ方は、すべて同じではありません。「変換効率」が高い順に、よい発電方法が決まるわけではありません。</p>
   <div class="tblwrap"><table id="dataTable"></table></div>
   <div class="note">
-    <b>読み方のヒント：</b>※ バイオマスの変換効率は、元の数値の意味を確認中のため「—」にしています。CO₂は計算では0にしていますが、実際に出ないわけではありません。<br>「変換効率」は、もとのエネルギーのうち何%を電気に変えられるか。
+    <b>読み方のヒント：</b>※ バイオマスの変換効率は、どこから数えるかで大きく変わるため「—」にしています。CO₂は計算では0にしていますが、実際に出ないわけではありません。<br>「変換効率」は、もとのエネルギーのうち何%を電気に変えられるか。
     効率が低くても<b>燃料代がタダ</b>（太陽光・風力・水力・地熱）でも、設備費・工事費・保守費などがかかります。
     効率だけ・値段だけで決められないのが、エネルギーの難しさです。
   </div>
@@ -1231,11 +1231,11 @@ function judge(r){
     {bad:'燃料を集める方法を考えよう',warn:'燃料をどこから買うか確かめよう',ok:'目安の中におさまる'},
     'バイオマス <b>'+q.biomass.toFixed(1)+'%</b>','目安：6%（このアプリで決めた目安）',
     '木などの燃料を、どこから、どれくらい集められるか考えよう。森林を守りながら使い続けられるかも大切です。このアプリでは燃料の40%を国産として計算しています。バイオマスから出るCO₂はまだ数えていないので、表示は実際より少なくなります。');
-  const nk=r.capKW.nuclear/KW_PER_UNIT, nr=NOW_NUKE*KW_PER_UNIT*8760*SRC[SI.nuclear].cf/E_TOTAL*100;
-  add('nuke','⚛️','必要な原子力発電所','発電所と場所',q.nuclear,nr,level(nk>NOW_NUKE,nk>15.5),
+  const nk=r.capKW.nuclear/KW_PER_UNIT, nr=23.5;
+  add('nuke','⚛️','必要な原子力発電所','発電所と場所',q.nuclear,nr,level(q.nuclear>nr,nk>15.5),
     {bad:'必要な発電所をどうそろえる？',warn:'発電所を動かせるか確かめよう',ok:'目安の中におさまる'},
-    '100万kW級 <b>'+nk.toFixed(1)+'基分</b>','目安：100万kW級33基・利用率70%',
-    '大きさをそろえた発電所が何基必要かを計算しています。実際の発電所は大きさが違います。安全対策や点検、止まっている発電所を動かす条件、地域の人との話し合い、放射性廃棄物の扱いも考える必要があります。');
+    '100万kW級 <b>'+nk.toFixed(1)+'基分</b>','目安：約23%（今ある33基を、止まる期間を短くしてすべて動かした場合）',
+    '大きさをそろえた発電所が何基必要かを計算しています（再稼働しているのは15基、2026年4月時点）。実際の発電所は大きさが違います。安全対策や点検、止まっている発電所を動かす条件、地域の人との話し合い、放射性廃棄物の扱いも考える必要があります。');
   add('bill','💸','電気代の目安','燃料とお金',r.bill,B.now.bill*1.3,level(r.bill>B.now.bill*1.3,r.bill>B.now.bill*1.1),
     {bad:'電気代が高くなる点を考えよう',warn:'今の組み合わせより高め',ok:'目安の中におさまる'},
     '月 <b>'+fmt(r.bill)+'円</b>（基準の'+(r.bill/B.now.bill).toFixed(2)+'倍）','目安：2023年度の組み合わせで計算した電気代×1.3',
@@ -1253,7 +1253,8 @@ function judge(r){
     {bad:'海外から燃料が届かなくなったら？',warn:'買う国や燃料のたくわえを確認',ok:'目安の中におさまる'},
     '海外の燃料に頼る割合（原子力を除く） <b>'+fmt(imp)+'%</b>','目安：80%（このアプリで決めた目安）',
     '80%は「これ以上は無理」という線ではありません。海外から燃料が届かなくなったら、どうするか考えよう。買う国を分ける、燃料をためておく、別の方法で発電するなどの備えができます。原子力も燃料は輸入ですが、数年分をためておけるため、この割合からは外しています。');
-  return L;
+  const order={bad:0,warn:1,ok:2};
+  return L.sort((a,b)=>order[a.lv]-order[b.lv]);
 }
 
 function renderChecks(J){
@@ -1329,7 +1330,7 @@ function renderCompare(r, J){
    ========================================================= */
 const EVENTS = [
   {id:"mideast", ic:"🔥", t:"中東で紛争が起きた", metric:"bill",
-   d:"もし石油の値段が3倍、LNGが1.4倍になったら？ この条件で電気代を比べます。",
+   d:"日本が輸入する石油の約96%は中東から。もし石油の値段が3倍、LNGが1.4倍になったら？ この条件で電気代を比べます。",
    opt:{fuelMult:{oil:3.0, lng:1.4}},
    tip:"石油火力を減らしておくほど、この打撃は小さくなります。"},
 
@@ -2004,7 +2005,7 @@ function buildGallery(){
         '<button class="pl-photo" type="button" data-id="'+s.id+'" aria-label="'+s.name+'のAIイメージを大きく見る">'+
           '<img src="img/'+s.id+'.jpg" srcset="img/'+s.id+'.jpg 640w, img/'+s.id+'@2x.jpg 1200w" sizes="(max-width:620px) 100vw, 380px"'+
           ' width="640" height="357" loading="lazy" alt="'+s.name+'の発電所のAI生成イメージ（実在の施設ではありません）">'+
-          '<span class="ai-label">AIイメージ・実在の施設ではありません</span><span class="zoom">🔍 拡大</span></button>'+
+          '<span class="ai-label">AIイメージ（実在しない施設）</span><span class="zoom">🔍 拡大</span></button>'+
         '<svg class="pl-svg" viewBox="0 0 240 150" preserveAspectRatio="xMidYMid meet" role="img" aria-label="'+s.name+'の発電所の図解">'+PLANT_SVG[s.id]+'</svg>'+
         '<div class="pl-tabs" role="group" aria-label="表示の切り替え">'+
           '<button type="button" data-v="photo" class="on">AIイメージ</button><button type="button" data-v="svg">図解</button>'+
@@ -2081,7 +2082,7 @@ function buildSources(){
   ' <a href="https://www.enecho.meti.go.jp/category/others/basic_plan/" target="_blank" rel="noopener">資源エネルギー庁</a></li>'+
   '<li><b>発電コスト</b>：総合資源エネルギー調査会 発電コスト検証ワーキンググループ「発電コスト検証に関するとりまとめ」（2025年2月6日）の2040年試算をもとに、各電源の代表値を設定。'+
   ' <a href="https://www.enecho.meti.go.jp/committee/council/basic_policy_subcommittee/mitoshi/cost_wg/" target="_blank" rel="noopener">検証WG</a></li>'+
-  '<li><b>CO₂の量</b>：元のアプリの数値を使っています。元の説明では、電力中央研究所の資料をもとに、発電所をつくるときや燃料を運ぶときのCO₂も数えています。ただし、バイオマス分は0にしているので、同じ条件で比べきれていません。</li>'+
+  '<li><b>CO₂の量</b>：電力中央研究所の資料をもとにした値で、発電所をつくるときや燃料を運ぶときのCO₂も数えています。ただし、バイオマスは0として計算しているため、ほかの発電方法と同じ条件では比べきれていません。</li>'+
   '<li><b>発電電力量・電源構成の実績</b>：2023年度 9,854億kWh（資源エネルギー庁 電力調査統計）。</li>'+
   '<li><b>エネルギー自給率</b>：2024年度 16.4%（速報値、原子力を準国産として算入）。このアプリの「海外に頼りにくい割合」は<b>電気だけを比べる別のものさし</b>なので数字が違います。</li>'+
   '<li><b>燃料の輸入先</b>：財務省貿易統計（2024年）― 原油は中東96%、石炭はオーストラリア72%、LNGはオーストラリア38%。</li>'+
