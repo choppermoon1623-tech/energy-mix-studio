@@ -88,6 +88,48 @@ h1{
 }
 .panel-sub{color:var(--txt3);font-size:.82rem;margin:0 0 16px}
 
+/* ---------- なぜバンド？ ---------- */
+.num.note{background:linear-gradient(180deg,var(--yellow),#c9a217)}
+.why{
+  background:linear-gradient(180deg,rgba(79,216,255,.09),rgba(79,216,255,.03));
+  border:1px solid rgba(79,216,255,.3);border-radius:13px;
+  padding:16px 18px;font-size:.88rem;line-height:1.85;margin-bottom:18px;
+}
+.why .big{
+  display:block;font-size:1.18rem;font-weight:800;color:var(--cyan);
+  margin:6px 0 8px;letter-spacing:.01em;
+}
+.why b{color:#fff}
+.roles{display:grid;grid-template-columns:repeat(auto-fit,minmax(252px,1fr));gap:14px}
+.rc{
+  background:#0f141d;border:1px solid var(--line);border-top:3px solid var(--k);
+  border-radius:14px;padding:15px;display:flex;flex-direction:column;gap:9px;
+}
+.rc-top{display:flex;align-items:center;gap:12px}
+.rc-inst{width:74px;height:60px;flex:none}
+.rc h4{margin:0;font-size:1.02rem;color:var(--k);font-weight:800}
+.rc-who{margin:0;font-size:.76rem;color:var(--txt2)}
+.rc p{margin:0;font-size:.79rem;line-height:1.7;color:var(--txt2)}
+.rc p b{
+  display:inline-block;color:var(--k);font-size:.68rem;font-weight:700;
+  border:1px solid currentColor;border-radius:4px;padding:0 5px;margin-right:6px;
+  vertical-align:.08em;
+}
+.rc-word{margin-top:auto!important;padding-top:7px;border-top:1px dashed var(--line2);
+  font-size:.74rem!important;color:var(--txt3)!important}
+.rc-word b{border:none!important;padding:0!important;font-size:.82rem!important;color:var(--k)!important}
+.daywrap{overflow-x:auto;margin-top:6px}
+.daywrap svg{display:block;min-width:470px;width:100%;height:auto}
+.scrollhint{font-size:.72rem;color:var(--txt3);margin:4px 0 0}
+.maptbl{width:100%;border-collapse:collapse;font-size:.81rem;margin-top:6px;min-width:0}
+.maptbl td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:normal}
+.maptbl tr:last-child td{border-bottom:none}
+.maptbl td:first-child{color:var(--yellow);font-weight:600;width:44%}
+.maptbl td:last-child{color:var(--txt2)}
+.arrow-col{color:var(--txt3);width:1em;text-align:center!important}
+h3.sub-h{font-size:.98rem;margin:22px 0 4px;display:flex;align-items:center;gap:8px}
+h3.sub-h::before{content:"";width:3px;height:16px;background:var(--cyan);border-radius:2px}
+
 /* ---------- プリセット ---------- */
 .presets{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
 .preset{
@@ -339,6 +381,58 @@ footer{text-align:center;color:var(--txt3);font-size:.74rem;padding-top:30px;lin
   <p class="sub">電気をつくる方法（バンドメンバー）の割合を自分で決めると、<br>
   <b>電気代・CO₂・電気の国産率・停電しにくさ</b>がその場で計算されます。</p>
 </header>
+
+<!-- ========== 0. なぜバンド？ ========== -->
+<section class="panel">
+  <h2 class="panel-h"><span class="num note"><svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path d="M6 12.2V3.6l7-1.4v7.2" fill="none" stroke="#1a1403" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="4" cy="12.4" r="2.3" fill="#1a1403"/><circle cx="11" cy="10.4" r="2.3" fill="#1a1403"/></svg></span>なぜ「バンド」にたとえるの？</h2>
+  <p class="panel-sub">まずここを読むと、このあとの操作がぜんぶ腑に落ちます。</p>
+
+  <div class="why">
+    電気には、ほかのモノにはない大きな特徴があります。
+    <span class="big">電気は、ためておけない。</span>
+    いま発電した電気は、いま誰かが使っています。倉庫に積んでおくことができません。
+    だから発電は「録音」ではなく <b>生演奏</b> です。
+    みんなが使う量（＝曲の音量）に合わせて、つくる量をその瞬間ごとにピッタリ合わせ続けなければいけません。
+    合わせられずに演奏が崩れると、曲が止まる ―― それが <b>停電</b> です。<br>
+    ひとつの楽器で最初から最後まで演奏しきるのは無理。だから<b>役割のちがうメンバーを集める</b>。
+    これが「エネルギーミックス」です。
+  </div>
+
+  <h3 class="sub-h">3つのパート</h3>
+  <div class="roles" id="roles"></div>
+
+  <h3 class="sub-h">1日の演奏を見てみよう</h3>
+  <p class="panel-sub" style="margin-bottom:8px">夏のある1日。白い線が「みんなが使う電気の量」＝曲の音量。その下を3つのパートで埋めていきます。</p>
+  <div class="daywrap"><svg id="dayChart" viewBox="0 0 490 236" role="img" aria-label="1日の電気の使われ方と、3つのパートの分担を示したグラフ"></svg></div>
+  <p class="scrollhint">※ グラフが切れている場合は横にスクロールできます</p>
+  <div class="note" style="border-left-color:var(--red);background:rgba(255,92,92,.06)">
+    <b style="color:var(--red)">⚡ 山場は夕方（赤い点線）。</b>
+    日が沈んで <b>ソロ（太陽光）の音がゼロ</b> になっても、みんなが使う量はほとんど減りません。
+    夜ごはん、おふろ、エアコン、照明 ―― むしろ増えます。
+    このとき、消えたソロのぶんを <b>ドラム（火力）が一気に働いて埋めています</b>。
+    昼にほとんど休んでいたドラムが、夕方だけフル演奏する。これが毎日くり返されています。<br>
+    <b>だから「太陽光をたくさん増やせば火力はいらない」とはならない</b>のです。
+    夕方に叩いてくれるメンバーは、どうしても必要になります。
+  </div>
+
+  <h3 class="sub-h">ひとりぼっちのバンドはどうなる？</h3>
+  <div class="checks" style="margin-top:6px">
+    <div class="chk warn"><span class="ci">🎤</span><span><b>ソロだけのバンド（太陽光・風力だけ）</b>…… 昼は元気いっぱい。でも日が沈んだ瞬間に無音になります。夜、誰も演奏していません。</span></div>
+    <div class="chk warn"><span class="ci">🥁</span><span><b>ドラムだけのバンド（火力だけ）</b>…… 演奏はちゃんと成立します。でも燃料代が毎年何兆円も海外に出ていき、CO₂も出しつづけます。</span></div>
+    <div class="chk warn"><span class="ci">🎸</span><span><b>ベースだけのバンド（原子力・水力だけ）</b>…… 止まらないのは強い。でも音量を細かく変えられないので、みんなが一気に電気を使う夕方に足りなくなります。</span></div>
+    <div class="chk ok"><span class="ci">🎶</span><span><b>だから、混ぜる。</b>お互いの苦手なところを、ほかのメンバーが埋める。次の「ミキシング卓」で、あなたのバンドを組んでみよう。</span></div>
+  </div>
+
+  <h3 class="sub-h">ことばの対応表</h3>
+  <table class="maptbl">
+    <tr><td>曲の音量</td><td class="arrow-col">→</td><td>みんなが使う電気の量（需要）</td></tr>
+    <tr><td>演奏の音の大きさ</td><td class="arrow-col">→</td><td>発電している量（供給）</td></tr>
+    <tr><td>曲のテンポ</td><td class="arrow-col">→</td><td>電気の周波数（東日本50Hz・西日本60Hz）</td></tr>
+    <tr><td>演奏が崩れて止まる</td><td class="arrow-col">→</td><td>停電</td></tr>
+    <tr><td>バンドのメンバー表</td><td class="arrow-col">→</td><td>電源構成（エネルギーミックス）</td></tr>
+    <tr><td>ミキシング卓をさわる人</td><td class="arrow-col">→</td><td>国のエネルギー政策を決める人、そして私たち</td></tr>
+  </table>
+</section>
 
 <!-- ========== 1. ミキサー ========== -->
 <section class="panel">
@@ -1000,6 +1094,144 @@ function runEvent(id){
 }
 
 /* =========================================================
+   なぜ「バンド」にたとえるのか ― 解説セクション
+   ========================================================= */
+
+/* --- 楽器のイラスト（viewBox 0 0 88 72） --- */
+const INST = {
+  /* ベースアンプ：どっしり置かれて、ずっと同じ音を支える */
+  base:
+    '<rect x="14" y="10" width="60" height="56" rx="4" fill="#1d2a3a" stroke="#4fd8ff" stroke-width="1.8"/>'+
+    '<rect x="18" y="14" width="52" height="11" rx="2" fill="#0f1826" stroke="#3a6f8c" stroke-width="1"/>'+
+    '<circle cx="24" cy="19.5" r="2.2" fill="#4fd8ff"/><circle cx="32" cy="19.5" r="2.2" fill="#2a5a72"/>'+
+    '<circle cx="40" cy="19.5" r="2.2" fill="#2a5a72"/><circle cx="48" cy="19.5" r="2.2" fill="#2a5a72"/>'+
+    '<circle cx="34" cy="43" r="13" fill="#132030" stroke="#4fd8ff" stroke-width="1.5"/>'+
+    '<circle cx="34" cy="43" r="5" fill="#25405a" stroke="#4fd8ff" stroke-width="1"/>'+
+    '<circle cx="58" cy="43" r="8.5" fill="#132030" stroke="#4fd8ff" stroke-width="1.3"/>'+
+    '<circle cx="58" cy="43" r="3.2" fill="#25405a" stroke="#4fd8ff" stroke-width="1"/>'+
+    '<rect x="20" y="66" width="6" height="4" fill="#2a3a4d"/><rect x="62" y="66" width="6" height="4" fill="#2a3a4d"/>'+
+    /* 一定のリズムを表す波 */
+    '<path d="M2,58 l3,-6 l3,6 l3,-6 l3,6" fill="none" stroke="#4fd8ff" stroke-width="1.4" opacity=".7"/>',
+
+  /* ドラム：叩き方を変えてテンポを合わせる */
+  drum:
+    '<line x1="70" y1="16" x2="70" y2="54" stroke="#6b7b94" stroke-width="1.8"/>'+
+    '<ellipse cx="70" cy="15" rx="15" ry="3.2" fill="#ffb14c" opacity=".85"/>'+
+    '<path d="M55,15 q15,7 30,0" fill="none" stroke="#ff9a3c" stroke-width="1.2"/>'+
+    '<circle cx="30" cy="44" r="21" fill="#1f2a38" stroke="#ff9a3c" stroke-width="2"/>'+
+    '<circle cx="30" cy="44" r="14" fill="#2c3a4c" stroke="#ff9a3c" stroke-width="1.2"/>'+
+    '<circle cx="30" cy="44" r="4" fill="#ff9a3c" opacity=".8"/>'+
+    '<line x1="9" y1="44" x2="4" y2="48" stroke="#6b7b94" stroke-width="2"/>'+
+    '<line x1="51" y1="44" x2="56" y2="48" stroke="#6b7b94" stroke-width="2"/>'+
+    /* スティック */
+    '<line x1="44" y1="24" x2="62" y2="34" stroke="#d9c39a" stroke-width="2.4" stroke-linecap="round"/>'+
+    '<line x1="48" y1="20" x2="66" y2="26" stroke="#d9c39a" stroke-width="2.4" stroke-linecap="round"/>'+
+    /* 速さを変えられることを表す波 */
+    '<path d="M2,62 l2,-5 l2,5 l4,-9 l3,9 l6,-4" fill="none" stroke="#ff9a3c" stroke-width="1.4" opacity=".7"/>',
+
+  /* ギター：決まれば最高に目立つソロ */
+  solo:
+    '<line x1="46" y1="44" x2="76" y2="14" stroke="#8a6a3a" stroke-width="5" stroke-linecap="round"/>'+
+    '<line x1="46" y1="44" x2="76" y2="14" stroke="#c9a367" stroke-width="2.4" stroke-linecap="round"/>'+
+    '<path d="M74,12 l8,-8 l5,5 l-8,8 z" fill="#2c3a4c" stroke="#ffd84f" stroke-width="1.4"/>'+
+    '<path d="M30,34 q13,-5 19,7 q5,11 -5,17 q-11,7 -21,1 q-9,-6 -14,-2 q-6,5 -7,-4 q-1,-10 7,-15 q10,-6 21,-4 z" '+
+      'fill="#2a2030" stroke="#ffd84f" stroke-width="1.8"/>'+
+    '<circle cx="34" cy="47" r="6" fill="#171320" stroke="#ffd84f" stroke-width="1.3"/>'+
+    '<line x1="18" y1="54" x2="30" y2="52" stroke="#ffd84f" stroke-width="1"/>'+
+    '<line x1="19" y1="58" x2="31" y2="56" stroke="#ffd84f" stroke-width="1"/>'+
+    '<rect x="14" y="50" width="7" height="11" rx="1.5" fill="#3a3145" stroke="#ffd84f" stroke-width="1.1"/>'+
+    /* 出たり出なかったりを表す波 */
+    '<path d="M2,16 l3,0 l0,-8 l3,8 l3,0" fill="none" stroke="#ffd84f" stroke-width="1.4" opacity=".7"/>'
+};
+
+const ROLES = [
+  {k:"base", inst:"ベース", col:"#4fd8ff", who:"水力・原子力・地熱",
+   band:"曲の最初から最後まで、同じ音をずっと刻みつづける。目立たないけれど、これが無いと曲がスカスカになる。急に速くしたり止めたりするのは苦手。",
+   power:"24時間ずっと一定に発電しつづける電源。出力を細かく上げ下げするのは苦手だが、燃料代が安く、休まない。",
+   word:"ベースロード電源"},
+  {k:"drum", inst:"ドラム", col:"#ff9a3c", who:"火力（石炭・LNG・石油）・バイオマス",
+   band:"みんなの演奏を聞きながら、速くしたり遅くしたり、強くしたり弱くしたり。ドラムが抜けると、曲はバラバラになって止まってしまう。",
+   power:"電気の使われ方に合わせて、発電量をすばやく増やしたり減らしたりできる電源。いま日本ではこの役をほぼ火力がやっている。",
+   word:"調整力（ちょうせいりょく）"},
+  {k:"solo", inst:"ソロ", col:"#ffd84f", who:"太陽光・風力",
+   band:"決まったときは会場がいちばん沸く、花形。でも気分が乗らない日はまったく鳴らない。ソロだけでは曲にならない。",
+   power:"燃料がタダでCO₂も出さない優等生。でも発電できるかどうかは天気しだいで、こちらから量を決められない。",
+   word:"変動性再生可能エネルギー"}
+];
+
+/* --- 1日の電気の使われ方グラフ（バンドの演奏にたとえる） --- */
+const DEMAND = [70,66,63,62,62,64,68,74,82,90,95,97,93,97,100,99,96,92,90,92,90,86,80,74];
+const SOLARD = [ 0, 0, 0, 0, 0, 2, 8,18,30,42,50,55,56,53,45,34,22,11, 3, 0, 0, 0, 0, 0];
+const BASELV  = 35;
+
+function buildBand(){
+  /* 役割カード */
+  $("roles").innerHTML = ROLES.map(r=>
+    '<div class="rc" style="--k:'+r.col+'">'+
+      '<div class="rc-top">'+
+        '<svg viewBox="0 0 88 72" class="rc-inst" role="img" aria-label="'+r.inst+'">'+INST[r.k]+'</svg>'+
+        '<div><h4>'+r.inst+'</h4><p class="rc-who">'+r.who+'</p></div>'+
+      '</div>'+
+      '<p class="rc-band"><b>バンドでは</b>'+r.band+'</p>'+
+      '<p class="rc-pow"><b>電気では</b>'+r.power+'</p>'+
+      '<p class="rc-word">むずかしく言うと ▶ <b>'+r.word+'</b></p>'+
+    '</div>').join("");
+
+  /* 1日のグラフ */
+  const X0=46, X1=470, Y0=210, Y1=26, VMAX=110, N=24;
+  const px = h => X0 + h*(X1-X0)/(N-1);
+  const py = v => Y0 - v*(Y0-Y1)/VMAX;
+  const zero = new Array(N).fill(0);
+  const base = new Array(N).fill(BASELV);
+  const baseSolar = SOLARD.map(s=>s+BASELV);
+  const area = (lo,up)=>{
+    let d = "M"+px(0).toFixed(1)+","+py(up[0]).toFixed(1);
+    for(let h=1;h<N;h++) d += "L"+px(h).toFixed(1)+","+py(up[h]).toFixed(1);
+    for(let h=N-1;h>=0;h--) d += "L"+px(h).toFixed(1)+","+py(lo[h]).toFixed(1);
+    return d+"Z";
+  };
+  const line = (arr)=>{
+    let d = "M"+px(0).toFixed(1)+","+py(arr[0]).toFixed(1);
+    for(let h=1;h<N;h++) d += "L"+px(h).toFixed(1)+","+py(arr[h]).toFixed(1);
+    return d;
+  };
+
+  let g = "";
+  /* 目盛り */
+  for(let h=0;h<=24;h+=6){
+    const x = px(Math.min(h,23));
+    g += '<line x1="'+x.toFixed(1)+'" y1="'+Y1+'" x2="'+x.toFixed(1)+'" y2="'+Y0+'" stroke="#263142" stroke-width="1"/>'+
+         '<text x="'+x.toFixed(1)+'" y="'+(Y0+16)+'" fill="#6b7b94" font-size="11" text-anchor="middle">'+h+'時</text>';
+  }
+  g += '<line x1="'+X0+'" y1="'+Y0+'" x2="'+X1+'" y2="'+Y0+'" stroke="#3d4a5f" stroke-width="1.5"/>';
+  g += '<text x="'+(X0-8)+'" y="'+(Y1+10)+'" fill="#6b7b94" font-size="11" text-anchor="end">多い</text>';
+  g += '<text x="'+(X0-8)+'" y="'+(Y0-2)+'" fill="#6b7b94" font-size="11" text-anchor="end">０</text>';
+
+  /* 3つのパートを積み上げる */
+  g += '<path d="'+area(zero,base)+'" fill="#4fd8ff" opacity=".34"/>';
+  g += '<path d="'+area(base,baseSolar)+'" fill="#ffd84f" opacity=".34"/>';
+  g += '<path d="'+area(baseSolar,DEMAND)+'" fill="#ff9a3c" opacity=".32"/>';
+  g += '<path d="'+line(base)+'" fill="none" stroke="#4fd8ff" stroke-width="2"/>';
+  g += '<path d="'+line(baseSolar)+'" fill="none" stroke="#ffd84f" stroke-width="2"/>';
+  /* 需要（曲の音量） */
+  g += '<path d="'+line(DEMAND)+'" fill="none" stroke="#fff" stroke-width="2.6" stroke-linejoin="round"/>';
+
+  /* ラベル */
+  g += '<text x="'+px(3).toFixed(1)+'" y="'+py(16).toFixed(1)+'" fill="#4fd8ff" font-size="12" font-weight="700">ベース（水力・原子力・地熱）</text>';
+  g += '<text x="'+px(10).toFixed(1)+'" y="'+py(58).toFixed(1)+'" fill="#ffd84f" font-size="12" font-weight="700">ソロ（太陽光）</text>';
+  g += '<text x="'+px(1.1).toFixed(1)+'" y="'+py(49).toFixed(1)+'" fill="#ff9a3c" font-size="12" font-weight="700">ドラム（火力）</text>';
+  g += '<text x="'+px(12.6).toFixed(1)+'" y="'+(py(100)-9).toFixed(1)+'" fill="#fff" font-size="11.5" font-weight="700">みんなが使う電気の量＝曲の音量</text>';
+
+  /* 夕方の山場：グラフ内は目印だけ（説明は下のキャプション） */
+  const ex = px(19), eTop = py(DEMAND[19]), eBot = py(baseSolar[19]);
+  g += '<path d="M'+ex.toFixed(1)+','+(eBot-1).toFixed(1)+' L'+ex.toFixed(1)+','+(eTop+3).toFixed(1)+'" stroke="#ff5c5c" stroke-width="2" stroke-dasharray="4 3"/>';
+  g += '<path d="M'+(ex-4).toFixed(1)+','+(eTop+8).toFixed(1)+' L'+ex.toFixed(1)+','+(eTop+2).toFixed(1)+' L'+(ex+4).toFixed(1)+','+(eTop+8).toFixed(1)+'" fill="#ff5c5c"/>';
+  g += '<path d="M'+(ex-4).toFixed(1)+','+(eBot-7).toFixed(1)+' L'+ex.toFixed(1)+','+(eBot-1).toFixed(1)+' L'+(ex+4).toFixed(1)+','+(eBot-7).toFixed(1)+'" fill="#ff5c5c"/>';
+
+  $("dayChart").innerHTML = g;
+}
+
+/* =========================================================
    発電所図鑑 ― それぞれの発電所はどんな形か
    すべてインラインSVGで描画（viewBox 0 0 240 150）
    ========================================================= */
@@ -1356,6 +1588,7 @@ function init(){
   buildPresets();
   buildMixer();
   buildEvents();
+  buildBand();
   buildGallery();
   buildTable();
   buildSources();
