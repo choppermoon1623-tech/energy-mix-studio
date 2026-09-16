@@ -314,7 +314,48 @@ input[type=range]::-moz-range-thumb{
   margin:0;background:#0f141d;border:1px solid var(--line);border-radius:14px;
   overflow:hidden;border-top:3px solid var(--k);display:flex;flex-direction:column;
 }
-.pl svg{display:block;width:100%;height:auto;background:#0c1220}
+.pl-media{position:relative;aspect-ratio:16/10;background:#0c1220;overflow:hidden}
+.pl-media > svg,.pl-photo{position:absolute;inset:0;width:100%;height:100%}
+.pl-photo{padding:0;border:0;margin:0;background:none;cursor:zoom-in;display:block}
+.pl-photo img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .35s}
+.pl-photo:hover img{transform:scale(1.04)}
+.pl-photo .zoom{
+  position:absolute;right:8px;bottom:8px;font-size:.66rem;color:#fff;
+  background:rgba(0,0,0,.55);border-radius:6px;padding:2px 7px;opacity:.85;
+}
+.pl[data-view="photo"] .pl-svg{display:none}
+.pl[data-view="svg"] .pl-photo{display:none}
+.pl-tabs{
+  position:absolute;left:8px;top:8px;display:flex;border-radius:8px;overflow:hidden;
+  background:rgba(8,12,20,.72);border:1px solid rgba(255,255,255,.18);
+}
+.pl-tabs button,.seg button{
+  font-family:inherit;border:0;background:transparent;color:var(--txt2);cursor:pointer;
+  font-size:.7rem;padding:3px 10px;font-weight:600;
+}
+.pl-tabs button.on{background:var(--k);color:#06101a}
+.pl-note{
+  font-size:.73rem!important;color:#ffd9b0!important;background:rgba(255,154,60,.08);
+  border:1px solid rgba(255,154,60,.28);border-radius:8px;padding:6px 9px;
+}
+.gal-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.seg{display:inline-flex;border:1px solid var(--line2);border-radius:9px;overflow:hidden}
+.seg button{font-size:.78rem;padding:6px 13px}
+.seg button.on{background:linear-gradient(180deg,var(--cyan),var(--cyan-d));color:#04121a}
+.gal-hint{font-size:.75rem;color:var(--txt3);flex:1;min-width:200px}
+.gal-credit{font-size:.7rem;color:var(--txt3);margin:10px 0 0}
+.lightbox{
+  position:fixed;inset:0;z-index:50;background:rgba(3,6,12,.97);
+  display:flex;align-items:center;justify-content:center;padding:16px;cursor:zoom-out;
+}
+.lightbox[hidden]{display:none!important}
+.lightbox figure{margin:0;position:relative;max-width:min(1200px,100%);max-height:100%;overflow-y:auto;padding-top:16px;cursor:default}
+.lightbox img{display:block;max-width:100%;max-height:72vh;border-radius:10px;box-shadow:0 10px 40px rgba(0,0,0,.6)}
+.lightbox figcaption{color:var(--txt2);font-size:.85rem;margin-top:10px;text-align:center}
+.lb-close{
+  position:absolute;top:0;right:0;width:36px;height:36px;border-radius:50%;
+  border:1px solid var(--line2);background:#1d2431;color:#fff;font-size:1rem;cursor:pointer;
+}
 .pl figcaption{padding:13px 15px 15px;display:flex;flex-direction:column;gap:6px}
 .pl h4{margin:0;font-size:.95rem;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
 .pl p{margin:0;font-size:.78rem;line-height:1.65}
@@ -527,10 +568,17 @@ footer{text-align:center;color:var(--txt3);font-size:.74rem;padding-top:30px;lin
 <section class="panel">
   <h2 class="panel-h"><span class="num">6</span>発電所図鑑 ― どんな形をしているの？</h2>
   <p class="panel-sub">同じ「発電所」でも見た目はまったく違います。遠くから見て何の発電所か当てられるようになろう。</p>
+  <div class="gal-bar">
+    <div class="seg" id="galleryAll" role="group" aria-label="すべてのカードの表示">
+      <button type="button" data-v="photo" class="on">📷 ぜんぶ写真</button><button type="button" data-v="svg">✏️ ぜんぶ図解</button>
+    </div>
+    <span class="gal-hint">写真で「本物の雰囲気」、図解で「見るポイント」をつかもう。写真は押すと大きくなります。</span>
+  </div>
   <div class="gallery" id="gallery"></div>
+  <p class="gal-credit">※ 写真は発電所の特徴をつかむためのイメージ画像（AIで作成）で、実在の発電所ではありません。看板の文字なども実物とは関係ありません。</p>
   <div class="note">
     <b>見分けかたのコツ：</b>まず<b>煙突</b>をさがす。煙突があれば燃やしている＝火力かバイオマス。
-    そのうち<b>まん丸なタンク</b>があればLNG、<b>黒い山</b>があれば石炭、<b>平たい円筒のタンク</b>が並んでいれば石油。
+    そのうち<b>黒い山</b>があれば石炭、<b>丸屋根の大きなタンク</b>と細い煙突の組み合わせならLNG、<b>平たい円筒のタンク</b>がずらりと並んでいれば石油。
     煙突がないのに海沿いに巨大な建屋があれば原子力です。
   </div>
 </section>
@@ -546,6 +594,14 @@ footer{text-align:center;color:var(--txt3);font-size:.74rem;padding-top:30px;lin
     効率だけ・値段だけで決められないのが、エネルギーの難しさです。
   </div>
 </section>
+
+<div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="写真の拡大表示">
+  <figure>
+    <button class="lb-close" id="lbClose" type="button" aria-label="閉じる">✕</button>
+    <img id="lbImg" alt="">
+    <figcaption id="lbCap"></figcaption>
+  </figure>
+</div>
 
 <details class="src">
   <summary>📚 データの出典と、計算のしかた（先生・生徒むけ）</summary>
@@ -1294,31 +1350,25 @@ coal: SKY + sea(0,58) + GROUND +
   '<rect x="151" y="44" width="10" height="3" fill="#ff5c5c" opacity=".8"/>'+
   '<rect x="211" y="96" width="24" height="22" fill="#232d3c" stroke="#4a5769" stroke-width="1"/>',
 
-/* ---- LNG火力：白くて丸いタンク ---- */
+/* ---- LNG火力：丸屋根の大きな円筒タンク（球形タンクはLNG船） ---- */
 lng: SKY + sea(0,44) + GROUND +
   smoke(196,44,.62,.3) +
-  /* LNG船（丸いタンクを積む） */
+  /* LNG船（球形タンクを並べて積む） */
   '<path d="M2,110 L40,110 L36,118 L6,118 Z" fill="#26313f" stroke="#3d4a5f" stroke-width="1"/>'+
   '<circle cx="14" cy="104" r="6" fill="#cfd8e6" stroke="#8b98ab" stroke-width="1"/>'+
   '<circle cx="28" cy="104" r="6" fill="#cfd8e6" stroke="#8b98ab" stroke-width="1"/>'+
-  /* 球形タンク3基（LNGの目印） */
-  '<g>'+
-  '<line x1="58" y1="104" x2="58" y2="118" stroke="#5c6b80" stroke-width="2"/>'+
-  '<line x1="50" y1="106" x2="53" y2="118" stroke="#5c6b80" stroke-width="1.6"/>'+
-  '<line x1="66" y1="106" x2="63" y2="118" stroke="#5c6b80" stroke-width="1.6"/>'+
-  '<circle cx="58" cy="92" r="16" fill="#e6ecf5" stroke="#ffb14c" stroke-width="1.6"/>'+
-  '<ellipse cx="53" cy="86" rx="5" ry="3.4" fill="#fbfdff" opacity=".85"/>'+
-  '</g><g>'+
-  '<line x1="95" y1="106" x2="95" y2="118" stroke="#5c6b80" stroke-width="2"/>'+
-  '<line x1="88" y1="108" x2="90" y2="118" stroke="#5c6b80" stroke-width="1.6"/>'+
-  '<line x1="102" y1="108" x2="100" y2="118" stroke="#5c6b80" stroke-width="1.6"/>'+
-  '<circle cx="95" cy="95" r="13" fill="#e6ecf5" stroke="#ffb14c" stroke-width="1.6"/>'+
-  '<ellipse cx="91" cy="90" rx="4" ry="2.8" fill="#fbfdff" opacity=".85"/>'+
-  '</g><g>'+
-  '<line x1="127" y1="108" x2="127" y2="118" stroke="#5c6b80" stroke-width="2"/>'+
-  '<circle cx="127" cy="99" r="10" fill="#e6ecf5" stroke="#ffb14c" stroke-width="1.6"/>'+
-  '<ellipse cx="124" cy="95" rx="3" ry="2.2" fill="#fbfdff" opacity=".85"/></g>'+
-  '<text x="92" y="134" fill="#7d8a9d" font-size="9" text-anchor="middle">球形のLNGタンク</text>'+
+  '<text x="21" y="143" fill="#7d8a9d" font-size="8" text-anchor="middle">LNG船</text>'+
+  /* 丸屋根の大きな円筒タンク2基（-162℃を保つため分厚い断熱） */
+  '<rect x="50" y="80" width="42" height="38" fill="#e6ecf5" stroke="#ffb14c" stroke-width="1.6"/>'+
+  '<path d="M50,80 Q71,66 92,80 Z" fill="#f4f7fb" stroke="#ffb14c" stroke-width="1.6"/>'+
+  '<line x1="50" y1="92" x2="92" y2="92" stroke="#b9c4d4" stroke-width=".8"/>'+
+  '<line x1="50" y1="104" x2="92" y2="104" stroke="#b9c4d4" stroke-width=".8"/>'+
+  '<path d="M86,118 L92,108 M86,108 L92,98" stroke="#8b98ab" stroke-width="1"/>'+
+  '<rect x="98" y="88" width="36" height="30" fill="#e6ecf5" stroke="#ffb14c" stroke-width="1.6"/>'+
+  '<path d="M98,88 Q116,76 134,88 Z" fill="#f4f7fb" stroke="#ffb14c" stroke-width="1.6"/>'+
+  '<line x1="98" y1="99" x2="134" y2="99" stroke="#b9c4d4" stroke-width=".8"/>'+
+  '<line x1="98" y1="109" x2="134" y2="109" stroke="#b9c4d4" stroke-width=".8"/>'+
+  '<text x="92" y="134" fill="#7d8a9d" font-size="9" text-anchor="middle">丸屋根の大きなLNGタンク</text>'+
   /* パイプライン */
   '<path d="M137,101 L152,101 L152,88" fill="none" stroke="#5c6b80" stroke-width="2"/>'+
   /* 建屋＋低めの煙突 */
@@ -1510,9 +1560,11 @@ biomass: SKY + GROUND +
 /* 見分けかた・特徴 */
 const PLANT_INFO = {
   coal:    {look:"黒い石炭の山とベルトコンベア、高い煙突", pt:"燃料の石炭を船で運び、広い貯炭場に積む。煙突がいちばん高い。", where:"海沿い（船で燃料を運ぶため）"},
-  lng:     {look:"白くて丸い球形タンク", pt:"−162℃に冷やした液体の天然ガスを丸いタンクにためる。まん丸なタンクが目印。", where:"海沿い（LNG船が着く港のそば）"},
+  lng:     {look:"丸屋根の大きな白い円筒タンクと、細い煙突が数本", pt:"−162℃に冷やして液体にした天然ガスを、分厚い断熱の大きなタンクにためる。港には球形タンクを積んだLNG船が着く。", where:"海沿い（LNG船が着く港のそば）",
+            note:"写真にはまん丸な球形タンクも写っていますが、日本のLNG基地のタンクは丸屋根の円筒形が主流です。町で見かける球形のタンクは、多くが都市ガスをためる「ガスホルダー」です。"},
   oil:     {look:"平たい円筒のタンクがずらり", pt:"石油はふつうの液体なので、ふた付きの平たい円柱のタンクにためる。", where:"海沿い（製油所のそば）"},
-  nuclear: {look:"丸いドームか四角い建屋。煙突から煙が出ない", pt:"原子炉を分厚いコンクリートで包む。燃やしていないので煙は出ない。海水で冷やす。", where:"海沿い（大量の冷却水が必要）"},
+  nuclear: {look:"丸いドームか四角い建屋。煙突から煙が出ない", pt:"原子炉を分厚いコンクリートで包む。燃やしていないので煙は出ない。海水で冷やす。", where:"海沿い（大量の冷却水が必要）",
+            note:"写真の右にある、湯気を出す大きな塔は「冷却塔」。海外の内陸の原発にはありますが、日本の原発は海水で冷やすので冷却塔はありません。出ているのは煙ではなく水蒸気です。"},
   hydro:   {look:"ダムと、山を下る太い鉄の管", pt:"高い所にためた水を落として水車を回す。管が太く長いほど大きな力になる。", where:"山あいの川（落差のある場所）"},
   geo:     {look:"くねくねした銀色の配管と、白い湯気", pt:"地下の熱で沸いた蒸気を井戸から取り出す。配管が曲がっているのは、熱で伸び縮みするため。", where:"火山のふもと（登別・洞爺など）"},
   wind:    {look:"3枚の羽根。海の上にも建つ", pt:"羽根が長いほどたくさん発電できる。最近のものは羽根の先まで100mを超える。", where:"風の強い海岸・尾根・洋上"},
@@ -1523,15 +1575,55 @@ const PLANT_INFO = {
 function buildGallery(){
   $("gallery").innerHTML = SRC.map(s=>{
     const i = PLANT_INFO[s.id];
-    return '<figure class="pl" style="--k:'+s.c+'">'+
-      '<svg viewBox="0 0 240 150" preserveAspectRatio="xMidYMid meet" role="img" aria-label="'+s.name+'の発電所のイメージ">'+PLANT_SVG[s.id]+'</svg>'+
+    return '<figure class="pl" data-view="photo" style="--k:'+s.c+'">'+
+      '<div class="pl-media">'+
+        '<button class="pl-photo" type="button" data-id="'+s.id+'" aria-label="'+s.name+'の写真を大きく見る">'+
+          '<img src="img/'+s.id+'.jpg" srcset="img/'+s.id+'.jpg 640w, img/'+s.id+'@2x.jpg 1200w" sizes="(max-width:620px) 100vw, 380px"'+
+          ' width="640" height="357" loading="lazy" alt="'+s.name+'の発電所の写真（イメージ）">'+
+          '<span class="zoom">🔍 拡大</span></button>'+
+        '<svg class="pl-svg" viewBox="0 0 240 150" preserveAspectRatio="xMidYMid meet" role="img" aria-label="'+s.name+'の発電所の図解">'+PLANT_SVG[s.id]+'</svg>'+
+        '<div class="pl-tabs" role="group" aria-label="表示の切り替え">'+
+          '<button type="button" data-v="photo" class="on">写真</button><button type="button" data-v="svg">図解</button>'+
+        '</div>'+
+      '</div>'+
       '<figcaption>'+
         '<h4>'+s.icon+' '+s.name+'<span class="role '+s.role+'">'+s.roleJa+'</span></h4>'+
         '<p class="pl-look"><span class="tag">見分けかた</span>'+i.look+'</p>'+
         '<p class="pl-pt">'+i.pt+'</p>'+
+        (i.note ? '<p class="pl-note">📷 '+i.note+'</p>' : '')+
         '<p class="pl-where">📍 建つ場所：'+i.where+'</p>'+
       '</figcaption></figure>';
   }).join("");
+
+  const setView = (fig, v)=>{
+    fig.dataset.view = v;
+    fig.querySelectorAll(".pl-tabs button").forEach(b=> b.classList.toggle("on", b.dataset.v===v));
+  };
+  $("gallery").querySelectorAll(".pl").forEach(fig=>{
+    fig.querySelectorAll(".pl-tabs button").forEach(b=> b.addEventListener("click", ()=> setView(fig, b.dataset.v)));
+  });
+  document.querySelectorAll("#galleryAll button").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      document.querySelectorAll("#galleryAll button").forEach(x=> x.classList.toggle("on", x===b));
+      $("gallery").querySelectorAll(".pl").forEach(fig=> setView(fig, b.dataset.v));
+    });
+  });
+
+  /* 写真の拡大表示 */
+  const lb = $("lightbox");
+  const openLb = (id)=>{
+    const src = SRC[SI[id]];
+    $("lbImg").src = "img/"+id+"@2x.jpg";
+    $("lbImg").alt = src.name+"の発電所の写真（イメージ）";
+    $("lbCap").innerHTML = '<b style="color:'+src.c+'">'+src.icon+' '+src.name+'</b>　'+PLANT_INFO[id].look+
+      (PLANT_INFO[id].note ? '<br><span style="color:#ffd9b0;font-size:.8rem">📷 '+PLANT_INFO[id].note+'</span>' : '');
+    lb.hidden = false;
+    $("lbClose").focus();
+  };
+  const closeLb = ()=>{ lb.hidden = true; $("lbImg").removeAttribute("src"); };
+  $("gallery").querySelectorAll(".pl-photo").forEach(b=> b.addEventListener("click", ()=> openLb(b.dataset.id)));
+  lb.addEventListener("click", e=>{ if(e.target===lb || e.target.id==="lbClose") closeLb(); });
+  document.addEventListener("keydown", e=>{ if(e.key==="Escape" && !lb.hidden) closeLb(); });
 }
 
 /* =========================================================
