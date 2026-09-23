@@ -556,8 +556,14 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .pump-card[data-phase="day"] .pump-upper-title,.pump-card[data-phase="day"] .pump-arrow-caption{fill:#16405a}
 .pump-flow{fill:none;stroke:#68dfff;stroke-width:8;stroke-linecap:round;stroke-dasharray:12 21;animation:pump-flow 1.1s linear infinite}
 .pump-card[data-phase="night"] .pump-flow{animation-direction:reverse}
-.pump-card[data-paused="true"] .pump-flow{animation-play-state:paused}
+.pump-rotor{transform-box:fill-box;transform-origin:center;animation:pump-rotate 1.25s linear infinite}
+.pump-card[data-phase="night"] .pump-rotor{animation-direction:reverse}
+.pump-card[data-paused="true"] .pump-flow,.pump-card[data-paused="true"] .pump-rotor{animation-play-state:paused}
+.pump-rotor-blade{fill:#ffd278}
+.pump-card[data-phase="night"] .pump-rotor-blade{fill:#69ddff}
+.pump-card[data-phase="night"] .pump-machine-ring{stroke:#69ddff}
 @keyframes pump-flow{to{stroke-dashoffset:-66}}
+@keyframes pump-rotate{to{transform:rotate(360deg)}}
 .pump-card [data-show]{display:none}
 .pump-card[data-phase="night"] [data-show="night"],.pump-card[data-phase="day"] [data-show="day"]{display:inline}
 .pump-explain{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
@@ -644,14 +650,23 @@ button:disabled{opacity:.45;cursor:not-allowed}
         <path d="M275 152 C326 154 349 215 403 231 S468 255 496 255" fill="none" stroke="#52697a" stroke-width="26" stroke-linecap="round"/>
         <path d="M275 152 C326 154 349 215 403 231 S468 255 496 255" fill="none" stroke="#163c57" stroke-width="17" stroke-linecap="round"/>
         <path class="pump-flow" d="M275 152 C326 154 349 215 403 231 S468 255 496 255"/>
-        <circle cx="404" cy="232" r="30" fill="#202b38" stroke="#ffb14c" stroke-width="4"/>
-        <circle cx="404" cy="232" r="17" fill="none" stroke="#ffb14c" stroke-width="2" stroke-dasharray="8 4"/>
-        <circle cx="404" cy="232" r="5" fill="#ffb14c"/>
+        <circle class="pump-machine-ring" cx="404" cy="232" r="30" fill="#202b38" stroke="#ffb14c" stroke-width="4"/>
+        <circle cx="404" cy="232" r="23" fill="none" stroke="#7593a9" stroke-width="1.5"/>
+        <g transform="translate(404 232)">
+          <g class="pump-rotor" aria-hidden="true">
+            <path class="pump-rotor-blade" d="M-3 -3 C-12 -8 -15 -19 -6 -22 C3 -23 7 -12 3 -4 Z"/>
+            <path class="pump-rotor-blade" d="M-3 -3 C-12 -8 -15 -19 -6 -22 C3 -23 7 -12 3 -4 Z" transform="rotate(120)"/>
+            <path class="pump-rotor-blade" d="M-3 -3 C-12 -8 -15 -19 -6 -22 C3 -23 7 -12 3 -4 Z" transform="rotate(240)"/>
+            <circle r="5" fill="#eaf7ff"/>
+            <circle r="2" fill="#203344"/>
+          </g>
+        </g>
         <text class="pump-upper-title" x="175" y="96" fill="#eef8ff" font-size="21" font-weight="700" text-anchor="middle">上の池</text>
         <text x="175" y="184" fill="#c1d6e6" font-size="14" text-anchor="middle">上部調整池</text>
         <text x="602" y="213" fill="#eef8ff" font-size="21" font-weight="700" text-anchor="middle">下の池</text>
         <text x="602" y="305" fill="#c1d6e6" font-size="14" text-anchor="middle">下部調整池（京極ダム）</text>
-        <text x="404" y="293" fill="#ffd9a8" font-size="17" font-weight="700" text-anchor="middle">ポンプ・水車</text>
+        <g data-show="night"><text x="404" y="293" fill="#a5ecff" font-size="17" font-weight="700" text-anchor="middle">ポンプが回る</text></g>
+        <g data-show="day"><text x="404" y="293" fill="#ffe3ac" font-size="17" font-weight="700" text-anchor="middle">水車が回る</text></g>
         <g data-show="night"><text x="387" y="81" fill="#9ceaff" font-size="20" font-weight="700" text-anchor="middle">上の池に水がたまる ↖</text><text x="405" y="317" fill="#dbe9ff" font-size="15" text-anchor="middle">電気を使う → ポンプを回す</text></g>
         <g data-show="day"><text class="pump-arrow-caption" x="385" y="81" fill="#9ceaff" font-size="20" font-weight="700" text-anchor="middle">上の池から水を流す ↘</text><text x="405" y="317" fill="#ffe2ad" font-size="15" text-anchor="middle">水車を回す → 電気をつくる</text></g>
       </svg>
@@ -660,7 +675,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
       <div id="pumpNight" class="active"><b>🌙 夜・電気が余るとき</b>安い時間帯などの電気を使ってポンプを回し、下の池の水を上の池へ。電気を「水の高さ」に変えてためる。</div>
       <div id="pumpDay"><b>☀️ 昼・電気がたくさん必要なとき</b>上の池の水を落として水車を回し、発電する。使う電気が増える時間に力を貸す。</div>
     </div>
-    <p class="pump-foot">※ 動きと水位はしくみを学ぶための模式図。くみ上げには電気が必要で、発電時に同じ量の電気が戻るわけではありません。現在は太陽光などの電気が余る昼間にくみ上げる場合もあります。資料：<a href="https://www.hepco.co.jp/energy/water_power/kyogoku_ps.html" target="_blank" rel="noopener">北海道電力・京極発電所</a>／<a href="https://www.enecho.meti.go.jp/about/special/johoteikyo/yousuihatuden.html" target="_blank" rel="noopener">資源エネルギー庁・揚水発電</a></p>
+    <p class="pump-foot">※ 京極では同じポンプ水車を、発電時は水の力で回し、揚水時は電気を使って逆回転させます。動きと水位はしくみを学ぶための模式図。くみ上げには電気が必要で、発電時に同じ量の電気が戻るわけではありません。現在は太陽光などの電気が余る昼間にくみ上げる場合もあります。資料：<a href="https://note.hepco.co.jp/n/n7b53637a2598" target="_blank" rel="noopener">北海道電力・京極のポンプ水車</a>／<a href="https://www.hepco.co.jp/energy/water_power/kyogoku_ps.html" target="_blank" rel="noopener">北海道電力・京極発電所</a>／<a href="https://www.enecho.meti.go.jp/about/special/johoteikyo/yousuihatuden.html" target="_blank" rel="noopener">資源エネルギー庁・揚水発電</a></p>
   </div>
 
   <h3 class="sub-h">ひとりぼっちのバンドはどうなる？</h3>
@@ -1772,8 +1787,8 @@ function buildPump(){
     $("pumpDay").classList.toggle("active",phase==="day");
     $("pumpStatus").textContent = phase==="night" ? "上の池に水がたまっていく" : "上の池の水を落として発電する";
     $("pumpDesc").textContent = phase==="night"
-      ? "夜は電気を使い、下部調整池から上部調整池へ水をくみ上げる。"
-      : "昼は上部調整池から下部調整池へ水を落とし、水車で発電する。";
+      ? "夜はポンプ水車を逆回転させて、下部調整池から上部調整池へ水をくみ上げる。"
+      : "昼は上部調整池から下部調整池へ水を落とし、ポンプ水車を回して発電する。";
     const target = phase==="night" ? 1 : 0;
     if(Math.abs(upperLevel-target)<.01) renderWater(1-target);
     if(reducedMotion){ renderWater(target); return; }
