@@ -550,9 +550,10 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .pump-status{margin-left:auto;font-size:.82rem;font-weight:700;color:var(--cyan)}
 .pump-visual{overflow-x:auto;border:1px solid #2e4960;border-radius:12px;background:#101d2b}
 .pump-visual svg{display:block;width:100%;min-width:610px;height:auto}
-.pump-upper,.pump-lower{transition:transform 1.5s ease}
-.pump-card[data-phase="night"] .pump-upper{transform:translateY(29px)}
-.pump-card[data-phase="day"] .pump-lower{transform:translateY(27px)}
+.pump-back-ridge,.pump-front-ridge{transition:fill .5s ease}
+.pump-card[data-phase="day"] .pump-back-ridge{fill:#639a8e}
+.pump-card[data-phase="day"] .pump-front-ridge{fill:#397b72}
+.pump-card[data-phase="day"] .pump-upper-title,.pump-card[data-phase="day"] .pump-arrow-caption{fill:#16405a}
 .pump-flow{fill:none;stroke:#68dfff;stroke-width:8;stroke-linecap:round;stroke-dasharray:12 21;animation:pump-flow 1.1s linear infinite}
 .pump-card[data-phase="night"] .pump-flow{animation-direction:reverse}
 .pump-card[data-paused="true"] .pump-flow{animation-play-state:paused}
@@ -610,7 +611,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
 
   <h3 class="sub-h" id="pumpStorage">水を使う巨大な蓄電池 ― 京極発電所</h3>
   <div class="pump-card" id="pumpCard" data-phase="night" data-paused="false">
-    <p class="pump-lead">北海道の<b>京極発電所</b>は、上下にある２つの池を使う<b>揚水発電所</b>。ボタンで水の行き先を切り替えてみよう。</p>
+    <p class="pump-lead">北海道の<b>京極発電所</b>は、上下にある２つの池を使う<b>揚水発電所</b>。ボタンで水の行き先を切り替えてみよう。同じボタンを押すと動きをもう一度見られます。</p>
     <div class="pump-controls" role="group" aria-label="揚水発電の動きを切り替える">
       <button type="button" data-pump-phase="night" aria-pressed="true">🌙 夜：水を上へ</button>
       <button type="button" data-pump-phase="day" aria-pressed="false">☀️ 昼：水を下へ</button>
@@ -622,35 +623,37 @@ button:disabled{opacity:.45;cursor:not-allowed}
         <title id="pumpTitle">京極発電所の揚水発電の模式図</title>
         <desc id="pumpDesc">上部調整池と下部調整池が管でつながる。夜は電気を使い、下の池から上の池へ水をくみ上げる。昼は上の池から下の池へ水を流し、水車で発電する。</desc>
         <defs>
-          <linearGradient id="pumpSky" x2="0" y2="1"><stop stop-color="#172d45"/><stop offset="1" stop-color="#24445a"/></linearGradient>
+          <linearGradient id="pumpSkyNight" x2="0" y2="1"><stop stop-color="#172d45"/><stop offset="1" stop-color="#24445a"/></linearGradient>
+          <linearGradient id="pumpSkyDay" x2="0" y2="1"><stop stop-color="#6abfe9"/><stop offset="1" stop-color="#c5eaf4"/></linearGradient>
           <linearGradient id="pumpWater" x2="0" y2="1"><stop stop-color="#81e7ff"/><stop offset="1" stop-color="#1888bb"/></linearGradient>
           <clipPath id="pumpUpperClip"><path d="M70 111 H278 V164 H70 Z"/></clipPath>
           <clipPath id="pumpLowerClip"><path d="M495 225 H703 V284 H495 Z"/></clipPath>
         </defs>
-        <rect width="760" height="330" fill="url(#pumpSky)"/>
+        <rect data-show="night" width="760" height="330" fill="url(#pumpSkyNight)"/>
+        <rect data-show="day" width="760" height="330" fill="url(#pumpSkyDay)"/>
         <g data-show="night"><circle cx="665" cy="55" r="21" fill="#d9e5fa"/><circle cx="675" cy="46" r="20" fill="#172d45"/><g fill="#dbe9ff"><circle cx="575" cy="48" r="2"/><circle cx="618" cy="78" r="1.6"/><circle cx="707" cy="91" r="2"/></g></g>
         <g data-show="day"><circle cx="665" cy="57" r="24" fill="#ffd84f" opacity=".95"/><circle cx="665" cy="57" r="33" fill="#ffd84f" opacity=".12"/></g>
-        <path d="M0 172 L96 82 L190 122 L285 82 L408 203 L496 183 L624 118 L760 197 V330 H0 Z" fill="#253b4d"/>
-        <path d="M0 231 L75 188 L222 205 L307 174 L408 252 L520 198 L760 228 V330 H0 Z" fill="#1b3142"/>
+        <path class="pump-back-ridge" d="M0 172 L96 82 L190 122 L285 82 L408 203 L496 183 L624 118 L760 197 V330 H0 Z" fill="#253b4d"/>
+        <path class="pump-front-ridge" d="M0 231 L75 188 L222 205 L307 174 L408 252 L520 198 L760 228 V330 H0 Z" fill="#1b3142"/>
         <path d="M68 109 H282 V168 H68 Z" fill="#1b3546" stroke="#92a9b8" stroke-width="4"/>
-        <rect class="pump-upper" x="70" y="114" width="210" height="51" fill="url(#pumpWater)" clip-path="url(#pumpUpperClip)"/>
-        <path class="pump-upper" d="M70 123 Q94 119 118 123 T166 123 T214 123 T262 123" fill="none" stroke="#b8f5ff" opacity=".65"/>
+        <rect id="pumpUpperWater" x="70" y="154" width="210" height="10" fill="url(#pumpWater)" clip-path="url(#pumpUpperClip)"/>
+        <path id="pumpUpperWave" d="M70 156 Q96 152 122 156 T174 156 T226 156 T278 156" fill="none" stroke="#b8f5ff" opacity=".8"/>
         <path d="M493 223 H705 V287 H493 Z" fill="#1b3546" stroke="#92a9b8" stroke-width="4"/>
-        <rect class="pump-lower" x="495" y="241" width="208" height="44" fill="url(#pumpWater)" clip-path="url(#pumpLowerClip)"/>
-        <path class="pump-lower" d="M495 248 Q520 244 545 248 T595 248 T645 248 T695 248" fill="none" stroke="#b8f5ff" opacity=".65"/>
+        <rect id="pumpLowerWater" x="495" y="229" width="208" height="55" fill="url(#pumpWater)" clip-path="url(#pumpLowerClip)"/>
+        <path id="pumpLowerWave" d="M495 231 Q521 227 547 231 T599 231 T651 231 T703 231" fill="none" stroke="#b8f5ff" opacity=".8"/>
         <path d="M275 152 C326 154 349 215 403 231 S468 255 496 255" fill="none" stroke="#52697a" stroke-width="26" stroke-linecap="round"/>
         <path d="M275 152 C326 154 349 215 403 231 S468 255 496 255" fill="none" stroke="#163c57" stroke-width="17" stroke-linecap="round"/>
         <path class="pump-flow" d="M275 152 C326 154 349 215 403 231 S468 255 496 255"/>
         <circle cx="404" cy="232" r="30" fill="#202b38" stroke="#ffb14c" stroke-width="4"/>
         <circle cx="404" cy="232" r="17" fill="none" stroke="#ffb14c" stroke-width="2" stroke-dasharray="8 4"/>
         <circle cx="404" cy="232" r="5" fill="#ffb14c"/>
-        <text x="175" y="96" fill="#eef8ff" font-size="21" font-weight="700" text-anchor="middle">上の池</text>
+        <text class="pump-upper-title" x="175" y="96" fill="#eef8ff" font-size="21" font-weight="700" text-anchor="middle">上の池</text>
         <text x="175" y="184" fill="#c1d6e6" font-size="14" text-anchor="middle">上部調整池</text>
         <text x="602" y="213" fill="#eef8ff" font-size="21" font-weight="700" text-anchor="middle">下の池</text>
         <text x="602" y="305" fill="#c1d6e6" font-size="14" text-anchor="middle">下部調整池（京極ダム）</text>
         <text x="404" y="293" fill="#ffd9a8" font-size="17" font-weight="700" text-anchor="middle">ポンプ・水車</text>
-        <g data-show="night"><text x="387" y="81" fill="#9ceaff" font-size="20" font-weight="700" text-anchor="middle">水をくみ上げる ↖</text><text x="405" y="317" fill="#dbe9ff" font-size="15" text-anchor="middle">電気を使う → ポンプを回す</text></g>
-        <g data-show="day"><text x="385" y="81" fill="#9ceaff" font-size="20" font-weight="700" text-anchor="middle">水を流す ↘</text><text x="405" y="317" fill="#ffe2ad" font-size="15" text-anchor="middle">水車を回す → 電気をつくる</text></g>
+        <g data-show="night"><text x="387" y="81" fill="#9ceaff" font-size="20" font-weight="700" text-anchor="middle">上の池に水がたまる ↖</text><text x="405" y="317" fill="#dbe9ff" font-size="15" text-anchor="middle">電気を使う → ポンプを回す</text></g>
+        <g data-show="day"><text class="pump-arrow-caption" x="385" y="81" fill="#9ceaff" font-size="20" font-weight="700" text-anchor="middle">上の池から水を流す ↘</text><text x="405" y="317" fill="#ffe2ad" font-size="15" text-anchor="middle">水車を回す → 電気をつくる</text></g>
       </svg>
     </div>
     <div class="pump-explain">
@@ -1716,23 +1719,76 @@ function buildBand(){
 function buildPump(){
   const card = $("pumpCard");
   const phaseButtons = card.querySelectorAll("[data-pump-phase]");
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const upperWater = $("pumpUpperWater"), lowerWater = $("pumpLowerWater");
+  const upperWave = $("pumpUpperWave"), lowerWave = $("pumpLowerWave");
+  let upperLevel = 0, animation = null, frameId = 0, started = false;
+  let observer;
+
+  const renderWater = level=>{
+    upperLevel = Math.max(0,Math.min(1,level));
+    const setPool = (rect,wave,x,bottom,minHeight,maxHeight,fill)=>{
+      const height = minHeight+(maxHeight-minHeight)*fill;
+      const y = bottom-height;
+      rect.setAttribute("y",y.toFixed(1));
+      rect.setAttribute("height",height.toFixed(1));
+      const waveY = (y+2).toFixed(1), waveHigh = (y-2).toFixed(1);
+      wave.setAttribute("d",`M${x} ${waveY} Q${x+26} ${waveHigh} ${x+52} ${waveY} T${x+104} ${waveY} T${x+156} ${waveY} T${x+208} ${waveY}`);
+    };
+    setPool(upperWater,upperWave,70,164,10,50,upperLevel);
+    setPool(lowerWater,lowerWave,495,284,10,55,1-upperLevel);
+  };
+  const tick = time=>{
+    if(!animation || card.dataset.paused==="true") { frameId=0; return; }
+    if(animation.lastTime!==null) animation.elapsed += time-animation.lastTime;
+    animation.lastTime = time;
+    const fraction = Math.min(1,animation.elapsed/animation.duration);
+    const eased = fraction*fraction*(3-2*fraction);
+    renderWater(animation.from+(animation.to-animation.from)*eased);
+    if(fraction<1) frameId=requestAnimationFrame(tick);
+    else { animation=null; frameId=0; }
+  };
+  const setPaused = paused=>{
+    card.dataset.paused = String(paused);
+    $("pumpPause").setAttribute("aria-pressed",String(paused));
+    $("pumpPause").textContent = paused ? "▶ 動きを再開" : "⏸ 動きを止める";
+    if(!paused && animation && !frameId){
+      animation.lastTime=null;
+      frameId=requestAnimationFrame(tick);
+    }
+  };
   const setPhase = phase=>{
+    if(!started){
+      started=true;
+      if(observer) observer.disconnect();
+      renderWater(phase==="night" ? 0 : 1);
+    }
+    if(frameId){ cancelAnimationFrame(frameId); frameId=0; }
+    animation=null;
+    setPaused(false);
     card.dataset.phase = phase;
     phaseButtons.forEach(b=>b.setAttribute("aria-pressed", String(b.dataset.pumpPhase===phase)));
     $("pumpNight").classList.toggle("active",phase==="night");
     $("pumpDay").classList.toggle("active",phase==="day");
-    $("pumpStatus").textContent = phase==="night" ? "電気を使って、水をくみ上げる" : "水を落として、電気をつくる";
+    $("pumpStatus").textContent = phase==="night" ? "上の池に水がたまっていく" : "上の池の水を落として発電する";
     $("pumpDesc").textContent = phase==="night"
       ? "夜は電気を使い、下部調整池から上部調整池へ水をくみ上げる。"
       : "昼は上部調整池から下部調整池へ水を落とし、水車で発電する。";
+    const target = phase==="night" ? 1 : 0;
+    if(Math.abs(upperLevel-target)<.01) renderWater(1-target);
+    if(reducedMotion){ renderWater(target); return; }
+    animation = {from:upperLevel,to:target,duration:5000*Math.abs(target-upperLevel),elapsed:0,lastTime:null};
+    frameId=requestAnimationFrame(tick);
   };
   phaseButtons.forEach(b=>b.addEventListener("click",()=>setPhase(b.dataset.pumpPhase)));
-  $("pumpPause").addEventListener("click",()=>{
-    const paused = card.dataset.paused!=="true";
-    card.dataset.paused = String(paused);
-    $("pumpPause").setAttribute("aria-pressed",String(paused));
-    $("pumpPause").textContent = paused ? "▶ 動きを再開" : "⏸ 動きを止める";
-  });
+  $("pumpPause").addEventListener("click",()=>setPaused(card.dataset.paused!=="true"));
+  renderWater(0);
+  if("IntersectionObserver" in window){
+    observer = new IntersectionObserver(entries=>{
+      if(entries.some(e=>e.isIntersecting)) setPhase("night");
+    },{threshold:.35});
+    observer.observe(card);
+  } else setPhase("night");
 }
 
 /* =========================================================
