@@ -540,6 +540,32 @@ button:disabled{opacity:.45;cursor:not-allowed}
 :focus-visible{outline:3px solid var(--cyan);outline-offset:4px}
 @media(max-width:620px){.quick-results{grid-template-columns:repeat(2,minmax(0,1fr))}.total-bar{position:static}.quick-nav a{flex:1 1 140px;justify-content:center}.lim-top{flex-wrap:wrap}.lim-nums{flex-wrap:wrap;gap:8px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+/* 京極発電所：揚水発電の動く図解 */
+.pump-card{background:#0d1520;border:1px solid #36536a;border-radius:15px;padding:16px;margin:12px 0 20px}
+.pump-lead{font-size:.88rem;color:var(--txt2);margin:0 0 12px}
+.pump-lead b{color:var(--cyan)}
+.pump-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.pump-controls button{font-family:inherit;font-size:.82rem;font-weight:700;line-height:1.4;min-height:42px;border:1px solid var(--line2);border-radius:9px;background:#172231;color:var(--txt2);padding:8px 14px;cursor:pointer}
+.pump-controls button[aria-pressed="true"]{background:var(--cyan);border-color:var(--cyan);color:#04121a}
+.pump-status{margin-left:auto;font-size:.82rem;font-weight:700;color:var(--cyan)}
+.pump-visual{overflow-x:auto;border:1px solid #2e4960;border-radius:12px;background:#101d2b}
+.pump-visual svg{display:block;width:100%;min-width:610px;height:auto}
+.pump-upper,.pump-lower{transition:transform 1.5s ease}
+.pump-card[data-phase="night"] .pump-upper{transform:translateY(29px)}
+.pump-card[data-phase="day"] .pump-lower{transform:translateY(27px)}
+.pump-flow{fill:none;stroke:#68dfff;stroke-width:8;stroke-linecap:round;stroke-dasharray:12 21;animation:pump-flow 1.1s linear infinite}
+.pump-card[data-phase="night"] .pump-flow{animation-direction:reverse}
+.pump-card[data-paused="true"] .pump-flow{animation-play-state:paused}
+@keyframes pump-flow{to{stroke-dashoffset:-66}}
+.pump-card [data-show]{display:none}
+.pump-card[data-phase="night"] [data-show="night"],.pump-card[data-phase="day"] [data-show="day"]{display:inline}
+.pump-explain{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+.pump-explain div{padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:#121e2b;font-size:.82rem;line-height:1.65;color:var(--txt2)}
+.pump-explain b{display:block;color:var(--txt);font-size:.89rem}
+.pump-explain .active{border-color:var(--cyan);background:#162b3c}
+.pump-foot{font-size:.75rem;line-height:1.65;color:var(--txt3);margin:12px 0 0}
+.pump-foot a{color:var(--cyan)}
+@media(max-width:620px){.pump-card{padding:12px}.pump-explain{grid-template-columns:1fr}.pump-status{width:100%;margin-left:0}}
 </style>
 </head>
 <body>
@@ -550,7 +576,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
   <h1>あなたのバンドを組もう</h1>
   <p class="sub">電気をつくる方法（バンドメンバー）の割合を自分で決めると、<br>
   <b>電気代・CO₂・国内でまかなえる割合・夕方の電気が足りるか</b>がすぐにわかります。</p>
-<nav class="quick-nav" aria-label="ページ内メニュー"><a class="btn" href="#mixPanel">まず組み合わせてみる</a><a class="btn ghost" href="#intro">バンドの説明を読む</a><a class="btn ghost" href="#galleryPanel">発電所図鑑へ</a></nav>
+<nav class="quick-nav" aria-label="ページ内メニュー"><a class="btn" href="#mixPanel">まず組み合わせてみる</a><a class="btn ghost" href="#intro">バンドの説明を読む</a><a class="btn ghost" href="#pumpStorage">水の蓄電池を見る</a><a class="btn ghost" href="#galleryPanel">発電所図鑑へ</a></nav>
 </header>
 
 <!-- ========== 0. なぜバンド？ ========== -->
@@ -580,6 +606,58 @@ button:disabled{opacity:.45;cursor:not-allowed}
     日がしずむと、<b>ソロ（太陽光）の音はゼロ</b>に。でも、夜ごはん・おふろ・エアコン・照明……みんなが使う電気の量はほとんど減りません。
     そのぶんを、<b>ドラム（火力など）が一気にがんばって</b>うめています。水力や蓄電池、電気を使う時間をずらす工夫も助けになります。<br>
     <b>太陽光を増やすなら、「日がしずんだあとの電気はどうする？」</b>もいっしょに考えよう。
+  </div>
+
+  <h3 class="sub-h" id="pumpStorage">水を使う巨大な蓄電池 ― 京極発電所</h3>
+  <div class="pump-card" id="pumpCard" data-phase="night" data-paused="false">
+    <p class="pump-lead">北海道の<b>京極発電所</b>は、上下にある２つの池を使う<b>揚水発電所</b>。ボタンで水の行き先を切り替えてみよう。</p>
+    <div class="pump-controls" role="group" aria-label="揚水発電の動きを切り替える">
+      <button type="button" data-pump-phase="night" aria-pressed="true">🌙 夜：水を上へ</button>
+      <button type="button" data-pump-phase="day" aria-pressed="false">☀️ 昼：水を下へ</button>
+      <button type="button" id="pumpPause" aria-pressed="false">⏸ 動きを止める</button>
+      <span class="pump-status" id="pumpStatus" aria-live="polite">電気を使って、水をくみ上げる</span>
+    </div>
+    <div class="pump-visual">
+      <svg viewBox="0 0 760 330" role="img" aria-labelledby="pumpTitle pumpDesc">
+        <title id="pumpTitle">京極発電所の揚水発電の模式図</title>
+        <desc id="pumpDesc">上部調整池と下部調整池が管でつながる。夜は電気を使い、下の池から上の池へ水をくみ上げる。昼は上の池から下の池へ水を流し、水車で発電する。</desc>
+        <defs>
+          <linearGradient id="pumpSky" x2="0" y2="1"><stop stop-color="#172d45"/><stop offset="1" stop-color="#24445a"/></linearGradient>
+          <linearGradient id="pumpWater" x2="0" y2="1"><stop stop-color="#81e7ff"/><stop offset="1" stop-color="#1888bb"/></linearGradient>
+          <clipPath id="pumpUpperClip"><path d="M70 111 H278 V164 H70 Z"/></clipPath>
+          <clipPath id="pumpLowerClip"><path d="M495 225 H703 V284 H495 Z"/></clipPath>
+        </defs>
+        <rect width="760" height="330" fill="url(#pumpSky)"/>
+        <g data-show="night"><circle cx="665" cy="55" r="21" fill="#d9e5fa"/><circle cx="675" cy="46" r="20" fill="#172d45"/><g fill="#dbe9ff"><circle cx="575" cy="48" r="2"/><circle cx="618" cy="78" r="1.6"/><circle cx="707" cy="91" r="2"/></g></g>
+        <g data-show="day"><circle cx="665" cy="57" r="24" fill="#ffd84f" opacity=".95"/><circle cx="665" cy="57" r="33" fill="#ffd84f" opacity=".12"/></g>
+        <path d="M0 172 L96 82 L190 122 L285 82 L408 203 L496 183 L624 118 L760 197 V330 H0 Z" fill="#253b4d"/>
+        <path d="M0 231 L75 188 L222 205 L307 174 L408 252 L520 198 L760 228 V330 H0 Z" fill="#1b3142"/>
+        <path d="M68 109 H282 V168 H68 Z" fill="#1b3546" stroke="#92a9b8" stroke-width="4"/>
+        <rect class="pump-upper" x="70" y="114" width="210" height="51" fill="url(#pumpWater)" clip-path="url(#pumpUpperClip)"/>
+        <path class="pump-upper" d="M70 123 Q94 119 118 123 T166 123 T214 123 T262 123" fill="none" stroke="#b8f5ff" opacity=".65"/>
+        <path d="M493 223 H705 V287 H493 Z" fill="#1b3546" stroke="#92a9b8" stroke-width="4"/>
+        <rect class="pump-lower" x="495" y="241" width="208" height="44" fill="url(#pumpWater)" clip-path="url(#pumpLowerClip)"/>
+        <path class="pump-lower" d="M495 248 Q520 244 545 248 T595 248 T645 248 T695 248" fill="none" stroke="#b8f5ff" opacity=".65"/>
+        <path d="M275 152 C326 154 349 215 403 231 S468 255 496 255" fill="none" stroke="#52697a" stroke-width="26" stroke-linecap="round"/>
+        <path d="M275 152 C326 154 349 215 403 231 S468 255 496 255" fill="none" stroke="#163c57" stroke-width="17" stroke-linecap="round"/>
+        <path class="pump-flow" d="M275 152 C326 154 349 215 403 231 S468 255 496 255"/>
+        <circle cx="404" cy="232" r="30" fill="#202b38" stroke="#ffb14c" stroke-width="4"/>
+        <circle cx="404" cy="232" r="17" fill="none" stroke="#ffb14c" stroke-width="2" stroke-dasharray="8 4"/>
+        <circle cx="404" cy="232" r="5" fill="#ffb14c"/>
+        <text x="175" y="96" fill="#eef8ff" font-size="21" font-weight="700" text-anchor="middle">上の池</text>
+        <text x="175" y="184" fill="#c1d6e6" font-size="14" text-anchor="middle">上部調整池</text>
+        <text x="602" y="213" fill="#eef8ff" font-size="21" font-weight="700" text-anchor="middle">下の池</text>
+        <text x="602" y="305" fill="#c1d6e6" font-size="14" text-anchor="middle">下部調整池（京極ダム）</text>
+        <text x="404" y="293" fill="#ffd9a8" font-size="17" font-weight="700" text-anchor="middle">ポンプ・水車</text>
+        <g data-show="night"><text x="387" y="81" fill="#9ceaff" font-size="20" font-weight="700" text-anchor="middle">水をくみ上げる ↖</text><text x="405" y="317" fill="#dbe9ff" font-size="15" text-anchor="middle">電気を使う → ポンプを回す</text></g>
+        <g data-show="day"><text x="385" y="81" fill="#9ceaff" font-size="20" font-weight="700" text-anchor="middle">水を流す ↘</text><text x="405" y="317" fill="#ffe2ad" font-size="15" text-anchor="middle">水車を回す → 電気をつくる</text></g>
+      </svg>
+    </div>
+    <div class="pump-explain">
+      <div id="pumpNight" class="active"><b>🌙 夜・電気が余るとき</b>安い時間帯などの電気を使ってポンプを回し、下の池の水を上の池へ。電気を「水の高さ」に変えてためる。</div>
+      <div id="pumpDay"><b>☀️ 昼・電気がたくさん必要なとき</b>上の池の水を落として水車を回し、発電する。使う電気が増える時間に力を貸す。</div>
+    </div>
+    <p class="pump-foot">※ 動きと水位はしくみを学ぶための模式図。くみ上げには電気が必要で、発電時に同じ量の電気が戻るわけではありません。現在は太陽光などの電気が余る昼間にくみ上げる場合もあります。資料：<a href="https://www.hepco.co.jp/energy/water_power/kyogoku_ps.html" target="_blank" rel="noopener">北海道電力・京極発電所</a>／<a href="https://www.enecho.meti.go.jp/about/special/johoteikyo/yousuihatuden.html" target="_blank" rel="noopener">資源エネルギー庁・揚水発電</a></p>
   </div>
 
   <h3 class="sub-h">ひとりぼっちのバンドはどうなる？</h3>
@@ -1634,6 +1712,29 @@ function buildBand(){
   $("dayChart").innerHTML = g;
 }
 
+/* 京極発電所：夜の揚水と昼の発電を切り替える */
+function buildPump(){
+  const card = $("pumpCard");
+  const phaseButtons = card.querySelectorAll("[data-pump-phase]");
+  const setPhase = phase=>{
+    card.dataset.phase = phase;
+    phaseButtons.forEach(b=>b.setAttribute("aria-pressed", String(b.dataset.pumpPhase===phase)));
+    $("pumpNight").classList.toggle("active",phase==="night");
+    $("pumpDay").classList.toggle("active",phase==="day");
+    $("pumpStatus").textContent = phase==="night" ? "電気を使って、水をくみ上げる" : "水を落として、電気をつくる";
+    $("pumpDesc").textContent = phase==="night"
+      ? "夜は電気を使い、下部調整池から上部調整池へ水をくみ上げる。"
+      : "昼は上部調整池から下部調整池へ水を落とし、水車で発電する。";
+  };
+  phaseButtons.forEach(b=>b.addEventListener("click",()=>setPhase(b.dataset.pumpPhase)));
+  $("pumpPause").addEventListener("click",()=>{
+    const paused = card.dataset.paused!=="true";
+    card.dataset.paused = String(paused);
+    $("pumpPause").setAttribute("aria-pressed",String(paused));
+    $("pumpPause").textContent = paused ? "▶ 動きを再開" : "⏸ 動きを止める";
+  });
+}
+
 /* =========================================================
    発電所図鑑 ― それぞれの発電所はどんな形か
    すべてインラインSVGで描画（viewBox 0 0 240 150）
@@ -2181,6 +2282,7 @@ function init(){
   buildMixer();
   buildEvents();
   buildBand();
+  buildPump();
   buildGallery();
   buildHkMap();
   buildTable();
